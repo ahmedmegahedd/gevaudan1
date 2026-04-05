@@ -25,10 +25,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#f0f4f8" }}>
       {/* Admin header */}
       <header
-        className="h-14 flex items-center justify-between px-6 border-b"
+        className="h-14 flex items-center justify-between px-4 sm:px-6 border-b"
         style={{ backgroundColor: "var(--color-primary)", borderColor: "rgba(255,255,255,0.06)" }}
       >
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
           <div className="flex flex-col leading-none mr-2">
             <span
               className="text-base font-bold tracking-wider text-white"

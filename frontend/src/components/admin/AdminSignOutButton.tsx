@@ -16,7 +16,7 @@ export default function AdminSignOutButton() {
   return (
     <button
       onClick={handleSignOut}
-      className="text-xs uppercase tracking-wider text-white/50 hover:text-white transition-colors"
+      className="text-xs uppercase tracking-wider text-white/50 hover:text-white transition-colors px-3 py-2 min-h-[44px] min-w-[44px]"
     >
       Sign Out
     </button>
