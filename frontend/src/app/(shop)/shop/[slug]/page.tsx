@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+
+export const dynamic = 'force-dynamic'
 import { storeConfig } from "@/config/store.config"
 import ProductDetail from "@/components/shop/ProductDetail"
 import type { Product } from "@/types"
