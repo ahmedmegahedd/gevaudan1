@@ -5,6 +5,7 @@ import Image from "next/image"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { useToastStore } from "@/store/toastStore"
+import { getRealVariantKeys, getVariantStock } from "@/lib/variantStock"
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal, deliveryFee, total } =
@@ -91,9 +92,13 @@ export default function CartPage() {
                     {currency} {item.product.price.toLocaleString()}
                   </p>
 
-                  {item.quantity >= item.product.stock && item.product.stock > 0 && (
-                    <p className="text-xs text-red-500">Max stock reached ({item.product.stock})</p>
-                  )}
+                  {(() => {
+                    const rk = getRealVariantKeys(item.product.variants)
+                    const s = getVariantStock(item.product.stock, item.product.variant_stock, item.selectedVariants, rk)
+                    return item.quantity >= s && s > 0 ? (
+                      <p className="text-xs text-red-500">Max stock reached ({s})</p>
+                    ) : null
+                  })()}
 
                   <div className="flex items-center gap-3 mt-2">
                     {/* Quantity controls — min 40px touch targets */}
@@ -112,7 +117,11 @@ export default function CartPage() {
                         onClick={() =>
                           updateQuantity(item.product.id, item.selectedVariants, item.quantity + 1)
                         }
-                        disabled={item.quantity >= item.product.stock}
+                        disabled={(() => {
+                          const rk = getRealVariantKeys(item.product.variants)
+                          const s = getVariantStock(item.product.stock, item.product.variant_stock, item.selectedVariants, rk)
+                          return item.quantity >= s
+                        })()}
                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Increase"
                       >

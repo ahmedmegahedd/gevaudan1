@@ -8,6 +8,7 @@ import { z } from "zod"
 import Image from "next/image"
 import { clientApi } from "@/lib/clientApi"
 import { storeConfig } from "@/config/store.config"
+import { cartesian } from "@/lib/variantStock"
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 import { useToastStore } from "@/store/toastStore"
 import type { Category, Product } from "@/types"
@@ -139,6 +140,11 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
     }
     return ["Size", "Bust (cm)", "Waist (cm)", "Hips (cm)"]
   })
+
+  // Variant stock state
+  const [variantStock, setVariantStock] = useState<Record<string, number>>(
+    (initialData?.variant_stock as Record<string, number> | null) ?? {}
+  )
 
   // Images state: mix of existing URLs and new local files
   const [images, setImages] = useState<ImageEntry[]>(
@@ -310,6 +316,11 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       is_featured: values.is_featured,
       variants,
       images: imageUrls,
+      variant_stock: Object.keys(variantStock).length > 0 ? variantStock : null,
+      // If variant_stock is set, total stock = sum of all variant stocks
+      ...(Object.keys(variantStock).length > 0
+        ? { stock: Object.values(variantStock).reduce((s, v) => s + v, 0) }
+        : {}),
     }
 
     if (mode === "create") {
@@ -602,6 +613,76 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
           </button>
         )}
       </Section>
+
+      {/* ── Variant Stock ── */}
+      {(() => {
+        const activeGroups = variantGroups.filter(
+          (g) => g.key.trim() && g.value.trim()
+        )
+        if (activeGroups.length === 0) return null
+
+        const keys = activeGroups.map((g) => g.key.trim())
+        const options = activeGroups.map((g) =>
+          g.value.split(",").map((v) => v.trim()).filter(Boolean)
+        )
+        const combinations = cartesian(options)
+
+        return (
+          <Section title="Stock per Variant">
+            <p className="text-xs text-gray-400 mb-3">
+              Set stock for each variant combination. Total stock is calculated automatically.
+              Leave all at 0 to use the single stock number above.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse" style={{ minWidth: 300 }}>
+                <thead>
+                  <tr style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}>
+                    {keys.map((k) => (
+                      <th key={k} className="px-3 py-2 text-left text-xs uppercase tracking-wider font-semibold">
+                        {k}
+                      </th>
+                    ))}
+                    <th className="px-3 py-2 text-left text-xs uppercase tracking-wider font-semibold w-24">
+                      Stock
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {combinations.map((combo, i) => {
+                    const stockKey = combo.join("|")
+                    return (
+                      <tr key={stockKey} style={{ backgroundColor: i % 2 === 0 ? "rgba(6,18,34,0.03)" : "transparent" }}>
+                        {combo.map((val, j) => (
+                          <td key={j} className="px-3 py-2 text-gray-700">{val}</td>
+                        ))}
+                        <td className="px-3 py-2">
+                          <input
+                            type="number"
+                            min={0}
+                            step={1}
+                            value={variantStock[stockKey] ?? 0}
+                            onChange={(e) => {
+                              const val = Math.max(0, parseInt(e.target.value) || 0)
+                              setVariantStock((prev) => ({ ...prev, [stockKey]: val }))
+                            }}
+                            className="w-20 border px-2 py-1 text-sm focus:outline-none focus:border-[var(--color-accent)] bg-white"
+                            style={{ borderColor: "#e5e7eb" }}
+                          />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {Object.keys(variantStock).length > 0 && (
+              <p className="text-xs text-gray-400 mt-2">
+                Total stock: <span className="font-semibold">{Object.values(variantStock).reduce((s, v) => s + v, 0)}</span>
+              </p>
+            )}
+          </Section>
+        )
+      })()}
 
       {/* ── Images ── */}
       <Section title="Images">

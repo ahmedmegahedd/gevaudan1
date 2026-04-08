@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Product } from "@/types"
 import { storeConfig } from "@/config/store.config"
+import { getRealVariantKeys, getVariantStock } from "@/lib/variantStock"
 
 export interface CartItem {
   product: Product
@@ -35,12 +36,14 @@ export const useCartStore = create<CartState>()(
       items: [],
 
       addItem(product, selectedVariants, quantity = 1) {
+        const realKeys = getRealVariantKeys(product.variants)
+        const stock = getVariantStock(product.stock, product.variant_stock, selectedVariants, realKeys)
         set((state) => {
           const existing = state.items.find((i) =>
             isSameItem(i, { productId: product.id, selectedVariants })
           )
           if (existing) {
-            const newQty = Math.min(existing.quantity + quantity, product.stock)
+            const newQty = Math.min(existing.quantity + quantity, stock)
             return {
               items: state.items.map((i) =>
                 isSameItem(i, { productId: product.id, selectedVariants })
@@ -49,7 +52,7 @@ export const useCartStore = create<CartState>()(
               ),
             }
           }
-          const cappedQty = Math.min(quantity, product.stock)
+          const cappedQty = Math.min(quantity, stock)
           return { items: [...state.items, { product, quantity: cappedQty, selectedVariants }] }
         })
       },
@@ -70,7 +73,9 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           items: state.items.map((i) => {
             if (!isSameItem(i, { productId, selectedVariants })) return i
-            const capped = Math.min(quantity, i.product.stock)
+            const realKeys = getRealVariantKeys(i.product.variants)
+            const stock = getVariantStock(i.product.stock, i.product.variant_stock, i.selectedVariants, realKeys)
+            const capped = Math.min(quantity, stock)
             return { ...i, quantity: capped }
           }),
         }))

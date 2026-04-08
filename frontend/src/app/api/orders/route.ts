@@ -35,22 +35,37 @@ export async function POST(request: NextRequest) {
     .select("id")
     .single()
 
-  // Deduct stock for each ordered item
+  // Deduct stock for each ordered item (variant-aware)
   if (!error) {
     await Promise.all(
-      items.map(async (item: { product_id: string; quantity: number }) => {
+      items.map(async (item: { product_id: string; quantity: number; variant?: Record<string, string> }) => {
         const { data: product } = await supabase
           .from("products")
-          .select("stock")
+          .select("stock, variant_stock, variants")
           .eq("id", item.product_id)
           .single()
-        if (product) {
-          const newStock = Math.max(0, product.stock - item.quantity)
-          await supabase
-            .from("products")
-            .update({ stock: newStock })
-            .eq("id", item.product_id)
+        if (!product) return
+
+        const updates: Record<string, unknown> = {}
+
+        // Deduct from variant_stock if this product uses it
+        if (product.variant_stock && item.variant && Object.keys(product.variant_stock).length > 0) {
+          const specialKeys = /^(material|materials|fabric|size_guide)$/i
+          const realKeys = Object.keys(product.variants ?? {}).filter((k: string) => !specialKeys.test(k))
+          const key = realKeys.map((k: string) => item.variant![k] ?? "").join("|")
+          if (key in product.variant_stock) {
+            const updatedVariantStock = { ...product.variant_stock }
+            updatedVariantStock[key] = Math.max(0, (updatedVariantStock[key] ?? 0) - item.quantity)
+            updates.variant_stock = updatedVariantStock
+            // Also update total stock as sum of all variant stocks
+            updates.stock = Object.values(updatedVariantStock).reduce((s: number, v) => s + (v as number), 0)
+          }
+        } else {
+          // No variant stock — deduct from total stock
+          updates.stock = Math.max(0, product.stock - item.quantity)
         }
+
+        await supabase.from("products").update(updates).eq("id", item.product_id)
       })
     )
   }

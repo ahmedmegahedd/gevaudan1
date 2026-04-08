@@ -54,6 +54,8 @@ export interface Product {
   /** Generic variant map: e.g. { size: ["S","M","L"], color: ["Black","White"] } */
   variants: Record<string, string[]>
   stock: number
+  /** Per-combination stock: key = variant values joined by "|", e.g. "M|Black": 5 */
+  variant_stock: Record<string, number> | null
   is_active: boolean
   is_featured: boolean
   model_info: string | null
