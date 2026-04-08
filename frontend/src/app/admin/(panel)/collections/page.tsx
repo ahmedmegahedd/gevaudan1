@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { serverApi } from "@/lib/serverApi"
 import CategoryDeleteButton from "@/components/admin/CategoryDeleteButton"
 
@@ -47,41 +48,46 @@ export default async function AdminCategoriesPage() {
           </Link>
         </div>
       ) : (
-        <div className="border rounded-sm overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-          <div
-            className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-4 py-2.5 text-xs uppercase tracking-wider text-gray-400 border-b"
-            style={{ borderColor: "#e5e7eb", backgroundColor: "#f9fafb" }}
-          >
-            <span>Name</span>
-            <span className="text-center">Products</span>
-            <span className="text-center">Status</span>
-            <span />
-          </div>
+        <div className="space-y-3">
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className="grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center px-4 py-3 border-b last:border-0"
-              style={{ borderColor: "#f3f4f6" }}
+              className="bg-white border rounded-sm flex items-center gap-3 px-4 py-3"
+              style={{ borderColor: "#e5e7eb" }}
             >
-              <div>
-                <p className="text-sm font-medium" style={{ color: "var(--color-primary)" }}>
-                  {cat.name}
-                </p>
-                <p className="text-xs text-gray-400 font-mono">{cat.slug}</p>
+              {/* Thumbnail */}
+              <div className="relative w-12 h-12 shrink-0 bg-gray-100 overflow-hidden rounded-sm">
+                {cat.image_url ? (
+                  <Image src={cat.image_url} alt={cat.name} fill className="object-cover" sizes="48px" />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-[9px]">—</div>
+                )}
               </div>
-              <span className="text-sm text-gray-500 text-center w-16">
-                {countMap[cat.id] ?? 0}
-              </span>
-              <span
-                className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-white w-16 text-center"
-                style={{ backgroundColor: cat.is_active ? "#10b981" : "#9ca3af" }}
-              >
-                {cat.is_active ? "Active" : "Off"}
-              </span>
-              <div className="flex items-center gap-2">
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-semibold truncate" style={{ color: "var(--color-primary)" }}>
+                    {cat.name}
+                  </p>
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-white shrink-0"
+                    style={{ backgroundColor: cat.is_active ? "#10b981" : "#9ca3af" }}
+                  >
+                    {cat.is_active ? "Active" : "Off"}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 font-mono truncate">{cat.slug}</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {countMap[cat.id] ?? 0} product{(countMap[cat.id] ?? 0) !== 1 ? "s" : ""}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 shrink-0">
                 <Link
                   href={`/admin/collections/${cat.id}/edit`}
-                  className="text-xs font-semibold px-3 py-1.5 border transition-colors hover:bg-gray-50"
+                  className="text-xs font-semibold px-3 py-2 border transition-colors hover:bg-gray-50 whitespace-nowrap"
                   style={{ color: "var(--color-primary)", borderColor: "#e5e7eb" }}
                 >
                   Edit

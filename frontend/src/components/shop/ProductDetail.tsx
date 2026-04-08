@@ -54,7 +54,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12 pb-24 md:pb-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12 pb-36 md:pb-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {/* ── Image Gallery ── */}
         <div className="space-y-3 md:space-y-4">
@@ -199,10 +199,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             {currency} {product.price.toLocaleString()}
           </p>
 
-          {product.description && (
-            <p className="text-gray-600 leading-relaxed text-base">{product.description}</p>
-          )}
-
           {/* ── Dynamic variant selectors ── */}
           {variantKeys.map((key) => (
             <div key={key}>
@@ -234,6 +230,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
           ))}
 
+          {product.description && (
+            <p className="text-gray-600 leading-relaxed text-base">{product.description}</p>
+          )}
+
           {/* ── Size Guide ── */}
           {(variantKeys.some((k) => /size/i.test(k)) || product.variants["size_guide"]) && (
             <SizeGuide rawRows={product.variants["size_guide"]} />
@@ -242,8 +242,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           {/* ── Material & Care ── */}
           <MaterialCare variants={product.variants} />
 
-          {/* ── Quantity ── */}
-          <div>
+          {/* ── Quantity — desktop only (mobile uses sticky bar) ── */}
+          <div className="hidden md:block">
             <p className="text-sm font-semibold uppercase tracking-wider mb-2"
               style={{ color: "var(--color-primary)" }}>
               Quantity
@@ -269,15 +269,26 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
           </div>
 
-          {/* ── Add to Cart — Desktop only ── */}
-          <button
-            onClick={handleAddToCart}
-            disabled={product.stock === 0}
-            className="hidden md:block w-full py-4 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "var(--color-accent)" }}
-          >
-            {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-          </button>
+          {/* ── Add to Cart + Buy Now — Desktop only ── */}
+          <div className="hidden md:flex flex-col gap-3">
+            <button
+              onClick={handleAddToCart}
+              disabled={product.stock === 0}
+              className="w-full py-4 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ backgroundColor: "var(--color-accent)" }}
+            >
+              {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+            </button>
+            {product.stock > 0 && (
+              <button
+                onClick={() => { handleAddToCart(); router.push("/checkout") }}
+                className="w-full py-4 text-sm uppercase tracking-widest font-semibold border transition-colors hover:bg-gray-50 disabled:opacity-40"
+                style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)" }}
+              >
+                Buy Now
+              </button>
+            )}
+          </div>
 
           {product.stock > 0 && product.stock <= 5 && (
             <p className="text-sm text-red-500">
@@ -287,39 +298,48 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
       </div>
 
-      {/* ── Sticky Add to Cart bar — Mobile only ── */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f8f5f0] border-t px-4 py-3 flex items-center gap-3 z-40"
+      {/* ── Sticky bottom bar — Mobile only ── */}
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f8f5f0] border-t px-4 pt-3 pb-4 space-y-2 z-40"
         style={{ borderColor: "#e5e7eb" }}>
-        {/* Quantity controls */}
-        <div className="flex items-center border shrink-0" style={{ borderColor: "#d1d5db" }}>
+        {/* Row 1: quantity + add to cart */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center border shrink-0" style={{ borderColor: "#d1d5db" }}>
+            <button
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              className="w-11 h-11 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+              aria-label="Decrease quantity"
+            >
+              −
+            </button>
+            <span className="w-8 text-center text-sm font-medium">{quantity}</span>
+            <button
+              onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+              disabled={quantity >= product.stock}
+              className="w-11 h-11 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
+          </div>
           <button
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
-            aria-label="Decrease quantity"
+            onClick={handleAddToCart}
+            disabled={product.stock === 0}
+            className="flex-1 h-11 text-xs uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "var(--color-accent)" }}
           >
-            −
-          </button>
-          <span className="w-8 text-center text-sm font-medium">{quantity}</span>
-          <button
-            onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-            disabled={quantity >= product.stock}
-            className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            aria-label="Increase quantity"
-          >
-            +
+            {product.stock === 0 ? "Out of Stock" : `Add to Cart — ${currency} ${(product.price * quantity).toLocaleString()}`}
           </button>
         </div>
-
-        <button
-          onClick={handleAddToCart}
-          disabled={product.stock === 0}
-          className="flex-1 h-12 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ backgroundColor: "var(--color-primary)" }}
-        >
-          {product.stock === 0
-            ? "Out of Stock"
-            : `Add to Cart — ${currency} ${(product.price * quantity).toLocaleString()}`}
-        </button>
+        {/* Row 2: buy now */}
+        {product.stock > 0 && (
+          <button
+            onClick={() => { handleAddToCart(); router.push("/checkout") }}
+            className="w-full h-11 text-xs uppercase tracking-widest font-semibold border transition-colors hover:bg-gray-100"
+            style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)" }}
+          >
+            Buy Now
+          </button>
+        )}
       </div>
     </div>
   )
@@ -367,6 +387,8 @@ const CARE_INSTRUCTIONS = [
 ]
 
 function MaterialCare({ variants }: { variants: Record<string, string[]> }) {
+  const [open, setOpen] = useState(false)
+
   const materialKey = Object.keys(variants).find((k) => /^(material|materials|fabric)$/i.test(k))
   if (!materialKey) return null
 
@@ -374,23 +396,36 @@ function MaterialCare({ variants }: { variants: Record<string, string[]> }) {
   if (!material) return null
 
   return (
-    <div className="border-t pt-4 space-y-4" style={{ borderColor: "#e5e7eb" }}>
-      <h3
-        className="text-sm font-semibold uppercase tracking-wider"
-        style={{ color: "var(--color-primary)" }}
+    <div>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center justify-between w-full py-2 border-t border-b text-sm font-semibold uppercase tracking-wider transition-colors"
+        style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}
+        aria-expanded={open}
       >
-        Material &amp; Care
-      </h3>
+        <span>Material &amp; Care</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4 transition-transform duration-300"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
 
-      <p className="text-gray-600 text-sm leading-relaxed">{material}</p>
-
-      <div className="grid grid-cols-2 gap-3">
-        {CARE_INSTRUCTIONS.map(({ label, icon }) => (
-          <div key={label} className="flex items-center gap-2.5">
-            <span style={{ color: "var(--color-accent)" }}>{icon}</span>
-            <span className="text-xs text-gray-500">{label}</span>
+      <div style={{ maxHeight: open ? "400px" : "0px", overflow: "hidden", transition: "max-height 0.35s ease" }}>
+        <div className="pt-4 pb-2 space-y-4">
+          <p className="text-gray-600 text-sm leading-relaxed">{material}</p>
+          <div className="grid grid-cols-2 gap-3">
+            {CARE_INSTRUCTIONS.map(({ label, icon }) => (
+              <div key={label} className="flex items-center gap-2.5">
+                <span style={{ color: "var(--color-accent)" }}>{icon}</span>
+                <span className="text-xs text-gray-500">{label}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   )

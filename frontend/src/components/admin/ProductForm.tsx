@@ -527,55 +527,60 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
           Editable size chart shown on the product page. Leave empty to use the default chart or hide it.
         </p>
 
-        {/* Column headers */}
-        <div className="flex gap-2 mb-2 items-center">
-          {sizeGuideHeaders.map((h, i) => (
-            <input
-              key={i}
-              type="text"
-              value={h}
-              onChange={(e) => {
-                const next = [...sizeGuideHeaders] as [string, string, string, string]
-                next[i] = e.target.value
-                setSizeGuideHeaders(next)
-              }}
-              className="flex-1 border px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-[var(--color-accent)] bg-[var(--color-primary)] text-white placeholder:text-white/40"
-              placeholder={["Size", "Col 2", "Col 3", "Col 4"][i]}
-            />
-          ))}
-          {/* spacer to align with row delete button */}
-          <div className="shrink-0 w-8" />
-        </div>
-
-        {/* Rows */}
-        <div className="space-y-1.5">
-          {sizeGuideRows.map((row, i) => (
-            <div key={i} className="flex gap-2 items-center">
-              {(["size", "col2", "col3", "col4"] as const).map((field) => (
+        {/* Scrollable table editor */}
+        <div className="overflow-x-auto">
+          <div style={{ minWidth: 420 }}>
+            {/* Column headers */}
+            <div className="flex gap-2 mb-2 items-center">
+              {sizeGuideHeaders.map((h, i) => (
                 <input
-                  key={field}
+                  key={i}
                   type="text"
-                  value={row[field]}
+                  value={h}
                   onChange={(e) => {
-                    const next = [...sizeGuideRows]
-                    next[i] = { ...next[i], [field]: e.target.value }
-                    setSizeGuideRows(next)
+                    const next = [...sizeGuideHeaders] as [string, string, string, string]
+                    next[i] = e.target.value
+                    setSizeGuideHeaders(next)
                   }}
-                  className="flex-1 border px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--color-accent)] bg-white"
-                  style={{ borderColor: "#e5e7eb" }}
-                  placeholder={field === "size" ? "e.g. M" : "e.g. 88–92"}
+                  className="flex-1 border px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-[var(--color-accent)] bg-[var(--color-primary)] text-white placeholder:text-white/40"
+                  placeholder={["Size", "Col 2", "Col 3", "Col 4"][i]}
                 />
               ))}
-              <button
-                type="button"
-                onClick={() => setSizeGuideRows((prev) => prev.filter((_, j) => j !== i))}
-                className="shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors text-lg leading-none"
-                aria-label="Remove row"
-              >
-                ×
-              </button>
+              {/* spacer to align with row delete button */}
+              <div className="shrink-0 w-8" />
             </div>
-          ))}
+
+            {/* Rows */}
+            <div className="space-y-1.5">
+              {sizeGuideRows.map((row, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  {(["size", "col2", "col3", "col4"] as const).map((field) => (
+                    <input
+                      key={field}
+                      type="text"
+                      value={row[field]}
+                      onChange={(e) => {
+                        const next = [...sizeGuideRows]
+                        next[i] = { ...next[i], [field]: e.target.value }
+                        setSizeGuideRows(next)
+                      }}
+                      className="flex-1 border px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--color-accent)] bg-white"
+                      style={{ borderColor: "#e5e7eb" }}
+                      placeholder={field === "size" ? "e.g. M" : "e.g. 88–92"}
+                    />
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setSizeGuideRows((prev) => prev.filter((_, j) => j !== i))}
+                    className="shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors text-lg leading-none"
+                    aria-label="Remove row"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <button

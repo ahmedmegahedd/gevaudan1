@@ -104,7 +104,7 @@ export const clientApi = {
 
   // ── Categories ────────────────────────────────────────────
 
-  async createCategory(data: { name: string; slug: string; is_active: boolean }) {
+  async createCategory(data: { name: string; slug: string; is_active: boolean; image_url: string | null }) {
     const supabase = createClient()
     const { data: result, error } = await supabase
       .from("categories")
@@ -115,7 +115,7 @@ export const clientApi = {
     return { data: result as { id: string } }
   },
 
-  async updateCategory(id: string, data: { name: string; slug: string; is_active: boolean }) {
+  async updateCategory(id: string, data: { name: string; slug: string; is_active: boolean; image_url: string | null }) {
     const supabase = createClient()
     const { error } = await supabase.from("categories").update(data).eq("id", id)
     if (error) return { error: error.message }

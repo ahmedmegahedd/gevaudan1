@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { clientApi } from "@/lib/clientApi"
 import { useToastStore } from "@/store/toastStore"
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 import type { Category } from "@/types"
 
 function slugify(name: string) {
@@ -37,10 +39,41 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
   const [isActive, setIsActive] = useState(initialData?.is_active ?? true)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+
+  // Image state
+  const [imageUrl, setImageUrl] = useState<string | null>(initialData?.image_url ?? null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imageError, setImageError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!slugManual && name) setSlug(slugify(name))
   }, [name, slugManual])
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      setImageError("Only JPG, PNG, or WebP accepted.")
+      return
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setImageError("Image must be under 5 MB.")
+      return
+    }
+    setImageError(null)
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+    e.target.value = ""
+  }
+
+  function removeImage() {
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    setImageFile(null)
+    setImagePreview(null)
+    setImageUrl(null)
+  }
 
   function validate() {
     const errs: Record<string, string> = {}
@@ -56,7 +89,20 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
     if (!validate()) return
     setSaving(true)
 
-    const payload = { name: name.trim(), slug: slug.trim(), is_active: isActive }
+    let finalImageUrl = imageUrl
+    if (imageFile) {
+      setUploading(true)
+      const { data, error } = await clientApi.uploadImage(imageFile)
+      setUploading(false)
+      if (error || !data) {
+        setImageError(error ?? "Upload failed")
+        setSaving(false)
+        return
+      }
+      finalImageUrl = data.url
+    }
+
+    const payload = { name: name.trim(), slug: slug.trim(), is_active: isActive, image_url: finalImageUrl }
 
     if (mode === "create") {
       const { data, error } = await clientApi.createCategory(payload)
@@ -82,6 +128,9 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       router.refresh()
     }
   }
+
+  const currentImage = imagePreview ?? imageUrl
+  const isSaving = saving || uploading
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -123,6 +172,37 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
           {errors.slug && <p className="text-xs text-red-500">{errors.slug}</p>}
         </div>
 
+        {/* Cover image */}
+        <div className="space-y-1">
+          <label className="block text-sm font-medium" style={{ color: "var(--color-primary)" }}>
+            Category Image
+          </label>
+          {currentImage ? (
+            <div className="relative w-full max-w-xs aspect-video overflow-hidden bg-gray-100 group">
+              <Image src={currentImage} alt="Category cover" fill className="object-cover" sizes="320px" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <label className="text-xs text-white bg-white/20 hover:bg-white/40 px-3 py-1.5 rounded cursor-pointer">
+                  Change
+                  <input type="file" accept={ACCEPTED_IMAGE_TYPES.join(",")} className="hidden" onChange={handleImageSelect} />
+                </label>
+                <button type="button" onClick={removeImage} className="text-xs text-white bg-red-500/80 hover:bg-red-500 px-3 py-1.5 rounded">
+                  Remove
+                </button>
+              </div>
+            </div>
+          ) : (
+            <label
+              className="flex flex-col items-center justify-center w-full max-w-xs aspect-video border-2 border-dashed cursor-pointer hover:border-gray-400 transition-colors bg-gray-50"
+              style={{ borderColor: "#d1d5db" }}
+            >
+              <span className="text-gray-300 text-3xl mb-1">+</span>
+              <span className="text-xs text-gray-400">Upload category image</span>
+              <input type="file" accept={ACCEPTED_IMAGE_TYPES.join(",")} className="hidden" onChange={handleImageSelect} />
+            </label>
+          )}
+          {imageError && <p className="text-xs text-red-500">{imageError}</p>}
+        </div>
+
         <div className="flex items-center justify-between pt-2">
           <div>
             <p className="text-sm font-medium" style={{ color: "var(--color-primary)" }}>Active</p>
@@ -147,11 +227,11 @@ export default function CategoryForm({ initialData, mode }: CategoryFormProps) {
       <div className="flex items-center gap-3">
         <button
           type="submit"
-          disabled={saving}
+          disabled={isSaving}
           className="px-8 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: "var(--color-primary)", minHeight: "48px" }}
         >
-          {saving ? "Saving…" : mode === "create" ? "Create Category" : "Save Changes"}
+          {uploading ? "Uploading…" : saving ? "Saving…" : mode === "create" ? "Create Category" : "Save Changes"}
         </button>
         <button
           type="button"
