@@ -370,7 +370,7 @@ export default function CheckoutPage() {
 
         {/* ── Mobile sticky submit ── */}
         <div
-          className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f8f5f0] border-t px-4 py-4 z-40"
+          className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f0f4f8] border-t px-4 py-4 z-40"
           style={{ borderColor: "#e5e7eb" }}
         >
           <button
@@ -413,7 +413,7 @@ function OrderSuccessModal({
       style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
     >
       <div
-        className="success-card bg-[#f8f5f0] w-full sm:max-w-md sm:rounded-2xl overflow-y-auto"
+        className="success-card bg-[#f0f4f8] w-full sm:max-w-md sm:rounded-2xl overflow-y-auto"
         style={{ maxHeight: "100dvh" }}
       >
         {/* Top accent bar */}
@@ -568,7 +568,7 @@ function OrderSuccessModal({
 
 function inputClass(hasError: boolean) {
   return [
-    "w-full border px-3 text-base focus:outline-none transition-colors bg-[#f8f5f0]",
+    "w-full border px-3 text-base focus:outline-none transition-colors bg-[#f0f4f8]",
     hasError ? "border-red-400" : "border-gray-300 focus:border-[var(--color-accent)]",
   ].join(" ") + " min-h-[48px]"
 }

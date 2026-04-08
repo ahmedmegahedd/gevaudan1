@@ -37,8 +37,8 @@ export default async function OrderConfirmationPage({ params }: Props) {
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
 
   return (
-    <div className="min-h-screen bg-[#f8f5f0] flex items-start justify-center py-12 px-4">
-      <div className="bg-[#f8f5f0] w-full max-w-md rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: "#e5e7eb" }}>
+    <div className="min-h-screen bg-[#f0f4f8] flex items-start justify-center py-12 px-4">
+      <div className="bg-[#f0f4f8] w-full max-w-md rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: "#e5e7eb" }}>
         {/* Accent top bar */}
         <div className="h-1.5" style={{ backgroundColor: theme.accentColor }} />
 

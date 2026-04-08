@@ -91,18 +91,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   <>
                     <button
                       onClick={prev}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-opacity
-                        opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                      style={{ backgroundColor: "rgba(6,18,34,0.55)" }}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center transition-opacity opacity-100 md:opacity-0 md:group-hover:opacity-100"
                       aria-label="Previous image"
                     >
                       <ChevronLeft />
                     </button>
                     <button
                       onClick={next}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-opacity
-                        opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                      style={{ backgroundColor: "rgba(6,18,34,0.55)" }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center transition-opacity opacity-100 md:opacity-0 md:group-hover:opacity-100"
                       aria-label="Next image"
                     >
                       <ChevronRight />
@@ -312,7 +308,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
 
       {/* ── Sticky bottom bar — Mobile only ── */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f8f5f0] border-t px-4 pt-3 pb-4 space-y-2 z-40"
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f0f4f8] border-t px-4 pt-3 pb-4 space-y-2 z-40"
         style={{ borderColor: "#e5e7eb" }}>
         {/* Row 1: quantity + add to cart */}
         <div className="flex items-center gap-2">
@@ -518,7 +514,7 @@ function SizeGuide({ rawRows }: { rawRows?: string[] }) {
 
 function ChevronLeft() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#000" strokeWidth={2.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
     </svg>
   )
@@ -526,7 +522,7 @@ function ChevronLeft() {
 
 function ChevronRight() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#000" strokeWidth={2.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
     </svg>
   )

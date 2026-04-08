@@ -241,7 +241,7 @@ export default function CartPage() {
       </div>
 
       {/* ── Mobile sticky order summary bar ── */}
-      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-[#f8f5f0] border-t px-4 py-4 space-y-2 z-40"
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-[#f0f4f8] border-t px-4 py-4 space-y-2 z-40"
         style={{ borderColor: "#e5e7eb" }}>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Delivery</span>

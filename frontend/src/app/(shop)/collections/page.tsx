@@ -79,7 +79,7 @@ export default async function CollectionsPage() {
               </div>
 
               {/* Content */}
-              <div className="p-5 flex flex-col flex-1" style={{ backgroundColor: "#f8f5f0" }}>
+              <div className="p-5 flex flex-col flex-1" style={{ backgroundColor: "#f0f4f8" }}>
                 <h2
                   className="text-xl font-bold mb-1 leading-snug"
                   style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}

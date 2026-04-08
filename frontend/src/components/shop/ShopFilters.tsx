@@ -125,7 +125,7 @@ export default function ShopFilters({
               className="w-full border px-3 text-sm focus:outline-none focus:border-opacity-100 transition-colors"
               style={{
                 borderColor: `${accentColor}60`,
-                backgroundColor: isMobile ? "rgba(255,255,255,0.08)" : "#f8f5f0",
+                backgroundColor: isMobile ? "rgba(255,255,255,0.08)" : "#f0f4f8",
                 color: isMobile ? "#fff" : primaryColor,
                 minHeight: "44px",
               }}
@@ -140,7 +140,7 @@ export default function ShopFilters({
               className="w-full border px-3 text-sm focus:outline-none transition-colors"
               style={{
                 borderColor: `${accentColor}60`,
-                backgroundColor: isMobile ? "rgba(255,255,255,0.08)" : "#f8f5f0",
+                backgroundColor: isMobile ? "rgba(255,255,255,0.08)" : "#f0f4f8",
                 color: isMobile ? "#fff" : primaryColor,
                 minHeight: "44px",
               }}
