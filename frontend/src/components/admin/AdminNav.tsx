@@ -10,6 +10,8 @@ const navLinks = [
   { label: "Products", href: "/admin/products" },
   { label: "Collections", href: "/admin/collections" },
   { label: "Analytics", href: "/admin/analytics" },
+  { label: "Newsletter", href: "/admin/newsletter" },
+  { label: "Promo Codes", href: "/admin/promo-codes" },
 ]
 
 export default function AdminNav() {

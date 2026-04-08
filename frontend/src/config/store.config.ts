@@ -1,6 +1,6 @@
 export const storeConfig = {
   brand: {
-    name: "Gévaudan",
+    name: "Gévadaun",
     subtitle: "Kemet",
     tagline: "Where Ancient Elegance Meets Modern Grace",
     logo: "/logo.png",

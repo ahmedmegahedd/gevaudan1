@@ -57,7 +57,7 @@ export default async function HomePage() {
             className="text-xs uppercase tracking-[0.4em] mb-4 md:mb-6"
             style={{ color: "var(--color-accent)" }}
           >
-            {storeConfig.brand.subtitle}
+            {storeConfig.brand.name}
           </p>
           <h1
             className="text-4xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-6 text-white"

@@ -1,26 +1,10 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import { storeConfig } from "@/config/store.config"
 import AdminSignOutButton from "@/components/admin/AdminSignOutButton"
 import AdminNav from "@/components/admin/AdminNav"
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect("/admin/login")
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single()
-
-  if (!profile || profile.role !== "admin") redirect("/")
-
+// Auth + role checks are handled entirely in middleware (matcher: /admin/:path*)
+// By the time this layout renders, the request is already verified as an admin.
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#f0f4f8" }}>
       {/* Admin header */}

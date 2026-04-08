@@ -8,6 +8,7 @@ import { z } from "zod"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { clientApi } from "@/lib/clientApi"
+import CheckoutRecommendations from "@/components/shop/CheckoutRecommendations"
 import type { OrderItem } from "@/types"
 
 const { cities, fee: deliveryFee, freeAbove, currency } = storeConfig.delivery
@@ -26,23 +27,36 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
+interface PromoState {
+  code: string
+  discountAmount: number
+  message: string
+}
+
 interface SuccessData {
   orderId: string
   phone: string
   items: OrderItem[]
   subtotal: number
   deliveryFee: number
+  discountAmount: number
   total: number
+  promoCode: string | null
 }
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, subtotal, clearCart } = useCartStore()
   const [success, setSuccess] = useState<SuccessData | null>(null)
+  const [promo, setPromo] = useState<PromoState | null>(null)
+  const [promoInput, setPromoInput] = useState("")
+  const [promoLoading, setPromoLoading] = useState(false)
+  const [promoError, setPromoError] = useState("")
 
   const sub = subtotal()
   const fee = sub >= freeAbove ? 0 : deliveryFee
-  const total = sub + fee
+  const discountAmount = promo?.discountAmount ?? 0
+  const total = Math.max(0, sub + fee - discountAmount)
 
   useEffect(() => {
     if (items.length === 0 && !success) router.replace("/shop")
@@ -53,6 +67,37 @@ export default function CheckoutPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) })
+
+  async function applyPromo() {
+    const code = promoInput.trim().toUpperCase()
+    if (!code) return
+    setPromoLoading(true)
+    setPromoError("")
+    setPromo(null)
+    try {
+      const res = await fetch("/api/promo/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, orderTotal: sub + fee }),
+      })
+      const data = await res.json()
+      if (data.valid) {
+        setPromo({ code, discountAmount: data.discount_amount, message: data.message })
+      } else {
+        setPromoError(data.message ?? "Invalid promo code.")
+      }
+    } catch {
+      setPromoError("Failed to validate code. Please try again.")
+    } finally {
+      setPromoLoading(false)
+    }
+  }
+
+  function removePromo() {
+    setPromo(null)
+    setPromoInput("")
+    setPromoError("")
+  }
 
   async function onSubmit(values: FormValues) {
     const orderItems: OrderItem[] = items.map((i) => ({
@@ -73,7 +118,9 @@ export default function CheckoutPage() {
       items: orderItems,
       subtotal: sub,
       delivery_fee: fee,
+      discount_amount: discountAmount,
       total,
+      promo_code: promo?.code ?? null,
     })
 
     if (error || !data) {
@@ -81,14 +128,15 @@ export default function CheckoutPage() {
       return
     }
 
-    // Show success modal before any redirect
     setSuccess({
       orderId: data.id,
       phone: values.phone,
       items: orderItems,
       subtotal: sub,
       deliveryFee: fee,
+      discountAmount,
       total,
+      promoCode: promo?.code ?? null,
     })
   }
 
@@ -114,6 +162,9 @@ export default function CheckoutPage() {
         >
           Checkout
         </h1>
+
+        {/* ── Complete Your Look (recommendations) ── */}
+        <CheckoutRecommendations />
 
         {/* Mobile compact summary */}
         <div
@@ -189,6 +240,52 @@ export default function CheckoutPage() {
               />
             </Field>
 
+            {/* ── Promo Code ── */}
+            <div>
+              <p className="block text-sm font-medium mb-1" style={{ color: "var(--color-primary)" }}>
+                Promo Code
+              </p>
+              {promo ? (
+                <div
+                  className="flex items-center justify-between px-3 py-2.5 border text-sm"
+                  style={{ borderColor: theme.accentColor, backgroundColor: `${theme.accentColor}12` }}
+                >
+                  <span className="font-medium" style={{ color: theme.accentColor }}>
+                    ✓ {promo.message}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={removePromo}
+                    className="text-xs text-gray-400 hover:text-red-500 transition-colors ml-3"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoInput}
+                    onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError("") }}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyPromo())}
+                    placeholder="Enter promo code"
+                    className={inputClass(!!promoError)}
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={applyPromo}
+                    disabled={promoLoading || !promoInput.trim()}
+                    className="px-4 text-sm font-semibold text-white shrink-0 transition-opacity hover:opacity-80 disabled:opacity-40"
+                    style={{ backgroundColor: theme.accentColor, minHeight: "48px" }}
+                  >
+                    {promoLoading ? "…" : "Apply"}
+                  </button>
+                </div>
+              )}
+              {promoError && <p className="mt-1 text-xs text-red-500">{promoError}</p>}
+            </div>
+
             <button
               type="submit"
               disabled={isSubmitting}
@@ -253,6 +350,12 @@ export default function CheckoutPage() {
                     {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
                   </span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between" style={{ color: theme.accentColor }}>
+                    <span>Discount {promo?.code && `(${promo.code})`}</span>
+                    <span>− {currency} {discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
                 <div
                   className="flex justify-between font-bold pt-2 border-t"
                   style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}

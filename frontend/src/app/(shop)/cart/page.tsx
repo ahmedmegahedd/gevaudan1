@@ -138,6 +138,34 @@ export default function CartPage() {
           })}
         </div>
 
+        {/* ── Continue Shopping ── */}
+        <div className="lg:col-span-2">
+          <Link
+            href="/shop"
+            className="group inline-flex w-full lg:w-auto items-center justify-center gap-2 px-6 py-3 text-sm uppercase tracking-widest font-semibold border transition-colors"
+            style={{
+              borderColor: storeConfig.theme.accentColor,
+              color: storeConfig.theme.accentColor,
+              backgroundColor: "transparent",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget
+              el.style.backgroundColor = storeConfig.theme.accentColor
+              el.style.color = "#fff"
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget
+              el.style.backgroundColor = "transparent"
+              el.style.color = storeConfig.theme.accentColor
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Continue Shopping
+          </Link>
+        </div>
+
         {/* ── Order Summary — Desktop sidebar (hidden on mobile) ── */}
         <div className="hidden lg:block lg:col-span-1">
           <div className="border p-6 space-y-4 sticky top-20" style={{ borderColor: "#e5e7eb" }}>

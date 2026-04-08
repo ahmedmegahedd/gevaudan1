@@ -21,6 +21,7 @@ const schema = z.object({
     .min(1, "Slug is required")
     .regex(/^[a-z0-9-]+$/, "Slug: lowercase letters, numbers, hyphens only"),
   description: z.string().optional(),
+  model_info: z.string().optional(),
   price: z.preprocess((v) => Number(v), z.number().min(0)),
   category_id: z.string().optional(),
   stock: z.preprocess((v) => Number(v), z.number().int().min(0)),
@@ -32,6 +33,7 @@ type FormValues = {
   name: string
   slug: string
   description?: string
+  model_info?: string
   price: number
   category_id?: string
   stock: number
@@ -97,9 +99,25 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
   // Slug auto-generation: track whether the slug was manually edited
   const [slugManual, setSlugManual] = useState(mode === "edit")
 
-  // Variant groups state
+  // Material field (stored as variants.material)
+  const materialKey = initialData
+    ? Object.keys(initialData.variants).find((k) => /^(material|materials|fabric)$/i.test(k))
+    : undefined
+  const [material, setMaterial] = useState(
+    materialKey ? (initialData!.variants[materialKey] ?? []).join(", ") : ""
+  )
+
+  // Variant groups state — exclude the material key (handled separately)
   const [variantGroups, setVariantGroups] = useState<VariantGroup[]>(
-    initialData ? parseVariants(initialData.variants) : []
+    initialData
+      ? parseVariants(
+          Object.fromEntries(
+            Object.entries(initialData.variants).filter(
+              ([k]) => !/^(material|materials|fabric)$/i.test(k)
+            )
+          )
+        )
+      : []
   )
 
   // Images state: mix of existing URLs and new local files
@@ -125,6 +143,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       name: initialData?.name ?? "",
       slug: initialData?.slug ?? "",
       description: initialData?.description ?? "",
+      model_info: initialData?.model_info ?? "",
       price: initialData?.price ?? 0,
       category_id: initialData?.category_id ?? "",
       stock: initialData?.stock ?? 0,
@@ -246,11 +265,15 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
 
     setUploading(false)
     const variants = buildVariants(variantGroups)
+    if (material.trim()) {
+      variants["material"] = material.split(",").map((v) => v.trim()).filter(Boolean)
+    }
 
     const payload = {
       name: values.name,
       slug: values.slug,
       description: values.description ?? null,
+      model_info: values.model_info?.trim() || null,
       price: values.price,
       category_id: values.category_id || null,
       stock: values.stock,
@@ -334,6 +357,15 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
             className={input(false)}
           />
         </Field>
+
+        <Field label="Model Info" error={undefined}>
+          <input
+            {...register("model_info")}
+            type="text"
+            placeholder="The model is wearing size M, model height is 175cm"
+            className={input(false)}
+          />
+        </Field>
       </Section>
 
       {/* ── Pricing & Inventory ── */}
@@ -379,6 +411,19 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
 
       {/* ── Variants ── */}
       <Section title="Variants">
+        <Field label="Material / Fabric" error={undefined}>
+          <input
+            type="text"
+            value={material}
+            onChange={(e) => setMaterial(e.target.value)}
+            placeholder="e.g. 100% Silk, Lining: 95% Polyester"
+            className={input(false)}
+          />
+          <p className="text-xs text-gray-400 mt-1">
+            Shown in the &quot;Material &amp; Care&quot; section on the product page.
+          </p>
+        </Field>
+
         <p className="text-xs text-gray-400 mb-4">
           Add variant groups (e.g. &quot;Size&quot;, &quot;Color&quot;). Options are comma-separated.
           Saves as JSON — works for any product type without code changes.

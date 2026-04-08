@@ -84,7 +84,9 @@ export const clientApi = {
     items: OrderItem[]
     subtotal: number
     delivery_fee: number
+    discount_amount?: number
     total: number
+    promo_code?: string | null
   }): Promise<{ data?: { id: string }; error?: string }> {
     try {
       const res = await fetch("/api/orders", {

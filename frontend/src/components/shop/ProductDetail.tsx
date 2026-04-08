@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { storeConfig } from "@/config/store.config"
@@ -16,10 +16,29 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const addItem = useCartStore((s) => s.addItem)
   const router = useRouter()
 
-  const [mainImage, setMainImage] = useState(product.images[0] ?? null)
+  const images = product.images
+  const [activeIndex, setActiveIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
 
-  // Build initial selected variants: first option for each key
+  const touchStartX = useRef<number | null>(null)
+
+  function prev() {
+    setActiveIndex((i) => (i - 1 + images.length) % images.length)
+  }
+  function next() {
+    setActiveIndex((i) => (i + 1) % images.length)
+  }
+  function onTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return
+    const delta = e.changedTouches[0].clientX - touchStartX.current
+    if (Math.abs(delta) > 40) { if (delta < 0) next(); else prev() }
+    touchStartX.current = null
+  }
+
+  // Build initial selected variants — first option for each key
   const variantKeys = Object.keys(product.variants)
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
@@ -39,17 +58,51 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {/* ── Image Gallery ── */}
         <div className="space-y-3 md:space-y-4">
-          {/* Main image — full width on mobile */}
-          <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 w-full">
-            {mainImage ? (
-              <Image
-                src={mainImage}
-                alt={product.name}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
+          {/* Main image */}
+          <div
+            className="group relative aspect-[3/4] overflow-hidden bg-gray-100 w-full"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            {images.length > 0 ? (
+              <>
+                {images.map((img, i) => (
+                  <Image
+                    key={img}
+                    src={img}
+                    alt={`${product.name} ${i + 1}`}
+                    fill
+                    priority={i === 0}
+                    className="object-cover transition-opacity duration-300"
+                    style={{ opacity: i === activeIndex ? 1 : 0 }}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                ))}
+
+                {/* Arrows — always visible on mobile, hover on desktop */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prev}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-opacity
+                        opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                      style={{ backgroundColor: "rgba(6,18,34,0.55)" }}
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft />
+                    </button>
+                    <button
+                      onClick={next}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-opacity
+                        opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                      style={{ backgroundColor: "rgba(6,18,34,0.55)" }}
+                      aria-label="Next image"
+                    >
+                      <ChevronRight />
+                    </button>
+                  </>
+                )}
+              </>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                 No image
@@ -57,16 +110,58 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             )}
           </div>
 
-          {/* Thumbnails — horizontal scroll on mobile */}
-          {product.images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {product.images.map((img, i) => (
+          {/* Model info */}
+          {product.model_info && (
+            <div className="flex items-start gap-1.5 px-0.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                className="w-3.5 h-3.5 shrink-0 mt-0.5"
+                style={{ color: storeConfig.theme.accentColor }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+              <p
+                className="text-xs italic leading-relaxed"
+                style={{ color: storeConfig.theme.accentColor }}
+              >
+                {product.model_info}
+              </p>
+            </div>
+          )}
+
+          {/* Dot indicators */}
+          {images.length > 1 && (
+            <div className="flex items-center justify-center gap-1.5">
+              {images.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => setMainImage(img)}
+                  onClick={() => setActiveIndex(i)}
+                  aria-label={`Go to image ${i + 1}`}
+                  className="w-2 h-2 rounded-full transition-all duration-200"
+                  style={{
+                    backgroundColor: i === activeIndex ? "var(--color-accent)" : "transparent",
+                    border: `1.5px solid ${i === activeIndex ? "var(--color-accent)" : "var(--color-primary)"}`,
+                    opacity: i === activeIndex ? 1 : 0.4,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Thumbnails — horizontal scroll on mobile */}
+          {images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveIndex(i)}
                   className="relative shrink-0 w-16 md:w-20 aspect-square overflow-hidden border-2 transition-colors"
                   style={{
-                    borderColor: mainImage === img ? "var(--color-accent)" : "transparent",
+                    borderColor: i === activeIndex ? "var(--color-accent)" : "transparent",
                   }}
                 >
                   <Image
@@ -138,6 +233,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </div>
             </div>
           ))}
+
+          {/* ── Size Guide ── */}
+          {variantKeys.some((k) => /size/i.test(k)) && <SizeGuide />}
+
+          {/* ── Material & Care ── */}
+          <MaterialCare variants={product.variants} />
 
           {/* ── Quantity ── */}
           <div>
@@ -217,5 +318,176 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </button>
       </div>
     </div>
+  )
+}
+
+const CARE_INSTRUCTIONS = [
+  {
+    label: "Machine wash cold",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
+        <rect x="2" y="4" width="20" height="16" rx="3" />
+        <path d="M2 9h20" />
+        <path strokeLinecap="round" d="M7 14.5c1-1.5 3-1.5 4 0s3 1.5 4 0" />
+      </svg>
+    ),
+  },
+  {
+    label: "Do not bleach",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 3l14 18M9 3H5l7 9" />
+        <path strokeLinecap="round" d="M19 21H5l7-9 3.5 4.5" />
+      </svg>
+    ),
+  },
+  {
+    label: "Hang to dry",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5h18" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v3m0 0c-3 0-6 2-6 5v6h12v-6c0-3-3-5-6-5z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Do not tumble dry",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6">
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="4" />
+        <line x1="4" y1="4" x2="20" y2="20" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+]
+
+function MaterialCare({ variants }: { variants: Record<string, string[]> }) {
+  const materialKey = Object.keys(variants).find((k) => /^(material|materials|fabric)$/i.test(k))
+  if (!materialKey) return null
+
+  const material = variants[materialKey]?.join(", ")
+  if (!material) return null
+
+  return (
+    <div className="border-t pt-4 space-y-4" style={{ borderColor: "#e5e7eb" }}>
+      <h3
+        className="text-sm font-semibold uppercase tracking-wider"
+        style={{ color: "var(--color-primary)" }}
+      >
+        Material &amp; Care
+      </h3>
+
+      <p className="text-gray-600 text-sm leading-relaxed">{material}</p>
+
+      <div className="grid grid-cols-2 gap-3">
+        {CARE_INSTRUCTIONS.map(({ label, icon }) => (
+          <div key={label} className="flex items-center gap-2.5">
+            <span style={{ color: "var(--color-accent)" }}>{icon}</span>
+            <span className="text-xs text-gray-500">{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const SIZE_GUIDE = [
+  { size: "XS",  bust: "80–83",  waist: "60–63",  hips: "86–89"  },
+  { size: "S",   bust: "84–87",  waist: "64–67",  hips: "90–93"  },
+  { size: "M",   bust: "88–92",  waist: "68–72",  hips: "94–98"  },
+  { size: "L",   bust: "93–98",  waist: "73–78",  hips: "99–104" },
+  { size: "XL",  bust: "99–104", waist: "79–84",  hips: "105–110"},
+  { size: "XXL", bust: "105–111",waist: "85–91",  hips: "111–117"},
+]
+
+function SizeGuide() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div>
+      {/* Toggle row */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center justify-between w-full py-2 border-t border-b text-sm font-semibold uppercase tracking-wider transition-colors"
+        style={{
+          borderColor: "#e5e7eb",
+          color: "var(--color-primary)",
+        }}
+        aria-expanded={open}
+      >
+        <span>Size Guide</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4 transition-transform duration-300"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Animated container */}
+      <div
+        style={{
+          maxHeight: open ? "400px" : "0px",
+          overflow: "hidden",
+          transition: "max-height 0.35s ease",
+        }}
+      >
+        <div className="overflow-x-auto pt-3 pb-1">
+          <table className="w-full text-sm border-collapse min-w-[340px]">
+            <thead>
+              <tr style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}>
+                {["Size", "Bust (cm)", "Waist (cm)", "Hips (cm)"].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-2.5 text-left text-xs uppercase tracking-wider font-semibold"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {SIZE_GUIDE.map((row, i) => (
+                <tr
+                  key={row.size}
+                  style={{
+                    backgroundColor: i % 2 === 0 ? "rgba(6,18,34,0.04)" : "rgba(6,18,34,0.08)",
+                  }}
+                >
+                  <td className="px-4 py-2.5 font-semibold" style={{ color: "var(--color-primary)" }}>
+                    {row.size}
+                  </td>
+                  <td className="px-4 py-2.5 text-gray-600">{row.bust}</td>
+                  <td className="px-4 py-2.5 text-gray-600">{row.waist}</td>
+                  <td className="px-4 py-2.5 text-gray-600">{row.hips}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ChevronLeft() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+    </svg>
+  )
+}
+
+function ChevronRight() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    </svg>
   )
 }

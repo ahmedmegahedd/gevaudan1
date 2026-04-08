@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
+import { useWishlistStore } from "@/store/wishlistStore"
 import { useToastStore } from "@/store/toastStore"
 import type { Product } from "@/types"
 
@@ -13,9 +14,16 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem)
+  const toggleWishlist = useWishlistStore((s) => s.toggleWishlist)
+  const wishlisted = useWishlistStore((s) => s.items.some((p) => p.id === product.id))
   const { currency } = storeConfig.delivery
 
   const mainImage = product.images[0] ?? null
+
+  function handleToggleWishlist(e: React.MouseEvent) {
+    e.preventDefault()
+    toggleWishlist(product)
+  }
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault()
@@ -49,6 +57,15 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
+        {/* Wishlist heart — top-right */}
+        <button
+          onClick={handleToggleWishlist}
+          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm transition-transform hover:scale-110 z-10"
+          aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        >
+          <HeartIcon filled={wishlisted} color={storeConfig.theme.accentColor} />
+        </button>
+
         {/* Always-visible add to cart button on mobile (bottom-right corner) */}
         <button
           onClick={handleAddToCart}
@@ -81,11 +98,86 @@ export default function ProductCard({ product }: ProductCardProps) {
         >
           {product.name}
         </h3>
+        <ColorSwatches variants={product.variants} />
         <p className="text-base font-semibold" style={{ color: "var(--color-accent)" }}>
           {currency} {product.price.toLocaleString()}
         </p>
       </div>
     </Link>
+  )
+}
+
+/** Returns true if the string is a hex code or a recognised CSS named color. */
+function isValidCssColor(value: string): boolean {
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value)) return true
+  if (/^rgb/i.test(value) || /^hsl/i.test(value)) return true
+  // Test against the browser's CSS parser (SSR-safe guard)
+  if (typeof document === "undefined") return false
+  const el = document.createElement("div")
+  el.style.color = ""
+  el.style.color = value
+  return el.style.color !== ""
+}
+
+/** Neutral swatches for names that can't be resolved to a CSS color */
+const NEUTRAL_SWATCH = "#c8c4bc"
+
+function ColorSwatches({ variants }: { variants: Record<string, string[]> }) {
+  // Find all color-like keys (case-insensitive, supports color/colour)
+  const colorKey = Object.keys(variants).find((k) => /colou?r/i.test(k))
+  if (!colorKey) return null
+
+  const colors = variants[colorKey]
+  if (!colors || colors.length === 0) return null
+
+  const MAX = 4
+  const visible = colors.slice(0, MAX)
+  const overflow = colors.length - MAX
+
+  return (
+    <div className="flex items-center" style={{ gap: 4, marginTop: 2, marginBottom: 2 }}>
+      {visible.map((color) => {
+        const resolved = isValidCssColor(color) ? color : NEUTRAL_SWATCH
+        const needsTooltip = resolved === NEUTRAL_SWATCH
+        return (
+          <span
+            key={color}
+            title={needsTooltip ? color : undefined}
+            style={{
+              display: "inline-block",
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              backgroundColor: resolved,
+              border: `1.5px solid rgba(0,0,0,0.15)`,
+              flexShrink: 0,
+              cursor: needsTooltip ? "default" : undefined,
+            }}
+            aria-label={color}
+          />
+        )
+      })}
+      {overflow > 0 && (
+        <span
+          className="text-[10px] font-medium leading-none"
+          style={{ color: "var(--color-accent)" }}
+        >
+          +{overflow}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function HeartIcon({ filled, color }: { filled: boolean; color: string }) {
+  return filled ? (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill={color}>
+      <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+    </svg>
+  ) : (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+    </svg>
   )
 }
 

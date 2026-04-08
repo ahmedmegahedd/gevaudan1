@@ -55,6 +55,7 @@ export interface Product {
   stock: number
   is_active: boolean
   is_featured: boolean
+  model_info: string | null
   created_at: string
   /** Populated when joined */
   category?: Category
@@ -89,8 +90,23 @@ export interface Order {
   items: OrderItem[]
   subtotal: number
   delivery_fee: number
+  discount_amount: number
   total: number
+  promo_code: string | null
   status: OrderStatus
+  created_at: string
+}
+
+export interface PromoCode {
+  id: string
+  code: string
+  discount_type: "percentage" | "fixed"
+  discount_value: number
+  min_order_amount: number
+  max_uses: number | null
+  times_used: number
+  expires_at: string | null
+  is_active: boolean
   created_at: string
 }
 

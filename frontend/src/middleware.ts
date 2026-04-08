@@ -1,35 +1,63 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { updateSession } from "@/lib/supabase/middleware"
+import { createServerClient } from "@supabase/ssr"
 
 export async function middleware(request: NextRequest) {
-  const { supabaseResponse, user } = await updateSession(request)
+  const { pathname } = request.nextUrl
+  const isLoginPage = pathname === "/admin/login"
 
-  const isLoginPage = request.nextUrl.pathname === "/admin/login"
+  // Build a Supabase client that can refresh the session cookie
+  let response = NextResponse.next({ request })
 
-  // Protect /admin/* routes (but not the login page itself)
-  if (request.nextUrl.pathname.startsWith("/admin") && !isLoginPage) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          response = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // Refresh session (required by Supabase SSR)
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!isLoginPage) {
     if (!user) {
       return NextResponse.redirect(new URL("/admin/login", request.url))
     }
+
+    // Check admin role and pass it to the layout via a request header
+    // so the layout doesn't need its own DB query
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single()
+
+    if (!profile || profile.role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url))
+    }
+
+    // Stamp the verified role on the request so the layout can read it
+    response.headers.set("x-admin-verified", "1")
   }
 
-  // Redirect authenticated admin away from login page
+  // Redirect logged-in admin away from login page
   if (isLoginPage && user) {
     return NextResponse.redirect(new URL("/admin", request.url))
   }
 
-  return supabaseResponse
+  return response
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, sitemap.xml, robots.txt
-     * - public folder assets
-     */
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  // Only run middleware on /admin routes — shop pages need no auth check
+  matcher: ["/admin/:path*"],
 }

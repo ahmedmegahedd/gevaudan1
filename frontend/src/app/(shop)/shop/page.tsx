@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 interface ShopPageProps {
-  searchParams: { category?: string; minPrice?: string; maxPrice?: string }
+  searchParams: { category?: string; minPrice?: string; maxPrice?: string; search?: string }
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
@@ -32,6 +32,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     .select("*, category:categories(*)")
     .eq("is_active", true)
     .order("created_at", { ascending: false })
+
+  if (searchParams.search) {
+    const term = searchParams.search.trim()
+    query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`)
+  }
 
   if (searchParams.category) {
     const cat = (categories as Category[])?.find((c) => c.slug === searchParams.category)
@@ -58,6 +63,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       minPrice={searchParams.minPrice ?? ""}
       maxPrice={searchParams.maxPrice ?? ""}
       currency={currency}
+      searchQuery={searchParams.search ?? ""}
     />
   )
 }

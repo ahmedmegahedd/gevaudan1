@@ -4,6 +4,7 @@ import { storeConfig } from "@/config/store.config"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import ToastContainer from "@/components/ui/Toast"
+import CookieConsent from "@/components/ui/CookieConsent"
 import "./globals.css"
 
 const headingFont = Cormorant_Garamond({
@@ -37,6 +38,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <ToastContainer />
+        <CookieConsent />
       </body>
     </html>
   )

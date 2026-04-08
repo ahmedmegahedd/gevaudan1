@@ -7,7 +7,7 @@ import { createServerClient } from "@supabase/ssr"
  */
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  const { customer_info, delivery_address, items, subtotal, delivery_fee, total } = body
+  const { customer_info, delivery_address, items, subtotal, delivery_fee, total, promo_code, discount_amount } = body
 
   if (!customer_info || !delivery_address || !items || items.length === 0) {
     return NextResponse.json({ error: "Missing required order fields" }, { status: 400 })
@@ -21,9 +21,34 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("orders")
-    .insert({ customer_info, delivery_address, items, subtotal, delivery_fee, total, status: "pending" })
+    .insert({
+      customer_info,
+      delivery_address,
+      items,
+      subtotal,
+      delivery_fee,
+      discount_amount: discount_amount ?? 0,
+      total,
+      promo_code: promo_code ?? null,
+      status: "pending",
+    })
     .select("id")
     .single()
+
+  // Increment promo code usage counter
+  if (!error && promo_code) {
+    const { data: promoRow } = await supabase
+      .from("promo_codes")
+      .select("times_used")
+      .eq("code", promo_code)
+      .single()
+    if (promoRow) {
+      await supabase
+        .from("promo_codes")
+        .update({ times_used: promoRow.times_used + 1 })
+        .eq("code", promo_code)
+    }
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json(data, { status: 201 })
