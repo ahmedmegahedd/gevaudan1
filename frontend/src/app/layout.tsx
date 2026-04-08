@@ -35,7 +35,7 @@ export default function RootLayout({
     <html lang="en" className={`${headingFont.variable} ${bodyFont.variable} bg-[#d4e9f7]`} suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col bg-[#d4e9f7]" suppressHydrationWarning>
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pt-16">{children}</main>
         <Footer />
         <ToastContainer />
         <CookieConsent />
