@@ -170,7 +170,6 @@ export default function CheckoutPage() {
         <div
           className="md:hidden border px-4 py-3 mb-6 rounded"
           style={{ backgroundColor: "#d4e9f7", borderColor: "#e5e7eb" }}
-          style={{ borderColor: "#e5e7eb" }}
         >
           <div className="flex justify-between text-sm font-medium" style={{ color: "var(--color-primary)" }}>
             <span>{items.length} item{items.length !== 1 ? "s" : ""}</span>
