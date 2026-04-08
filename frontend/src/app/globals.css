@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #f0f4f8;
+  --background: #d4e9f7;
   --foreground: #171717;
   --color-primary: #061222;
   --color-accent: #447794;
@@ -18,9 +18,13 @@ html, body {
   overflow-x: hidden;
 }
 
+html {
+  background-color: #d4e9f7 !important;
+}
+
 body {
   color: var(--foreground);
-  background: var(--background);
+  background-color: #d4e9f7 !important;
   font-family: var(--font-body), system-ui, sans-serif;
 }
 

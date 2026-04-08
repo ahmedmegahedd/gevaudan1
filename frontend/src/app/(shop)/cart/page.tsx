@@ -61,7 +61,7 @@ export default function CartPage() {
                 style={{ borderColor: "#e5e7eb" }}
               >
                 {/* Image — smaller on mobile */}
-                <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 bg-gray-100 overflow-hidden">
+                <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 overflow-hidden" style={{ backgroundColor: "#a8c8e0" }}>
                   {item.product.images[0] ? (
                     <Image
                       src={item.product.images[0]}
@@ -107,7 +107,7 @@ export default function CartPage() {
                         onClick={() =>
                           updateQuantity(item.product.id, item.selectedVariants, item.quantity - 1)
                         }
-                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition-colors text-sm"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#a8c8e0] transition-colors text-sm"
                         aria-label="Decrease"
                       >
                         −
@@ -122,7 +122,7 @@ export default function CartPage() {
                           const s = getVariantStock(item.product.stock, item.product.variant_stock, item.selectedVariants, rk)
                           return item.quantity >= s
                         })()}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#a8c8e0] transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Increase"
                       >
                         +
@@ -241,22 +241,22 @@ export default function CartPage() {
       </div>
 
       {/* ── Mobile sticky order summary bar ── */}
-      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-[#f0f4f8] border-t px-4 py-4 space-y-2 z-40"
-        style={{ borderColor: "#e5e7eb" }}>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Delivery</span>
-          <span style={{ color: fee === 0 ? "green" : "var(--color-primary)" }}>
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden border-t px-4 py-4 space-y-2 z-40"
+        style={{ backgroundColor: "var(--color-primary)", borderColor: "rgba(255,255,255,0.1)" }}>
+        <div className="flex justify-between text-sm text-white/70">
+          <span>Delivery</span>
+          <span style={{ color: fee === 0 ? "#6ee7b7" : "rgba(255,255,255,0.7)" }}>
             {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
           </span>
         </div>
-        <div className="flex justify-between font-bold" style={{ color: "var(--color-primary)" }}>
+        <div className="flex justify-between font-bold text-white">
           <span>Total</span>
           <span>{currency} {orderTotal.toLocaleString()}</span>
         </div>
         <Link
           href="/checkout"
           className="block w-full py-4 text-center text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-          style={{ backgroundColor: "var(--color-primary)" }}
+          style={{ backgroundColor: "var(--color-accent)" }}
         >
           Proceed to Order
         </Link>

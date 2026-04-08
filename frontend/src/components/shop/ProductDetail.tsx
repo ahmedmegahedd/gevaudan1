@@ -67,7 +67,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         <div className="space-y-3 md:space-y-4">
           {/* Main image */}
           <div
-            className="group relative aspect-[3/4] overflow-hidden bg-gray-100 w-full"
+            className="group relative aspect-[3/4] overflow-hidden w-full" style={{ backgroundColor: "#a8c8e0" }}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
@@ -261,7 +261,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               style={{ borderColor: "#d1d5db" }}>
               <button
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-[#a8c8e0] transition-colors"
                 aria-label="Decrease quantity"
               >
                 −
@@ -270,7 +270,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <button
                 onClick={() => setQuantity((q) => Math.min(selectedStock, q + 1))}
                 disabled={quantity >= selectedStock}
-                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-[#a8c8e0] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 aria-label="Increase quantity"
               >
                 +
@@ -291,7 +291,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             {!outOfStock && (
               <button
                 onClick={() => { handleAddToCart(); router.push("/checkout") }}
-                className="w-full py-4 text-sm uppercase tracking-widest font-semibold border transition-colors hover:bg-gray-50"
+                className="w-full py-4 text-sm uppercase tracking-widest font-semibold border transition-colors hover:bg-[#a8c8e0]"
                 style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)" }}
               >
                 Buy Now
@@ -308,23 +308,23 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
 
       {/* ── Sticky bottom bar — Mobile only ── */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f0f4f8] border-t px-4 pt-3 pb-4 space-y-2 z-40"
-        style={{ borderColor: "#e5e7eb" }}>
+      <div className="fixed bottom-0 left-0 right-0 md:hidden border-t px-4 pt-3 pb-4 space-y-2 z-40"
+        style={{ backgroundColor: "var(--color-primary)", borderColor: "rgba(255,255,255,0.1)" }}>
         {/* Row 1: quantity + add to cart */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center border shrink-0" style={{ borderColor: "#d1d5db" }}>
+          <div className="flex items-center border shrink-0" style={{ borderColor: "rgba(255,255,255,0.25)" }}>
             <button
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="w-11 h-11 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+              className="w-11 h-11 text-lg flex items-center justify-center text-white hover:bg-white/10 transition-colors"
               aria-label="Decrease quantity"
             >
               −
             </button>
-            <span className="w-8 text-center text-sm font-medium">{quantity}</span>
+            <span className="w-8 text-center text-sm font-medium text-white">{quantity}</span>
             <button
               onClick={() => setQuantity((q) => Math.min(selectedStock, q + 1))}
               disabled={quantity >= selectedStock}
-              className="w-11 h-11 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="w-11 h-11 text-lg flex items-center justify-center text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Increase quantity"
             >
               +
@@ -343,8 +343,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         {!outOfStock && (
           <button
             onClick={() => { handleAddToCart(); router.push("/checkout") }}
-            className="w-full h-11 text-xs uppercase tracking-widest font-semibold border transition-colors hover:bg-gray-100"
-            style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)" }}
+            className="w-full h-11 text-xs uppercase tracking-widest font-semibold text-white/80 border border-white/30 transition-colors hover:bg-white/10"
           >
             Buy Now
           </button>

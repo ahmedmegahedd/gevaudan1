@@ -45,7 +45,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       className="group flex flex-col"
     >
       {/* Image */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-3">
+      <div className="relative aspect-[3/4] overflow-hidden mb-3" style={{ backgroundColor: "#a8c8e0" }}>
         {mainImage ? (
           <Image
             src={mainImage}

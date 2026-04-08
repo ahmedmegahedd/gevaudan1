@@ -6,7 +6,7 @@ import AdminNav from "@/components/admin/AdminNav"
 // By the time this layout renders, the request is already verified as an admin.
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#f0f4f8" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#d4e9f7" }}>
       {/* Admin header */}
       <header
         className="h-14 flex items-center justify-between px-4 sm:px-6 border-b"

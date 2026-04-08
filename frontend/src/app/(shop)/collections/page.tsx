@@ -59,7 +59,7 @@ export default async function CollectionsPage() {
               style={{ borderColor: "#e5e7eb" }}
             >
               {/* Cover image */}
-              <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+              <div className="relative aspect-[4/3] overflow-hidden" style={{ backgroundColor: "#a8c8e0" }}>
                 {col.cover_image ? (
                   <Image
                     src={col.cover_image}
@@ -79,7 +79,7 @@ export default async function CollectionsPage() {
               </div>
 
               {/* Content */}
-              <div className="p-5 flex flex-col flex-1" style={{ backgroundColor: "#f0f4f8" }}>
+              <div className="p-5 flex flex-col flex-1" style={{ backgroundColor: "#d4e9f7" }}>
                 <h2
                   className="text-xl font-bold mb-1 leading-snug"
                   style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}

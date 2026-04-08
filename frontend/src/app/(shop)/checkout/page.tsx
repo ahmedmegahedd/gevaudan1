@@ -168,7 +168,8 @@ export default function CheckoutPage() {
 
         {/* Mobile compact summary */}
         <div
-          className="md:hidden bg-gray-50 border px-4 py-3 mb-6 rounded"
+          className="md:hidden border px-4 py-3 mb-6 rounded"
+          style={{ backgroundColor: "#d4e9f7", borderColor: "#e5e7eb" }}
           style={{ borderColor: "#e5e7eb" }}
         >
           <div className="flex justify-between text-sm font-medium" style={{ color: "var(--color-primary)" }}>
@@ -370,15 +371,15 @@ export default function CheckoutPage() {
 
         {/* ── Mobile sticky submit ── */}
         <div
-          className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f0f4f8] border-t px-4 py-4 z-40"
-          style={{ borderColor: "#e5e7eb" }}
+          className="fixed bottom-0 left-0 right-0 md:hidden border-t px-4 py-4 z-40"
+          style={{ backgroundColor: "var(--color-primary)", borderColor: "rgba(255,255,255,0.1)" }}
         >
           <button
             type="submit"
             form="checkout-form"
             disabled={isSubmitting}
             className="w-full text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "var(--color-primary)", height: "48px" }}
+            style={{ backgroundColor: "var(--color-accent)", height: "48px" }}
           >
             {isSubmitting ? "Placing Order…" : "Place Order (Cash on Delivery)"}
           </button>
@@ -413,7 +414,7 @@ function OrderSuccessModal({
       style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
     >
       <div
-        className="success-card bg-[#f0f4f8] w-full sm:max-w-md sm:rounded-2xl overflow-y-auto"
+        className="success-card bg-[#d4e9f7] w-full sm:max-w-md sm:rounded-2xl overflow-y-auto"
         style={{ maxHeight: "100dvh" }}
       >
         {/* Top accent bar */}
@@ -568,7 +569,7 @@ function OrderSuccessModal({
 
 function inputClass(hasError: boolean) {
   return [
-    "w-full border px-3 text-base focus:outline-none transition-colors bg-[#f0f4f8]",
+    "w-full border px-3 text-base focus:outline-none transition-colors bg-[#d4e9f7]",
     hasError ? "border-red-400" : "border-gray-300 focus:border-[var(--color-accent)]",
   ].join(" ") + " min-h-[48px]"
 }

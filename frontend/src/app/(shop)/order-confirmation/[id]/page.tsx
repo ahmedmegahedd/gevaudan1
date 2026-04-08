@@ -37,8 +37,8 @@ export default async function OrderConfirmationPage({ params }: Props) {
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
 
   return (
-    <div className="min-h-screen bg-[#f0f4f8] flex items-start justify-center py-12 px-4">
-      <div className="bg-[#f0f4f8] w-full max-w-md rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: "#e5e7eb" }}>
+    <div className="min-h-screen bg-[#d4e9f7] flex items-start justify-center py-12 px-4">
+      <div className="bg-[#d4e9f7] w-full max-w-md rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: "#e5e7eb" }}>
         {/* Accent top bar */}
         <div className="h-1.5" style={{ backgroundColor: theme.accentColor }} />
 
@@ -97,7 +97,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
           </div>
 
           {/* Delivery info */}
-          <div className="bg-gray-50 rounded-xl px-4 py-3 text-sm space-y-1">
+          <div className="rounded-xl px-4 py-3 text-sm space-y-1" style={{ backgroundColor: "#a8c8e0" }}>
             <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Delivery To</p>
             <p style={{ color: "var(--color-primary)" }}>
               {o.delivery_address.city} — {o.delivery_address.address}

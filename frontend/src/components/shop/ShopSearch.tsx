@@ -101,7 +101,7 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
           onKeyDown={onKey}
           onFocus={() => query.length >= 2 && suggestions.length > 0 && setShowSuggestions(true)}
           placeholder="Search products…"
-          className="flex-1 h-11 px-3 text-sm focus:outline-none bg-[#f0f4f8]"
+          className="flex-1 h-11 px-3 text-sm focus:outline-none bg-[#d4e9f7]"
           style={{ color: primaryColor }}
           aria-label="Search products"
         />
@@ -127,16 +127,16 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
       {showSuggestions && suggestions.length > 0 && (
         <div
           className="absolute left-0 right-0 top-full mt-1 z-40 shadow-xl overflow-hidden border"
-          style={{ backgroundColor: "#f0f4f8", borderColor: "#e5e7eb" }}
+          style={{ backgroundColor: "#d4e9f7", borderColor: "#e5e7eb" }}
         >
           {suggestions.map((p) => (
             <button
               key={p.id}
               onClick={() => { setShowSuggestions(false); router.push(`/shop/${p.slug}`) }}
-              className="flex items-center gap-3 w-full px-3 py-2.5 text-left hover:bg-gray-50 transition-colors border-b last:border-0"
+              className="flex items-center gap-3 w-full px-3 py-2.5 text-left hover:bg-[#a8c8e0] transition-colors border-b last:border-0"
               style={{ borderColor: "#f3f4f6" }}
             >
-              <div className="relative w-9 h-12 shrink-0 bg-gray-100 overflow-hidden">
+              <div className="relative w-9 h-12 shrink-0 overflow-hidden" style={{ backgroundColor: "#a8c8e0" }}>
                 {p.images?.[0] ? (
                   <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="36px" />
                 ) : null}
@@ -155,7 +155,7 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
 
           <button
             onClick={() => submit()}
-            className="flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-xs font-medium border-t hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-xs font-medium border-t hover:bg-[#a8c8e0] transition-colors"
             style={{ borderColor: "#f3f4f6", color: accentColor }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

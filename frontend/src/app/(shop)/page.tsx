@@ -112,7 +112,7 @@ export default async function HomePage() {
       {categories && categories.length > 0 && (
         <section
           className="py-12 md:py-20"
-          style={{ backgroundColor: "#f9f9f9" }}
+          style={{ backgroundColor: "#d4e9f7" }}
         >
           <div className="max-w-7xl mx-auto">
             <h2
