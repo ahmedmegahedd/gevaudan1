@@ -101,7 +101,7 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
           onKeyDown={onKey}
           onFocus={() => query.length >= 2 && suggestions.length > 0 && setShowSuggestions(true)}
           placeholder="Search products…"
-          className="flex-1 h-11 px-3 text-sm focus:outline-none bg-white"
+          className="flex-1 h-11 px-3 text-sm focus:outline-none bg-[#f8f5f0]"
           style={{ color: primaryColor }}
           aria-label="Search products"
         />
@@ -127,7 +127,7 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
       {showSuggestions && suggestions.length > 0 && (
         <div
           className="absolute left-0 right-0 top-full mt-1 z-40 shadow-xl overflow-hidden border"
-          style={{ backgroundColor: "#fff", borderColor: "#e5e7eb" }}
+          style={{ backgroundColor: "#f8f5f0", borderColor: "#e5e7eb" }}
         >
           {suggestions.map((p) => (
             <button

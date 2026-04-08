@@ -91,6 +91,10 @@ export default function CartPage() {
                     {currency} {item.product.price.toLocaleString()}
                   </p>
 
+                  {item.quantity >= item.product.stock && item.product.stock > 0 && (
+                    <p className="text-xs text-red-500">Max stock reached ({item.product.stock})</p>
+                  )}
+
                   <div className="flex items-center gap-3 mt-2">
                     {/* Quantity controls — min 40px touch targets */}
                     <div className="flex items-center border" style={{ borderColor: "#d1d5db" }}>
@@ -108,7 +112,8 @@ export default function CartPage() {
                         onClick={() =>
                           updateQuantity(item.product.id, item.selectedVariants, item.quantity + 1)
                         }
-                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition-colors text-sm"
+                        disabled={item.quantity >= item.product.stock}
+                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Increase"
                       >
                         +
@@ -227,7 +232,7 @@ export default function CartPage() {
       </div>
 
       {/* ── Mobile sticky order summary bar ── */}
-      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t px-4 py-4 space-y-2 z-40"
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-[#f8f5f0] border-t px-4 py-4 space-y-2 z-40"
         style={{ borderColor: "#e5e7eb" }}>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Delivery</span>

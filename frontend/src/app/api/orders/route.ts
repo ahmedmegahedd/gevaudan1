@@ -35,6 +35,26 @@ export async function POST(request: NextRequest) {
     .select("id")
     .single()
 
+  // Deduct stock for each ordered item
+  if (!error) {
+    await Promise.all(
+      items.map(async (item: { product_id: string; quantity: number }) => {
+        const { data: product } = await supabase
+          .from("products")
+          .select("stock")
+          .eq("id", item.product_id)
+          .single()
+        if (product) {
+          const newStock = Math.max(0, product.stock - item.quantity)
+          await supabase
+            .from("products")
+            .update({ stock: newStock })
+            .eq("id", item.product_id)
+        }
+      })
+    )
+  }
+
   // Increment promo code usage counter
   if (!error && promo_code) {
     const { data: promoRow } = await supabase

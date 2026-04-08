@@ -25,8 +25,11 @@ export default function ProductCard({ product }: ProductCardProps) {
     toggleWishlist(product)
   }
 
+  const outOfStock = product.stock === 0
+
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault()
+    if (outOfStock) return
     // Add with the first available option for each variant (quick-add from grid)
     const defaultVariants: Record<string, string> = {}
     for (const [key, values] of Object.entries(product.variants)) {
@@ -48,12 +51,21 @@ export default function ProductCard({ product }: ProductCardProps) {
             src={mainImage}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className={`object-cover transition-transform duration-500 ${outOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-gray-300 text-xs">No image</span>
+          </div>
+        )}
+
+        {/* Out of stock badge */}
+        {outOfStock && (
+          <div className="absolute inset-0 flex items-end justify-center pb-4">
+            <span className="bg-black/60 text-white text-xs uppercase tracking-widest font-semibold px-3 py-1.5">
+              Out of Stock
+            </span>
           </div>
         )}
 
@@ -67,24 +79,32 @@ export default function ProductCard({ product }: ProductCardProps) {
         </button>
 
         {/* Always-visible add to cart button on mobile (bottom-right corner) */}
-        <button
-          onClick={handleAddToCart}
-          className="absolute bottom-2 right-2 w-10 h-10 flex items-center justify-center text-white md:hidden rounded-sm"
-          style={{ backgroundColor: "var(--color-primary)" }}
-          aria-label={`Add ${product.name} to cart`}
-        >
-          <CartIconSmall />
-        </button>
+        {!outOfStock && (
+          <button
+            onClick={handleAddToCart}
+            className="absolute bottom-2 right-2 w-10 h-10 flex items-center justify-center text-white md:hidden rounded-sm"
+            style={{ backgroundColor: "var(--color-primary)" }}
+            aria-label={`Add ${product.name} to cart`}
+          >
+            <CartIconSmall />
+          </button>
+        )}
 
         {/* Desktop hover overlay */}
-        <button
-          onClick={handleAddToCart}
-          className="absolute bottom-0 left-0 right-0 py-3 text-xs uppercase tracking-widest font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity hidden md:block"
-          style={{ backgroundColor: "var(--color-primary)" }}
-          aria-label={`Add ${product.name} to cart`}
-        >
-          Add to Cart
-        </button>
+        {outOfStock ? (
+          <div className="absolute bottom-0 left-0 right-0 py-3 text-xs uppercase tracking-widest font-semibold text-white/70 text-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:block bg-black/50">
+            Out of Stock
+          </div>
+        ) : (
+          <button
+            onClick={handleAddToCart}
+            className="absolute bottom-0 left-0 right-0 py-3 text-xs uppercase tracking-widest font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity hidden md:block"
+            style={{ backgroundColor: "var(--color-primary)" }}
+            aria-label={`Add ${product.name} to cart`}
+          >
+            Add to Cart
+          </button>
+        )}
       </div>
 
       {/* Info */}

@@ -102,6 +102,43 @@ export const clientApi = {
     }
   },
 
+  // ── Categories ────────────────────────────────────────────
+
+  async createCategory(data: { name: string; slug: string; is_active: boolean }) {
+    const supabase = createClient()
+    const { data: result, error } = await supabase
+      .from("categories")
+      .insert(data)
+      .select()
+      .single()
+    if (error) return { error: error.message }
+    return { data: result as { id: string } }
+  },
+
+  async updateCategory(id: string, data: { name: string; slug: string; is_active: boolean }) {
+    const supabase = createClient()
+    const { error } = await supabase.from("categories").update(data).eq("id", id)
+    if (error) return { error: error.message }
+    return { data: true }
+  },
+
+  async deleteCategory(id: string) {
+    const supabase = createClient()
+    const { error } = await supabase.from("categories").delete().eq("id", id)
+    if (error) return { error: error.message }
+    return { data: true }
+  },
+
+  async setProductCategory(productId: string, categoryId: string | null) {
+    const supabase = createClient()
+    const { error } = await supabase
+      .from("products")
+      .update({ category_id: categoryId })
+      .eq("id", productId)
+    if (error) return { error: error.message }
+    return { data: true }
+  },
+
   // ── Collections ───────────────────────────────────────────
 
   async createCollection(data: unknown) {

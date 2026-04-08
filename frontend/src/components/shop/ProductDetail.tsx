@@ -235,7 +235,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           ))}
 
           {/* ── Size Guide ── */}
-          {variantKeys.some((k) => /size/i.test(k)) && <SizeGuide />}
+          {(variantKeys.some((k) => /size/i.test(k)) || product.variants["size_guide"]) && (
+            <SizeGuide rawRows={product.variants["size_guide"]} />
+          )}
 
           {/* ── Material & Care ── */}
           <MaterialCare variants={product.variants} />
@@ -257,8 +259,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </button>
               <span className="w-12 text-center text-sm font-medium">{quantity}</span>
               <button
-                onClick={() => setQuantity((q) => q + 1)}
-                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+                onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                disabled={quantity >= product.stock}
+                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 aria-label="Increase quantity"
               >
                 +
@@ -285,7 +288,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
 
       {/* ── Sticky Add to Cart bar — Mobile only ── */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t px-4 py-3 flex items-center gap-3 z-40"
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#f8f5f0] border-t px-4 py-3 flex items-center gap-3 z-40"
         style={{ borderColor: "#e5e7eb" }}>
         {/* Quantity controls */}
         <div className="flex items-center border shrink-0" style={{ borderColor: "#d1d5db" }}>
@@ -298,8 +301,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </button>
           <span className="w-8 text-center text-sm font-medium">{quantity}</span>
           <button
-            onClick={() => setQuantity((q) => q + 1)}
-            className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+            onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+            disabled={quantity >= product.stock}
+            className="w-12 h-12 text-lg flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Increase quantity"
           >
             +
@@ -392,28 +396,38 @@ function MaterialCare({ variants }: { variants: Record<string, string[]> }) {
   )
 }
 
-const SIZE_GUIDE = [
-  { size: "XS",  bust: "80–83",  waist: "60–63",  hips: "86–89"  },
-  { size: "S",   bust: "84–87",  waist: "64–67",  hips: "90–93"  },
-  { size: "M",   bust: "88–92",  waist: "68–72",  hips: "94–98"  },
-  { size: "L",   bust: "93–98",  waist: "73–78",  hips: "99–104" },
-  { size: "XL",  bust: "99–104", waist: "79–84",  hips: "105–110"},
-  { size: "XXL", bust: "105–111",waist: "85–91",  hips: "111–117"},
+const DEFAULT_SIZE_GUIDE = [
+  { size: "XS",  col2: "80–83",  col3: "60–63",  col4: "86–89"  },
+  { size: "S",   col2: "84–87",  col3: "64–67",  col4: "90–93"  },
+  { size: "M",   col2: "88–92",  col3: "68–72",  col4: "94–98"  },
+  { size: "L",   col2: "93–98",  col3: "73–78",  col4: "99–104" },
+  { size: "XL",  col2: "99–104", col3: "79–84",  col4: "105–110"},
+  { size: "XXL", col2: "105–111",col3: "85–91",  col4: "111–117"},
 ]
 
-function SizeGuide() {
+const DEFAULT_HEADERS = ["Size", "Bust (cm)", "Waist (cm)", "Hips (cm)"]
+
+function SizeGuide({ rawRows }: { rawRows?: string[] }) {
   const [open, setOpen] = useState(false)
+
+  // Parse custom rows: "SIZE|COL2|COL3|COL4" or fall back to defaults
+  const rows = rawRows && rawRows.length > 0
+    ? rawRows.map((r) => { const [size, col2, col3, col4] = r.split("|"); return { size: size ?? "", col2: col2 ?? "", col3: col3 ?? "", col4: col4 ?? "" } })
+    : DEFAULT_SIZE_GUIDE
+
+  // Parse headers from first raw row if it starts with "HEADER:"
+  let headers = DEFAULT_HEADERS
+  if (rawRows && rawRows[0]?.startsWith("HEADER:")) {
+    headers = rawRows[0].replace("HEADER:", "").split("|")
+  }
+  const dataRows = rawRows && rawRows[0]?.startsWith("HEADER:") ? rows.slice(1) : rows
 
   return (
     <div>
-      {/* Toggle row */}
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex items-center justify-between w-full py-2 border-t border-b text-sm font-semibold uppercase tracking-wider transition-colors"
-        style={{
-          borderColor: "#e5e7eb",
-          color: "var(--color-primary)",
-        }}
+        style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}
         aria-expanded={open}
       >
         <span>Size Guide</span>
@@ -421,51 +435,29 @@ function SizeGuide() {
           xmlns="http://www.w3.org/2000/svg"
           className="h-4 w-4 transition-transform duration-300"
           style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
-      {/* Animated container */}
-      <div
-        style={{
-          maxHeight: open ? "400px" : "0px",
-          overflow: "hidden",
-          transition: "max-height 0.35s ease",
-        }}
-      >
+      <div style={{ maxHeight: open ? "400px" : "0px", overflow: "hidden", transition: "max-height 0.35s ease" }}>
         <div className="overflow-x-auto pt-3 pb-1">
           <table className="w-full text-sm border-collapse min-w-[340px]">
             <thead>
               <tr style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}>
-                {["Size", "Bust (cm)", "Waist (cm)", "Hips (cm)"].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-2.5 text-left text-xs uppercase tracking-wider font-semibold"
-                  >
-                    {h}
-                  </th>
+                {headers.map((h) => (
+                  <th key={h} className="px-4 py-2.5 text-left text-xs uppercase tracking-wider font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {SIZE_GUIDE.map((row, i) => (
-                <tr
-                  key={row.size}
-                  style={{
-                    backgroundColor: i % 2 === 0 ? "rgba(6,18,34,0.04)" : "rgba(6,18,34,0.08)",
-                  }}
-                >
-                  <td className="px-4 py-2.5 font-semibold" style={{ color: "var(--color-primary)" }}>
-                    {row.size}
-                  </td>
-                  <td className="px-4 py-2.5 text-gray-600">{row.bust}</td>
-                  <td className="px-4 py-2.5 text-gray-600">{row.waist}</td>
-                  <td className="px-4 py-2.5 text-gray-600">{row.hips}</td>
+              {dataRows.map((row, i) => (
+                <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "rgba(6,18,34,0.04)" : "rgba(6,18,34,0.08)" }}>
+                  <td className="px-4 py-2.5 font-semibold" style={{ color: "var(--color-primary)" }}>{row.size}</td>
+                  <td className="px-4 py-2.5 text-gray-600">{row.col2}</td>
+                  <td className="px-4 py-2.5 text-gray-600">{row.col3}</td>
+                  <td className="px-4 py-2.5 text-gray-600">{row.col4 ?? ""}</td>
                 </tr>
               ))}
             </tbody>

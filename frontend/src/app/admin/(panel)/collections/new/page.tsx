@@ -1,17 +1,17 @@
-import CollectionForm from "@/components/admin/CollectionForm"
+import CategoryForm from "@/components/admin/CategoryForm"
 
-export const metadata = { title: "New Collection" }
+export const metadata = { title: "New Category" }
 
-export default function NewCollectionPage() {
+export default function NewCategoryPage() {
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-2xl mx-auto">
       <h1
         className="text-2xl font-bold mb-8"
         style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
       >
-        New Collection
+        New Category
       </h1>
-      <CollectionForm mode="create" />
+      <CategoryForm mode="create" />
     </div>
   )
 }

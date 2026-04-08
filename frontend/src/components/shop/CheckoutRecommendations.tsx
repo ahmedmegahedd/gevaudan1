@@ -138,7 +138,7 @@ function RecoCard({ product, onAdd }: { product: Product; onAdd: () => void }) {
   const mainImage = product.images[0] ?? null
 
   return (
-    <div className="bg-white flex flex-col">
+    <div className="bg-[#f8f5f0] flex flex-col">
       <Link href={`/shop/${product.slug}`} className="relative aspect-[3/4] block overflow-hidden bg-gray-50">
         {mainImage ? (
           <Image

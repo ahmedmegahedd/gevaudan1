@@ -40,15 +40,17 @@ export const useCartStore = create<CartState>()(
             isSameItem(i, { productId: product.id, selectedVariants })
           )
           if (existing) {
+            const newQty = Math.min(existing.quantity + quantity, product.stock)
             return {
               items: state.items.map((i) =>
                 isSameItem(i, { productId: product.id, selectedVariants })
-                  ? { ...i, quantity: i.quantity + quantity }
+                  ? { ...i, quantity: newQty }
                   : i
               ),
             }
           }
-          return { items: [...state.items, { product, quantity, selectedVariants }] }
+          const cappedQty = Math.min(quantity, product.stock)
+          return { items: [...state.items, { product, quantity: cappedQty, selectedVariants }] }
         })
       },
 
@@ -66,9 +68,11 @@ export const useCartStore = create<CartState>()(
           return
         }
         set((state) => ({
-          items: state.items.map((i) =>
-            isSameItem(i, { productId, selectedVariants }) ? { ...i, quantity } : i
-          ),
+          items: state.items.map((i) => {
+            if (!isSameItem(i, { productId, selectedVariants })) return i
+            const capped = Math.min(quantity, i.product.stock)
+            return { ...i, quantity: capped }
+          }),
         }))
       },
 

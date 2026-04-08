@@ -107,18 +107,38 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
     materialKey ? (initialData!.variants[materialKey] ?? []).join(", ") : ""
   )
 
-  // Variant groups state — exclude the material key (handled separately)
+  // Variant groups state — exclude material and size_guide keys (handled separately)
   const [variantGroups, setVariantGroups] = useState<VariantGroup[]>(
     initialData
       ? parseVariants(
           Object.fromEntries(
             Object.entries(initialData.variants).filter(
-              ([k]) => !/^(material|materials|fabric)$/i.test(k)
+              ([k]) => !/^(material|materials|fabric|size_guide)$/i.test(k)
             )
           )
         )
       : []
   )
+
+  // Size guide rows state
+  interface SizeRow { size: string; col2: string; col3: string; col4: string }
+  const [sizeGuideRows, setSizeGuideRows] = useState<SizeRow[]>(() => {
+    const raw = initialData?.variants?.["size_guide"]
+    if (!raw || raw.length === 0) return []
+    const start = raw[0]?.startsWith("HEADER:") ? 1 : 0
+    return raw.slice(start).map((r) => {
+      const [size, col2, col3, col4] = r.split("|")
+      return { size: size ?? "", col2: col2 ?? "", col3: col3 ?? "", col4: col4 ?? "" }
+    })
+  })
+  const [sizeGuideHeaders, setSizeGuideHeaders] = useState<[string, string, string, string]>(() => {
+    const raw = initialData?.variants?.["size_guide"]
+    if (raw && raw[0]?.startsWith("HEADER:")) {
+      const parts = raw[0].replace("HEADER:", "").split("|")
+      return [parts[0] ?? "Size", parts[1] ?? "Bust (cm)", parts[2] ?? "Waist (cm)", parts[3] ?? "Hips (cm)"]
+    }
+    return ["Size", "Bust (cm)", "Waist (cm)", "Hips (cm)"]
+  })
 
   // Images state: mix of existing URLs and new local files
   const [images, setImages] = useState<ImageEntry[]>(
@@ -267,6 +287,15 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
     const variants = buildVariants(variantGroups)
     if (material.trim()) {
       variants["material"] = material.split(",").map((v) => v.trim()).filter(Boolean)
+    }
+    if (sizeGuideRows.length > 0) {
+      const headerRow = `HEADER:${sizeGuideHeaders.join("|")}`
+      variants["size_guide"] = [
+        headerRow,
+        ...sizeGuideRows
+          .filter((r) => r.size.trim())
+          .map((r) => `${r.size}|${r.col2}|${r.col3}|${r.col4}`),
+      ]
     }
 
     const payload = {
@@ -424,59 +453,62 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
           </p>
         </Field>
 
-        <p className="text-xs text-gray-400 mb-4">
-          Add variant groups (e.g. &quot;Size&quot;, &quot;Color&quot;). Options are comma-separated.
-          Saves as JSON — works for any product type without code changes.
+        <p className="text-xs text-gray-400 mb-2">
+          Add variant groups (e.g. &quot;Size&quot;, &quot;Color&quot;). For Color groups, use the color pickers below.
         </p>
 
-        <div className="space-y-3">
-          {variantGroups.map((group, i) => (
-            <div key={i} className="flex flex-col sm:flex-row gap-3 items-start">
-              <div className="w-full sm:w-32 shrink-0">
-                <input
-                  type="text"
-                  value={group.key}
-                  onChange={(e) => updateVariantKey(i, e.target.value)}
-                  placeholder="Group name"
-                  className={`${input(false)} text-sm`}
-                />
+        <div className="space-y-4">
+          {variantGroups.map((group, i) => {
+            const isColor = /colou?r/i.test(group.key)
+            return (
+              <div key={i} className="flex flex-col sm:flex-row gap-3 items-start">
+                <div className="w-full sm:w-32 shrink-0">
+                  <input
+                    type="text"
+                    value={group.key}
+                    onChange={(e) => updateVariantKey(i, e.target.value)}
+                    placeholder="Group name"
+                    className={`${input(false)} text-sm`}
+                  />
+                </div>
+                <div className="flex-1 w-full">
+                  {isColor ? (
+                    <ColorPickerField
+                      value={group.value}
+                      onChange={(v) => updateVariantValue(i, v)}
+                    />
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        value={group.value}
+                        onChange={(e) => updateVariantValue(i, e.target.value)}
+                        placeholder="S, M, L, XL"
+                        className={`${input(false)} text-sm`}
+                      />
+                      {group.value && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {group.value.split(",").map((v) => v.trim()).filter(Boolean).map((v) => (
+                            <span key={v} className="text-[10px] px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: "var(--color-accent)" }}>
+                              {v}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeVariantGroup(i)}
+                  className="flex items-center justify-center min-h-[44px] min-w-[44px] text-gray-300 hover:text-red-400 transition-colors text-lg leading-none"
+                  aria-label="Remove variant group"
+                >
+                  ×
+                </button>
               </div>
-              <div className="flex-1 w-full">
-                <input
-                  type="text"
-                  value={group.value}
-                  onChange={(e) => updateVariantValue(i, e.target.value)}
-                  placeholder="S, M, L, XL"
-                  className={`${input(false)} text-sm`}
-                />
-                {group.value && (
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    {group.value
-                      .split(",")
-                      .map((v) => v.trim())
-                      .filter(Boolean)
-                      .map((v) => (
-                        <span
-                          key={v}
-                          className="text-[10px] px-2 py-0.5 rounded-full text-white"
-                          style={{ backgroundColor: "var(--color-accent)" }}
-                        >
-                          {v}
-                        </span>
-                      ))}
-                  </div>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => removeVariantGroup(i)}
-                className="flex items-center justify-center min-h-[44px] min-w-[44px] text-gray-300 hover:text-red-400 transition-colors text-lg leading-none"
-                aria-label="Remove variant group"
-              >
-                ×
-              </button>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         <button
@@ -487,6 +519,83 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
         >
           + Add Variant Group
         </button>
+      </Section>
+
+      {/* ── Size Guide ── */}
+      <Section title="Size Guide">
+        <p className="text-xs text-gray-400 mb-3">
+          Editable size chart shown on the product page. Leave empty to use the default chart or hide it.
+        </p>
+
+        {/* Column headers */}
+        <div className="flex gap-2 mb-2 items-center">
+          {sizeGuideHeaders.map((h, i) => (
+            <input
+              key={i}
+              type="text"
+              value={h}
+              onChange={(e) => {
+                const next = [...sizeGuideHeaders] as [string, string, string, string]
+                next[i] = e.target.value
+                setSizeGuideHeaders(next)
+              }}
+              className="flex-1 border px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-[var(--color-accent)] bg-[var(--color-primary)] text-white placeholder:text-white/40"
+              placeholder={["Size", "Col 2", "Col 3", "Col 4"][i]}
+            />
+          ))}
+          {/* spacer to align with row delete button */}
+          <div className="shrink-0 w-8" />
+        </div>
+
+        {/* Rows */}
+        <div className="space-y-1.5">
+          {sizeGuideRows.map((row, i) => (
+            <div key={i} className="flex gap-2 items-center">
+              {(["size", "col2", "col3", "col4"] as const).map((field) => (
+                <input
+                  key={field}
+                  type="text"
+                  value={row[field]}
+                  onChange={(e) => {
+                    const next = [...sizeGuideRows]
+                    next[i] = { ...next[i], [field]: e.target.value }
+                    setSizeGuideRows(next)
+                  }}
+                  className="flex-1 border px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--color-accent)] bg-white"
+                  style={{ borderColor: "#e5e7eb" }}
+                  placeholder={field === "size" ? "e.g. M" : "e.g. 88–92"}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={() => setSizeGuideRows((prev) => prev.filter((_, j) => j !== i))}
+                className="shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors text-lg leading-none"
+                aria-label="Remove row"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setSizeGuideRows((prev) => [...prev, { size: "", col2: "", col3: "", col4: "" }])}
+          className="mt-3 text-xs uppercase tracking-wider font-medium border px-4 py-2 min-h-[40px] transition-colors hover:bg-gray-50"
+          style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)" }}
+        >
+          + Add Row
+        </button>
+
+        {sizeGuideRows.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setSizeGuideRows([])}
+            className="mt-2 ml-3 text-xs text-red-400 hover:text-red-600 transition-colors"
+          >
+            Clear all rows
+          </button>
+        )}
       </Section>
 
       {/* ── Images ── */}
@@ -676,4 +785,65 @@ function input(hasError: boolean) {
       ? "border-red-400"
       : "border-gray-300 focus:border-gray-600",
   ].join(" ") + " min-h-[48px]"
+}
+
+function ColorPickerField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const colors = value.split(",").map((c) => c.trim()).filter(Boolean)
+
+  function updateColor(index: number, hex: string) {
+    const next = [...colors]
+    next[index] = hex
+    onChange(next.join(", "))
+  }
+
+  function addColor() {
+    onChange([...colors, "#000000"].join(", "))
+  }
+
+  function removeColor(index: number) {
+    onChange(colors.filter((_, i) => i !== index).join(", "))
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 min-h-[48px] border border-gray-300 px-3 py-2 bg-white">
+      {colors.map((color, i) => (
+        <div key={i} className="relative group flex flex-col items-center gap-0.5">
+          <label
+            className="relative w-9 h-9 rounded-full overflow-hidden cursor-pointer border-2 transition-transform hover:scale-110"
+            style={{ borderColor: "#d1d5db" }}
+            title={color}
+          >
+            <span
+              className="absolute inset-0 rounded-full"
+              style={{ backgroundColor: color }}
+            />
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => updateColor(i, e.target.value)}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+            />
+          </label>
+          <span className="text-[9px] font-mono text-gray-400 leading-none">{color}</span>
+          <button
+            type="button"
+            onClick={() => removeColor(i)}
+            className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-400 text-white text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity leading-none"
+            aria-label="Remove color"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addColor}
+        className="w-9 h-9 rounded-full border-2 border-dashed flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors text-lg leading-none"
+        style={{ borderColor: "#d1d5db" }}
+        aria-label="Add color"
+      >
+        +
+      </button>
+    </div>
+  )
 }

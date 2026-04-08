@@ -1,25 +1,27 @@
 import { notFound } from "next/navigation"
 import { serverApi } from "@/lib/serverApi"
-import CollectionForm from "@/components/admin/CollectionForm"
-import CollectionProductAssigner from "@/components/admin/CollectionProductAssigner"
-import type { Product, Category } from "@/types"
+import CategoryForm from "@/components/admin/CategoryForm"
+import CategoryProductManager from "@/components/admin/CategoryProductManager"
+import type { Product } from "@/types"
 
 export const dynamic = "force-dynamic"
-export const metadata = { title: "Edit Collection" }
+export const metadata = { title: "Edit Category" }
 
 interface Props {
   params: { id: string }
 }
 
-type ProductWithCategory = Product & { category?: Category }
-
-export default async function EditCollectionPage({ params }: Props) {
-  const [collection, products] = await Promise.all([
-    serverApi.collectionById(params.id),
+export default async function EditCategoryPage({ params }: Props) {
+  const [categories, products] = await Promise.all([
+    serverApi.categories(),
     serverApi.products(),
   ])
 
-  if (!collection) notFound()
+  const category = categories.find((c) => c.id === params.id)
+  if (!category) notFound()
+
+  const categoryProducts = products.filter((p) => p.category_id === params.id)
+  const otherProducts = products.filter((p) => p.category_id !== params.id)
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
@@ -27,15 +29,15 @@ export default async function EditCollectionPage({ params }: Props) {
         className="text-2xl font-bold"
         style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
       >
-        Edit Collection
+        Edit Category
       </h1>
 
-      <CollectionForm mode="edit" initialData={collection} />
+      <CategoryForm mode="edit" initialData={category} />
 
-      <CollectionProductAssigner
-        collectionId={collection.id}
-        allProducts={products as ProductWithCategory[]}
-        initialAssigned={collection.products ?? []}
+      <CategoryProductManager
+        categoryId={params.id}
+        categoryProducts={categoryProducts as Product[]}
+        otherProducts={otherProducts as Product[]}
       />
     </div>
   )
