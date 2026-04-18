@@ -222,6 +222,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       onClick={() => {
                         setSelectedVariants((prev) => ({ ...prev, [key]: option }))
                         setQuantity(1)
+                        // Switch image if this is a color key and a mapping exists
+                        if (/colou?r/i.test(key) && product.color_images?.[option]) {
+                          const imgUrl = product.color_images[option]
+                          const idx = product.images.indexOf(imgUrl)
+                          if (idx !== -1) setActiveIndex(idx)
+                        }
                       }}
                       className="relative min-h-[44px] min-w-[44px] px-4 py-3 text-sm border transition-colors overflow-hidden"
                       style={{
@@ -473,7 +479,7 @@ function SizeGuide({ rawRows }: { rawRows?: string[] }) {
         style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}
         aria-expanded={open}
       >
-        <span>Size Guide</span>
+        <span>Size Chart</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-4 w-4 transition-transform duration-300"
@@ -485,7 +491,7 @@ function SizeGuide({ rawRows }: { rawRows?: string[] }) {
       </button>
 
       <div style={{ maxHeight: open ? "400px" : "0px", overflow: "hidden", transition: "max-height 0.35s ease" }}>
-        <div className="overflow-x-auto pt-3 pb-1">
+        <div className="overflow-x-auto pt-3">
           <table className="w-full text-sm border-collapse min-w-[340px]">
             <thead>
               <tr style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}>

@@ -155,6 +155,11 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
   const [imageError, setImageError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
 
+  // Color → Image mapping state
+  const [colorImages, setColorImages] = useState<Record<string, string>>(
+    (initialData?.color_images as Record<string, string> | null) ?? {}
+  )
+
   // ── Form setup ──
   const {
     register,
@@ -317,6 +322,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       variants,
       images: imageUrls,
       variant_stock: Object.keys(variantStock).length > 0 ? variantStock : null,
+      color_images: Object.keys(colorImages).length > 0 ? colorImages : null,
       // If variant_stock is set, total stock = sum of all variant stocks
       ...(Object.keys(variantStock).length > 0
         ? { stock: Object.values(variantStock).reduce((s, v) => s + v, 0) }
@@ -745,6 +751,61 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
 
         {imageError && <p className="text-xs text-red-500">{imageError}</p>}
       </Section>
+
+      {/* ── Color Images ── */}
+      {(() => {
+        const colorKey = variantGroups.find((g) => /colou?r/i.test(g.key.trim()))
+        const colors = colorKey
+          ? colorKey.value.split(",").map((v) => v.trim()).filter(Boolean)
+          : []
+        const uploadedUrls = images.map((e) => e.type === "existing" ? e.url : e.preview)
+        if (colors.length === 0 || uploadedUrls.length === 0) return null
+        return (
+          <Section title="Color Images">
+            <p className="text-xs text-gray-400 mb-4">
+              Click an image to assign it to each color. Customers will see that image when they hover the color swatch.
+            </p>
+            <div className="space-y-4">
+              {colors.map((color) => (
+                <div key={color}>
+                  <p className="text-sm font-medium mb-2" style={{ color: "var(--color-primary)" }}>
+                    {color}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {uploadedUrls.map((url, i) => {
+                      const isSelected = colorImages[color] === url
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() =>
+                            setColorImages((prev) =>
+                              isSelected
+                                ? Object.fromEntries(Object.entries(prev).filter(([k]) => k !== color))
+                                : { ...prev, [color]: url }
+                            )
+                          }
+                          className="relative w-16 aspect-[3/4] overflow-hidden border-2 transition-all"
+                          style={{ borderColor: isSelected ? "var(--color-accent)" : "#e5e7eb" }}
+                        >
+                          <Image src={url} alt={color} fill className="object-cover" sizes="64px" />
+                          {isSelected && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )
+      })()}
 
       {/* ── Visibility ── */}
       <Section title="Visibility">

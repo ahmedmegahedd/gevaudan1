@@ -56,6 +56,8 @@ export interface Product {
   stock: number
   /** Per-combination stock: key = variant values joined by "|", e.g. "M|Black": 5 */
   variant_stock: Record<string, number> | null
+  /** Maps color name → image URL, e.g. { "Black": "https://..." } */
+  color_images: Record<string, string> | null
   is_active: boolean
   is_featured: boolean
   model_info: string | null

@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { useWishlistStore } from "@/store/wishlistStore"
@@ -17,8 +18,14 @@ const navLinks = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
   const itemCount = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0))
   const wishlistCount = useWishlistStore((s) => s.items.length)
+
+  // Close menu on any navigation
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
 
   return (
     <header

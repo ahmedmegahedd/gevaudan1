@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { useState } from "react"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { useWishlistStore } from "@/store/wishlistStore"
@@ -19,6 +20,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { currency } = storeConfig.delivery
 
   const mainImage = product.images[0] ?? null
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const displayImage = previewImage ?? mainImage
 
   function handleToggleWishlist(e: React.MouseEvent) {
     e.preventDefault()
@@ -46,12 +49,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     >
       {/* Image */}
       <div className="relative aspect-[3/4] overflow-hidden mb-3" style={{ backgroundColor: "#a8c8e0" }}>
-        {mainImage ? (
+        {displayImage ? (
           <Image
-            src={mainImage}
+            src={displayImage}
             alt={product.name}
             fill
-            className={`object-cover transition-transform duration-500 ${outOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
+            className={`object-cover transition-all duration-300 ${outOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
@@ -118,7 +121,12 @@ export default function ProductCard({ product }: ProductCardProps) {
         >
           {product.name}
         </h3>
-        <ColorSwatches variants={product.variants} />
+        <ColorSwatches
+          variants={product.variants}
+          colorImages={product.color_images ?? {}}
+          mainImage={mainImage ?? ""}
+          onPreview={setPreviewImage}
+        />
         <p className="text-base font-semibold" style={{ color: "var(--color-accent)" }}>
           {currency} {product.price.toLocaleString()}
         </p>
@@ -142,8 +150,15 @@ function isValidCssColor(value: string): boolean {
 /** Neutral swatches for names that can't be resolved to a CSS color */
 const NEUTRAL_SWATCH = "#c8c4bc"
 
-function ColorSwatches({ variants }: { variants: Record<string, string[]> }) {
-  // Find all color-like keys (case-insensitive, supports color/colour)
+interface ColorSwatchesProps {
+  variants: Record<string, string[]>
+  colorImages: Record<string, string>
+  mainImage: string
+  onPreview: (url: string | null) => void
+}
+
+function ColorSwatches({ variants, colorImages, mainImage, onPreview }: ColorSwatchesProps) {
+  const [active, setActive] = useState<string | null>(null)
   const colorKey = Object.keys(variants).find((k) => /colou?r/i.test(k))
   if (!colorKey) return null
 
@@ -154,26 +169,61 @@ function ColorSwatches({ variants }: { variants: Record<string, string[]> }) {
   const visible = colors.slice(0, MAX)
   const overflow = colors.length - MAX
 
+  function handleClick(e: React.MouseEvent, color: string) {
+    e.preventDefault()
+    e.stopPropagation()
+    const img = colorImages[color]
+    if (!img) return
+    if (active === color) {
+      // toggle off — go back to main image
+      setActive(null)
+      onPreview(null)
+    } else {
+      setActive(color)
+      onPreview(img)
+    }
+  }
+
+  function handleMouseEnter(color: string) {
+    const img = colorImages[color]
+    if (img) onPreview(img)
+  }
+
+  function handleMouseLeave() {
+    // restore to the clicked/active color, or main image
+    if (active && colorImages[active]) {
+      onPreview(colorImages[active])
+    } else {
+      onPreview(null)
+    }
+  }
+
   return (
     <div className="flex items-center" style={{ gap: 4, marginTop: 2, marginBottom: 2 }}>
       {visible.map((color) => {
         const resolved = isValidCssColor(color) ? color : NEUTRAL_SWATCH
-        const needsTooltip = resolved === NEUTRAL_SWATCH
+        const hasImage = !!colorImages[color]
+        const isActive = active === color
         return (
-          <span
+          <button
             key={color}
-            title={needsTooltip ? color : undefined}
+            type="button"
+            title={color}
+            onClick={(e) => handleClick(e, color)}
+            onMouseEnter={() => handleMouseEnter(color)}
+            onMouseLeave={handleMouseLeave}
+            aria-label={color}
             style={{
-              display: "inline-block",
               width: 16,
               height: 16,
               borderRadius: "50%",
               backgroundColor: resolved,
-              border: `1.5px solid rgba(0,0,0,0.15)`,
+              border: isActive ? `2px solid var(--color-accent)` : `1.5px solid rgba(0,0,0,0.15)`,
               flexShrink: 0,
-              cursor: needsTooltip ? "default" : undefined,
+              cursor: hasImage ? "pointer" : "default",
+              outline: "none",
+              padding: 0,
             }}
-            aria-label={color}
           />
         )
       })}

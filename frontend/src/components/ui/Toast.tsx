@@ -2,16 +2,10 @@
 
 import { useToastStore } from "@/store/toastStore"
 
-const icons: Record<string, string> = {
-  success: "✓",
-  error: "✕",
-  info: "i",
-}
-
-const colors: Record<string, string> = {
-  success: "#10b981",
-  error: "#ef4444",
-  info: "#3b82f6",
+const accentByType: Record<string, string> = {
+  success: "var(--color-accent)",
+  error: "#b91c1c",
+  info: "var(--color-accent)",
 }
 
 export default function ToastContainer() {
@@ -20,27 +14,72 @@ export default function ToastContainer() {
   if (toasts.length === 0) return null
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
-      {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          className="flex items-start gap-3 px-4 py-3 text-white shadow-lg pointer-events-auto"
-          style={{ backgroundColor: colors[toast.type] }}
-          role="alert"
-        >
-          <span className="shrink-0 font-bold text-sm w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
-            {icons[toast.type]}
-          </span>
-          <p className="text-sm flex-1">{toast.message}</p>
-          <button
-            onClick={() => removeToast(toast.id)}
-            className="text-white/70 hover:text-white transition-colors text-lg leading-none"
-            aria-label="Dismiss"
+    <div className="fixed top-20 right-4 sm:right-6 z-[100] flex flex-col gap-3 max-w-sm w-[calc(100%-2rem)] sm:w-full pointer-events-none">
+      {toasts.map((toast) => {
+        const accent = accentByType[toast.type] ?? "var(--color-accent)"
+        return (
+          <div
+            key={toast.id}
+            className="luxe-toast relative flex items-center gap-4 pl-5 pr-4 py-4 pointer-events-auto overflow-hidden"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              color: "#fff",
+              boxShadow: "0 10px 40px rgba(6, 18, 34, 0.35)",
+              borderLeft: `3px solid ${accent}`,
+            }}
+            role="alert"
           >
-            ×
-          </button>
-        </div>
-      ))}
+            {/* Icon */}
+            <span
+              className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full"
+              style={{ backgroundColor: `${accent}22`, color: accent }}
+              aria-hidden="true"
+            >
+              {toast.type === "success" ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : toast.type === "error" ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+            </span>
+
+            {/* Text */}
+            <div className="flex-1 min-w-0">
+              <p
+                className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-0.5"
+                style={{ color: accent }}
+              >
+                {toast.type === "success" ? "Success" : toast.type === "error" ? "Error" : "Notice"}
+              </p>
+              <p
+                className="text-sm leading-snug text-white/95 truncate"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                {toast.message}
+              </p>
+            </div>
+
+            {/* Close */}
+            <button
+              onClick={() => removeToast(toast.id)}
+              className="shrink-0 text-white/50 hover:text-white transition-colors"
+              aria-label="Dismiss"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )
+      })}
     </div>
   )
 }
+</content>

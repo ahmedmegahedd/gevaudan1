@@ -68,7 +68,7 @@ export default async function ProductPage({ params }: Props) {
             className="text-2xl md:text-3xl font-bold mb-6"
             style={{ fontFamily: `var(--font-heading)`, color: "var(--color-primary)" }}
           >
-            You May Also Like
+            Complete Your Look
           </h2>
 
           {/* Mobile: horizontal scroll; Desktop: 4-column grid */}
