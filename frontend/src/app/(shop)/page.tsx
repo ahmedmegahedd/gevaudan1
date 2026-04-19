@@ -96,11 +96,8 @@ export default async function HomePage() {
           <div className="text-center mt-10 md:mt-12">
             <Link
               href="/shop"
-              className="inline-block border text-sm uppercase tracking-widest px-8 py-3 transition-colors hover:text-white hover:bg-[var(--color-primary)]"
-              style={{
-                borderColor: "var(--color-primary)",
-                color: "var(--color-primary)",
-              }}
+              className="inline-block border text-sm uppercase tracking-widest px-8 py-3 transition-colors text-[var(--color-primary)] hover:text-white hover:bg-[var(--color-primary)]"
+              style={{ borderColor: "var(--color-primary)" }}
             >
               View All
             </Link>
