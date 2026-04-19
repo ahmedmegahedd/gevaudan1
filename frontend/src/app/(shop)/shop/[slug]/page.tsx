@@ -63,7 +63,7 @@ export default async function ProductPage({ params }: Props) {
       <ProductDetail product={product as Product} />
 
       {recommended.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t" style={{ borderColor: "#e5e7eb" }}>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-32 md:py-12 border-t" style={{ borderColor: "#e5e7eb" }}>
           <h2
             className="text-2xl md:text-3xl font-bold mb-6"
             style={{ fontFamily: `var(--font-heading)`, color: "var(--color-primary)" }}
