@@ -243,16 +243,16 @@ function MobileDrawerLogo() {
 
   return (
     <div
-      className="flex items-center justify-center py-5 border-b"
+      className="flex items-center justify-center py-8 border-b"
       style={{ borderColor: "rgba(255,255,255,0.08)" }}
     >
       {!imgError ? (
         <Image
           src="/logo.png"
           alt={brand.name}
-          width={320}
-          height={120}
-          style={{ maxHeight: 120, width: "auto", objectFit: "contain" }}
+          width={480}
+          height={200}
+          style={{ maxHeight: 200, width: "auto", objectFit: "contain" }}
           onError={() => setImgError(true)}
           priority
         />
