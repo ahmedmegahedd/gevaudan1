@@ -7,12 +7,15 @@ export const storeConfig = {
     whatsapp: "+201001234567",
   },
   theme: {
-    primaryColor: "#061222",
-    accentColor: "#447794",
-    midColor1: "#2D5B75",
-    midColor2: "#123249",
+    // ── Brand identity: deep burgundy on warm cream ──
+    primaryColor: "#5C1F2A",   // deep burgundy — dark surfaces, primary CTAs, headings
+    accentColor: "#8B3A48",    // softer wine — accent text, highlights, secondary CTAs
+    midColor1: "#7A2A38",      // mid burgundy
+    midColor2: "#3D1419",      // espresso burgundy — deepest shadows
+    creamColor: "#F1E9D9",     // warm cream — page background, light surfaces
     fontHeading: "Cormorant Garamond",
     fontBody: "Inter",
+    fontScript: "Zapfino",
   },
   contact: {
     email: "hello@gevaudan.com",

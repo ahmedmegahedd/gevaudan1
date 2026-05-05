@@ -46,7 +46,7 @@ export default async function HomePage() {
         {/* Aurora WebGL background */}
         <div className="absolute inset-0 z-0">
           <Aurora
-            colorStops={["#447794", "#88CCE8", "#2D5B75"]}
+            colorStops={["#5C1F2A", "#8B3A48", "#3D1419"]}
             amplitude={1.8}
             blend={0.8}
             speed={0.5}
@@ -55,12 +55,12 @@ export default async function HomePage() {
         {/* Subtle overlay — just enough to keep text readable */}
         <div
           className="absolute inset-0 z-10"
-          style={{ background: "linear-gradient(to top, rgba(6,18,34,0.75) 0%, rgba(6,18,34,0.1) 50%, rgba(6,18,34,0.3) 100%)" }}
+          style={{ background: "linear-gradient(to top, rgba(61,20,25,0.75) 0%, rgba(61,20,25,0.1) 50%, rgba(61,20,25,0.3) 100%)" }}
         />
         <div className="relative z-20 max-w-3xl w-full">
           <p
-            className="text-[11px] uppercase mb-8"
-            style={{ color: "var(--color-accent)", letterSpacing: "0.4em" }}
+            className="brand-script mb-6 md:mb-8"
+            style={{ color: "var(--color-cream)", fontSize: 56 }}
           >
             {storeConfig.brand.name}
           </p>

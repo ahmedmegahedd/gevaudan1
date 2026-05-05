@@ -37,14 +37,14 @@ export default function Navbar() {
         {/* Logo / Brand */}
         <Link href="/" className="flex flex-col leading-none shrink-0" onClick={() => setMenuOpen(false)}>
           <span
-            className="text-2xl md:text-3xl font-semibold text-white"
-            style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.04em" }}
+            className="brand-script text-white"
+            style={{ fontSize: 28 }}
           >
             {brand.name}
           </span>
           <span
-            className="text-[10px] uppercase tracking-[0.3em] font-light mt-0.5"
-            style={{ color: "var(--color-accent)" }}
+            className="text-[10px] uppercase tracking-[0.3em] font-light mt-1"
+            style={{ color: "var(--color-cream)" }}
           >
             {brand.subtitle}
           </span>
@@ -268,8 +268,8 @@ function MobileDrawerLogo() {
         />
       ) : (
         <span
-          className="text-2xl font-semibold text-white"
-          style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.04em" }}
+          className="brand-script text-white"
+          style={{ fontSize: 36 }}
         >
           {brand.name}
         </span>

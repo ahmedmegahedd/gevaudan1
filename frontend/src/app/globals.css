@@ -3,21 +3,23 @@
 @tailwind utilities;
 
 :root {
-  --background: #d4e9f7;
-  --foreground: #171717;
-  --color-primary: #061222;
-  --color-accent: #447794;
-  --color-mid1: #2D5B75;
-  --color-mid2: #123249;
-  --color-text-light: #ffffff;
-  --color-text-on-accent: #ffffff;
+  --background: #F1E9D9;
+  --foreground: #2A1A1F;
+  --color-primary: #5C1F2A;          /* deep burgundy */
+  --color-accent: #8B3A48;           /* softer wine */
+  --color-mid1: #7A2A38;
+  --color-mid2: #3D1419;
+  --color-cream: #F1E9D9;            /* warm cream — page background */
+  --color-cream-deep: #E0D5C2;       /* warmer sand — image placeholder, subtle surfaces */
+  --color-text-light: #F1E9D9;
+  --color-text-on-accent: #F1E9D9;
 
   /* ── Luxury design tokens ── */
   --transition-base: 0.3s ease;
   --transition-image: 0.4s ease;
-  --shadow-card: 0 2px 20px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 6px 30px rgba(0, 0, 0, 0.08);
-  --divider-soft: rgba(6, 18, 34, 0.1);
+  --shadow-card: 0 2px 20px rgba(61, 20, 25, 0.08);
+  --shadow-card-hover: 0 6px 30px rgba(61, 20, 25, 0.12);
+  --divider-soft: rgba(92, 31, 42, 0.12);
   --tracking-heading: 0.02em;
   --tracking-label: 0.15em;
   --line-height-body: 1.8;
@@ -29,13 +31,13 @@ html, body {
 }
 
 html {
-  background-color: #d4e9f7 !important;
+  background-color: #F1E9D9 !important;
   scroll-behavior: smooth;
 }
 
 body {
   color: var(--foreground);
-  background-color: #d4e9f7 !important;
+  background-color: #F1E9D9 !important;
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: 16px;
   line-height: var(--line-height-body);
@@ -172,7 +174,7 @@ input, select, textarea {
     border-bottom-color: var(--color-accent);
   }
   .input-underline::placeholder {
-    color: rgba(6, 18, 34, 0.4);
+    color: rgba(61, 20, 25, 0.4);
   }
   .input-underline.has-error {
     border-bottom-color: #ef4444;
@@ -190,6 +192,18 @@ input, select, textarea {
   /* ── Body text leading ── */
   .leading-luxe {
     line-height: 1.8;
+  }
+
+  /* ── Brand wordmark (Zapfino script with web-safe fallback) ──
+     Zapfino ships only on Apple OSes — Allura (loaded as --font-script) is
+     the closest free webfont and covers everyone else. */
+  .brand-script {
+    font-family: "Zapfino", var(--font-script), "Allura", "Snell Roundhand", cursive;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    /* Optical: Zapfino renders larger than text-equivalent serif at the same
+       em size, so callers should pin the size explicitly via font-size. */
   }
 
   /* ── Out-of-stock color swatch (dim + diagonal red strike) ── */

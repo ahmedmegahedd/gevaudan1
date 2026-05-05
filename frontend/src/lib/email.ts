@@ -38,7 +38,7 @@ export interface BackInStockEmailParams {
 }
 
 /**
- * Branded back-in-stock email — Gévaudan navy + accent blue.
+ * Branded back-in-stock email — burgundy primary + wine accent.
  * Inline styles only (most email clients strip <style> tags or class-based CSS).
  */
 export function buildBackInStockEmail({
@@ -71,8 +71,8 @@ export function buildBackInStockEmail({
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>${escapeHtml(productName)} is back in stock</title>
   </head>
-  <body style="margin: 0; padding: 0; background-color: #d4e9f7; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #ffffff;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #d4e9f7; padding: 32px 16px;">
+  <body style="margin: 0; padding: 0; background-color: #F1E9D9; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #ffffff;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #F1E9D9; padding: 32px 16px;">
       <tr>
         <td align="center">
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: ${navy}; border-radius: 4px; overflow: hidden;">

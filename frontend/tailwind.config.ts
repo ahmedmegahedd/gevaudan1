@@ -10,14 +10,16 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        primary: "#061222",
-        accent: "#447794",
-        mid1: "#2D5B75",
-        mid2: "#123249",
+        primary: "#5C1F2A",
+        accent: "#8B3A48",
+        mid1: "#7A2A38",
+        mid2: "#3D1419",
+        cream: "#F1E9D9",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Georgia", "serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
+        script: ["Zapfino", "var(--font-script)", "cursive"],
       },
       letterSpacing: {
         heading: "0.02em",

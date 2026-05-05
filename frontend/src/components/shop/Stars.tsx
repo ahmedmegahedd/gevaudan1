@@ -20,7 +20,7 @@ export default function Stars({
   value,
   size = 14,
   color = "var(--color-accent)",
-  emptyColor = "rgba(6,18,34,0.18)",
+  emptyColor = "rgba(61,20,25,0.18)",
   className,
   ariaLabelValue,
 }: StarsProps) {

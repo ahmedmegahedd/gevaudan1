@@ -196,7 +196,7 @@ export default function CheckoutPage() {
             <span>{items.length} item{items.length !== 1 ? "s" : ""}</span>
             <span className="price-text">{currency} {total.toLocaleString()}</span>
           </div>
-          <p className="text-xs mt-2" style={{ color: "rgba(6,18,34,0.4)" }}>
+          <p className="text-xs mt-2" style={{ color: "rgba(61,20,25,0.4)" }}>
             Delivery: {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
           </p>
         </div>
@@ -304,7 +304,7 @@ export default function CheckoutPage() {
                       onClick={removePromo}
                       className="text-xs uppercase ml-3 hover:text-red-500"
                       style={{
-                        color: "rgba(6,18,34,0.5)",
+                        color: "rgba(61,20,25,0.5)",
                         letterSpacing: "0.15em",
                       }}
                     >
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
 
             <p
               className="text-xs text-center hidden md:block"
-              style={{ color: "rgba(6,18,34,0.4)", lineHeight: 1.7 }}
+              style={{ color: "rgba(61,20,25,0.4)", lineHeight: 1.7 }}
             >
               No payment required now. We will call you to confirm your order.
             </p>
@@ -403,13 +403,13 @@ export default function CheckoutPage() {
                         >
                           {item.product.name}
                           {item.quantity > 1 && (
-                            <span className="ml-1" style={{ color: "rgba(6,18,34,0.4)" }}>
+                            <span className="ml-1" style={{ color: "rgba(61,20,25,0.4)" }}>
                               ×{item.quantity}
                             </span>
                           )}
                         </p>
                         {variantLabel && (
-                          <p className="text-xs mt-1" style={{ color: "rgba(6,18,34,0.4)" }}>
+                          <p className="text-xs mt-1" style={{ color: "rgba(61,20,25,0.4)" }}>
                             {variantLabel}
                           </p>
                         )}
@@ -429,11 +429,11 @@ export default function CheckoutPage() {
                 className="pt-5 space-y-3 text-sm"
                 style={{ borderTop: "1px solid var(--divider-soft)" }}
               >
-                <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.6)" }}>
+                <div className="flex justify-between" style={{ color: "rgba(61,20,25,0.6)" }}>
                   <span>Subtotal</span>
                   <span>{currency} {sub.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.6)" }}>
+                <div className="flex justify-between" style={{ color: "rgba(61,20,25,0.6)" }}>
                   <span>Delivery</span>
                   <span style={{ color: fee === 0 ? "#16a34a" : undefined }}>
                     {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
@@ -516,7 +516,7 @@ function OrderSuccessModal({
       style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
     >
       <div
-        className="success-card bg-[#d4e9f7] w-full sm:max-w-md sm:rounded-card overflow-y-auto"
+        className="success-card bg-[#F1E9D9] w-full sm:max-w-md sm:rounded-card overflow-y-auto"
         style={{ maxHeight: "100dvh" }}
       >
         {/* Top accent bar */}
@@ -568,7 +568,7 @@ function OrderSuccessModal({
               >
                 Order Placed Successfully!
               </h2>
-              <p className="text-sm" style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.7 }}>
+              <p className="text-sm" style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.7 }}>
                 Thank you for shopping with{" "}
                 <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                   {brand.name}
@@ -581,13 +581,13 @@ function OrderSuccessModal({
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-mono"
               style={{ backgroundColor: `${theme.accentColor}18`, color: theme.accentColor, fontWeight: 500 }}
             >
-              <span className="text-xs font-sans" style={{ color: "rgba(6,18,34,0.5)", fontWeight: 400 }}>
+              <span className="text-xs font-sans" style={{ color: "rgba(61,20,25,0.5)", fontWeight: 400 }}>
                 Order
               </span>
               #{shortId}
             </div>
 
-            <p className="text-sm" style={{ color: "rgba(6,18,34,0.55)", lineHeight: 1.8 }}>
+            <p className="text-sm" style={{ color: "rgba(61,20,25,0.55)", lineHeight: 1.8 }}>
               We will contact you on{" "}
               <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                 {data.phone}
@@ -601,7 +601,7 @@ function OrderSuccessModal({
             <div
               className="px-5 py-3 text-[10px] uppercase font-medium"
               style={{
-                backgroundColor: "rgba(6,18,34,0.04)",
+                backgroundColor: "rgba(61,20,25,0.04)",
                 color: "var(--color-primary)",
                 letterSpacing: "0.18em",
               }}
@@ -627,7 +627,7 @@ function OrderSuccessModal({
                       {item.name}
                     </p>
                     {item.variant && (
-                      <p className="text-xs mt-1" style={{ color: "rgba(6,18,34,0.4)" }}>
+                      <p className="text-xs mt-1" style={{ color: "rgba(61,20,25,0.4)" }}>
                         {Object.entries(item.variant).map(([k, v]) => `${k}: ${v}`).join(", ")}
                       </p>
                     )}
@@ -637,7 +637,7 @@ function OrderSuccessModal({
                       {currency} {(item.price * item.quantity).toLocaleString()}
                     </span>
                     {item.quantity > 1 && (
-                      <p className="text-xs" style={{ color: "rgba(6,18,34,0.4)" }}>×{item.quantity}</p>
+                      <p className="text-xs" style={{ color: "rgba(61,20,25,0.4)" }}>×{item.quantity}</p>
                     )}
                   </div>
                 </li>
@@ -647,11 +647,11 @@ function OrderSuccessModal({
               className="px-5 py-4 space-y-2 text-sm"
               style={{ borderTop: "1px solid var(--divider-soft)" }}
             >
-              <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.5)" }}>
+              <div className="flex justify-between" style={{ color: "rgba(61,20,25,0.5)" }}>
                 <span>Subtotal</span>
                 <span>{currency} {data.subtotal.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.5)" }}>
+              <div className="flex justify-between" style={{ color: "rgba(61,20,25,0.5)" }}>
                 <span>Delivery</span>
                 <span style={{ color: data.deliveryFee === 0 ? "#16a34a" : undefined }}>
                   {data.deliveryFee === 0 ? "Free" : `${currency} ${data.deliveryFee.toLocaleString()}`}

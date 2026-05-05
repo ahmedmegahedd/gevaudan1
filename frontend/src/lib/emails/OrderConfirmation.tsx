@@ -14,14 +14,16 @@ import {
 import { storeConfig } from "@/config/store.config"
 import type { Order } from "@/types"
 
-const NAVY = "#061222"
-const ACCENT = "#447794"
-const PAGE_BG = "#d4e9f7"
+// Brand primary (deep burgundy) and accent (wine). The NAVY/ACCENT names
+// are legacy from the previous palette — kept to minimize the diff.
+const NAVY = "#5C1F2A"
+const ACCENT = "#8B3A48"
+const PAGE_BG = "#F1E9D9"
 const TEXT_LIGHT = "rgba(255,255,255,0.75)"
 const DIVIDER_LIGHT = "rgba(255,255,255,0.08)"
-const DIVIDER_DARK = "rgba(6,18,34,0.1)"
-const BODY_TEXT = "rgba(6,18,34,0.75)"
-const MUTED_TEXT = "rgba(6,18,34,0.5)"
+const DIVIDER_DARK = "rgba(61,20,25,0.1)"
+const BODY_TEXT = "rgba(61,20,25,0.75)"
+const MUTED_TEXT = "rgba(61,20,25,0.5)"
 
 interface OrderConfirmationProps {
   order: Order
@@ -207,7 +209,7 @@ export default function OrderConfirmation({ order }: OrderConfirmationProps) {
               }}
             >
               <thead>
-                <tr style={{ backgroundColor: "rgba(6,18,34,0.04)" }}>
+                <tr style={{ backgroundColor: "rgba(61,20,25,0.04)" }}>
                   <th style={TH_STYLE}>Item</th>
                   <th style={{ ...TH_STYLE, textAlign: "center", width: 60 }}>Qty</th>
                   <th style={{ ...TH_STYLE, textAlign: "right", width: 120 }}>Price</th>

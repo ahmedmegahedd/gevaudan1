@@ -96,7 +96,7 @@ export default async function ReturnRequestPage({ params }: Props) {
                   <li key={i} className="flex items-start gap-4">
                     <div
                       className="relative w-16 aspect-[3/4] shrink-0 overflow-hidden rounded-sm"
-                      style={{ backgroundColor: "#a8c8e0" }}
+                      style={{ backgroundColor: "#E0D5C2" }}
                     >
                       {img ? (
                         <Image src={img} alt={it.name} fill className="object-cover" sizes="64px" />
@@ -132,7 +132,7 @@ export default async function ReturnRequestPage({ params }: Props) {
               <div className="flex items-start gap-4">
                 <div
                   className="relative w-20 aspect-[3/4] shrink-0 overflow-hidden rounded-sm"
-                  style={{ backgroundColor: "#a8c8e0" }}
+                  style={{ backgroundColor: "#E0D5C2" }}
                 >
                   {exchangeProduct.images?.[0] ? (
                     <Image
@@ -169,7 +169,7 @@ export default async function ReturnRequestPage({ params }: Props) {
           <Card title="Customer Reason">
             <p
               className="text-sm whitespace-pre-line"
-              style={{ color: "rgba(6,18,34,0.75)", lineHeight: 1.8 }}
+              style={{ color: "rgba(61,20,25,0.75)", lineHeight: 1.8 }}
             >
               {req.reason}
             </p>

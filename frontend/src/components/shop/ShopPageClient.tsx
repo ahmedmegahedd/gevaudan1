@@ -58,7 +58,7 @@ export default function ShopPageClient({
         </h1>
         <p
           className="text-base max-w-xl mx-auto"
-          style={{ color: "rgba(6,18,34,0.55)", lineHeight: 1.8 }}
+          style={{ color: "rgba(61,20,25,0.55)", lineHeight: 1.8 }}
         >
           Browse our complete collection — every piece chosen with intention.
         </p>
@@ -145,7 +145,7 @@ export default function ShopPageClient({
                 <span style={{ color: "var(--color-accent)", fontWeight: 500 }}>
                   &ldquo;{searchQuery}&rdquo;
                 </span>
-                <span className="ml-2" style={{ color: "rgba(6,18,34,0.4)" }}>
+                <span className="ml-2" style={{ color: "rgba(61,20,25,0.4)" }}>
                   ({products.length} {products.length === 1 ? "result" : "results"})
                 </span>
               </p>
@@ -167,7 +167,7 @@ export default function ShopPageClient({
             <div className="py-24 text-center">
               <p
                 className="text-base mb-6"
-                style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.8 }}
+                style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.8 }}
               >
                 {searchQuery ? `No products found for "${searchQuery}".` : "No products found."}
               </p>

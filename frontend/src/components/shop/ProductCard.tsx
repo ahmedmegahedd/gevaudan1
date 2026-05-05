@@ -52,7 +52,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Image */}
       <div
         className="relative aspect-[3/4] overflow-hidden"
-        style={{ backgroundColor: "#a8c8e0" }}
+        style={{ backgroundColor: "#E0D5C2" }}
       >
         {displayImage ? (
           <Image
@@ -150,7 +150,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
             <span
               className="text-xs"
-              style={{ color: "rgba(6,18,34,0.5)" }}
+              style={{ color: "rgba(61,20,25,0.5)" }}
             >
               ({product.review_count})
             </span>
@@ -266,7 +266,7 @@ function ColorSwatches({ variants, colorImages, stockByVariant, onPreview }: Col
               height: 16,
               borderRadius: "50%",
               backgroundColor: resolved,
-              border: isActive ? `2px solid var(--color-accent)` : `1px solid rgba(6,18,34,0.1)`,
+              border: isActive ? `2px solid var(--color-accent)` : `1px solid rgba(61,20,25,0.1)`,
               flexShrink: 0,
               cursor: oos ? "not-allowed" : hasImage ? "pointer" : "default",
               outline: "none",

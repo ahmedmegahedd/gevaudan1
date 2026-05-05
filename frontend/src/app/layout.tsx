@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Cormorant_Garamond, Inter } from "next/font/google"
+import { Cormorant_Garamond, Inter, Allura } from "next/font/google"
 import { storeConfig } from "@/config/store.config"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
@@ -20,6 +20,14 @@ const bodyFont = Inter({
   display: "swap",
 })
 
+// Allura — fallback for the brand wordmark when Zapfino isn't on the user's machine
+const scriptFont = Allura({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-script",
+  display: "swap",
+})
+
 export const metadata: Metadata = {
   title: {
     default: storeConfig.brand.name,
@@ -32,8 +40,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${headingFont.variable} ${bodyFont.variable} bg-[#d4e9f7]`} suppressHydrationWarning>
-      <body className="antialiased min-h-screen flex flex-col bg-[#d4e9f7]" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${headingFont.variable} ${bodyFont.variable} ${scriptFont.variable} bg-[#F1E9D9]`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased min-h-screen flex flex-col bg-[#F1E9D9]" suppressHydrationWarning>
         <Navbar />
         <main className="flex-1 pt-[60px] md:pt-[70px]">{children}</main>
         <Footer />

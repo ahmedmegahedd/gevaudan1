@@ -47,7 +47,7 @@ export default async function CollectionsPage() {
         </h1>
         <p
           className="text-base md:text-lg max-w-xl mx-auto"
-          style={{ color: "rgba(6,18,34,0.55)", lineHeight: 1.8 }}
+          style={{ color: "rgba(61,20,25,0.55)", lineHeight: 1.8 }}
         >
           Thoughtfully curated selections for every occasion and style.
         </p>
@@ -55,7 +55,7 @@ export default async function CollectionsPage() {
 
       {collections.length === 0 ? (
         <div className="text-center py-24">
-          <p className="text-base mb-8" style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.8 }}>
+          <p className="text-base mb-8" style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.8 }}>
             No collections available yet.
           </p>
           <Link href="/shop" className="luxe-primary-btn">
@@ -72,7 +72,7 @@ export default async function CollectionsPage() {
               style={{ backgroundColor: "#ffffff" }}
             >
               {/* Cover image */}
-              <div className="relative aspect-[4/3] overflow-hidden" style={{ backgroundColor: "#a8c8e0" }}>
+              <div className="relative aspect-[4/3] overflow-hidden" style={{ backgroundColor: "#E0D5C2" }}>
                 {col.cover_image ? (
                   <Image
                     src={col.cover_image}
@@ -108,7 +108,7 @@ export default async function CollectionsPage() {
                 {col.description && (
                   <p
                     className="text-sm line-clamp-2 mb-6 flex-1"
-                    style={{ color: "rgba(6,18,34,0.55)", lineHeight: 1.7 }}
+                    style={{ color: "rgba(61,20,25,0.55)", lineHeight: 1.7 }}
                   >
                     {col.description}
                   </p>

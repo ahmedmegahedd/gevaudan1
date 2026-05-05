@@ -151,7 +151,7 @@ function RecoCard({ product, onAdd }: { product: Product; onAdd: () => void }) {
       <Link
         href={`/shop/${product.slug}`}
         className="relative aspect-[3/4] block overflow-hidden rounded-[2px]"
-        style={{ backgroundColor: "#a8c8e0" }}
+        style={{ backgroundColor: "#E0D5C2" }}
       >
         {mainImage ? (
           <Image

@@ -110,7 +110,7 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
           <button
             onClick={clear}
             className="px-3 hover:opacity-70"
-            style={{ color: "rgba(6,18,34,0.4)" }}
+            style={{ color: "rgba(61,20,25,0.4)" }}
             aria-label="Clear"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -141,7 +141,7 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
               className="flex items-center gap-4 w-full px-4 py-3 text-left hover:bg-[rgba(168,200,224,0.3)]"
               style={i > 0 ? { borderTop: "1px solid var(--divider-soft)" } : undefined}
             >
-              <div className="relative w-10 h-14 shrink-0 overflow-hidden rounded-[2px]" style={{ backgroundColor: "#a8c8e0" }}>
+              <div className="relative w-10 h-14 shrink-0 overflow-hidden rounded-[2px]" style={{ backgroundColor: "#E0D5C2" }}>
                 {p.images?.[0] ? (
                   <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="40px" />
                 ) : null}
@@ -162,7 +162,7 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
                   {currency} {p.price?.toLocaleString()}
                 </p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "rgba(6,18,34,0.3)" }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "rgba(61,20,25,0.3)" }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </button>

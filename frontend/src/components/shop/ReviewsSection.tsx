@@ -56,7 +56,7 @@ export default async function ReviewsSection({ productId }: ReviewsSectionProps)
             >
               <p
                 className="text-base"
-                style={{ color: "rgba(6,18,34,0.55)", lineHeight: 1.8 }}
+                style={{ color: "rgba(61,20,25,0.55)", lineHeight: 1.8 }}
               >
                 No reviews yet — be the first to review this product.
               </p>
@@ -78,7 +78,7 @@ export default async function ReviewsSection({ productId }: ReviewsSectionProps)
                 </div>
                 <p
                   className="text-[11px] uppercase"
-                  style={{ color: "rgba(6,18,34,0.5)", letterSpacing: "0.18em" }}
+                  style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.18em" }}
                 >
                   {count} {count === 1 ? "review" : "reviews"}
                 </p>
@@ -102,7 +102,7 @@ export default async function ReviewsSection({ productId }: ReviewsSectionProps)
                       </span>
                       <div
                         className="flex-1 h-1.5 rounded-full overflow-hidden"
-                        style={{ backgroundColor: "rgba(6,18,34,0.08)" }}
+                        style={{ backgroundColor: "rgba(61,20,25,0.08)" }}
                       >
                         <div
                           className="h-full"
@@ -115,7 +115,7 @@ export default async function ReviewsSection({ productId }: ReviewsSectionProps)
                       </div>
                       <span
                         className="w-8 shrink-0 text-right text-xs tabular-nums"
-                        style={{ color: "rgba(6,18,34,0.55)" }}
+                        style={{ color: "rgba(61,20,25,0.55)" }}
                       >
                         {c}
                       </span>
@@ -153,7 +153,7 @@ export default async function ReviewsSection({ productId }: ReviewsSectionProps)
                     <span
                       className="text-[10px] uppercase ml-auto"
                       style={{
-                        color: "rgba(6,18,34,0.4)",
+                        color: "rgba(61,20,25,0.4)",
                         letterSpacing: "0.18em",
                       }}
                     >
@@ -162,7 +162,7 @@ export default async function ReviewsSection({ productId }: ReviewsSectionProps)
                   </div>
                   <p
                     className="text-base whitespace-pre-line"
-                    style={{ color: "rgba(6,18,34,0.75)", lineHeight: 1.8 }}
+                    style={{ color: "rgba(61,20,25,0.75)", lineHeight: 1.8 }}
                   >
                     {r.review_text}
                   </p>

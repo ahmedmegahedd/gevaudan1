@@ -44,12 +44,10 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <p
-              className="text-3xl mb-3"
+              className="brand-script mb-4"
               style={{
-                color: "var(--color-accent)",
-                fontFamily: "var(--font-heading)",
-                fontWeight: 500,
-                letterSpacing: "0.04em",
+                color: "var(--color-cream)",
+                fontSize: 56,
               }}
             >
               {brand.name}

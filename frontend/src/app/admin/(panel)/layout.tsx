@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq("status", "pending")
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#d4e9f7" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#F1E9D9" }}>
       {/* Admin header */}
       <header
         className="h-14 flex items-center justify-between px-4 sm:px-6 border-b"
@@ -24,12 +24,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="flex items-center gap-3 sm:gap-6">
           <div className="flex flex-col leading-none mr-2">
             <span
-              className="text-base font-bold tracking-wider text-white"
-              style={{ fontFamily: "var(--font-heading)" }}
+              className="brand-script text-white"
+              style={{ fontSize: 22 }}
             >
               {storeConfig.brand.name}
             </span>
-            <span className="text-[9px] uppercase tracking-[0.3em]" style={{ color: "var(--color-accent)" }}>
+            <span
+              className="text-[9px] uppercase tracking-[0.3em] mt-0.5"
+              style={{ color: "var(--color-cream)" }}
+            >
               Admin
             </span>
           </div>

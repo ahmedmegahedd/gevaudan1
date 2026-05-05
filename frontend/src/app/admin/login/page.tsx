@@ -38,8 +38,8 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm bg-white p-8 space-y-6">
         <div className="text-center">
           <p
-            className="text-2xl font-bold tracking-wider mb-0.5"
-            style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)" }}
+            className="brand-script mb-2"
+            style={{ color: "var(--color-primary)", fontSize: 44 }}
           >
             {storeConfig.brand.name}
           </p>

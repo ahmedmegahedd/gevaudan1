@@ -27,7 +27,7 @@ export default function WishlistPage() {
         {items.length > 0 && (
           <p
             className="text-[11px] uppercase"
-            style={{ color: "rgba(6,18,34,0.5)", letterSpacing: "0.2em" }}
+            style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.2em" }}
           >
             {items.length} {items.length === 1 ? "item" : "items"}
           </p>
@@ -62,7 +62,7 @@ export default function WishlistPage() {
             </p>
             <p
               className="text-base"
-              style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.8 }}
+              style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.8 }}
             >
               Save items you love and come back to them anytime.
             </p>
