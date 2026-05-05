@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
+import { sendOrderConfirmationEmail } from "@/lib/emails/sendOrderConfirmation"
+import type { Order } from "@/types"
 
 /**
  * POST /api/orders
@@ -13,6 +15,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing required order fields" }, { status: 400 })
   }
 
+  // Normalize the email so empty strings become null and stored value is lowercased
+  const normalizedEmail =
+    typeof customer_info.email === "string" && customer_info.email.trim()
+      ? customer_info.email.trim().toLowerCase()
+      : null
+  const normalizedCustomerInfo = {
+    name: customer_info.name,
+    phone: customer_info.phone,
+    email: normalizedEmail ?? "",
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -22,7 +35,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase
     .from("orders")
     .insert({
-      customer_info,
+      customer_info: normalizedCustomerInfo,
       delivery_address,
       items,
       subtotal,
@@ -32,7 +45,7 @@ export async function POST(request: NextRequest) {
       promo_code: promo_code ?? null,
       status: "pending",
     })
-    .select("id")
+    .select("*")
     .single()
 
   // Deduct stock for each ordered item (variant-aware)
@@ -86,5 +99,18 @@ export async function POST(request: NextRequest) {
   }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+  // ── Fire the order confirmation email (best-effort, non-blocking on errors) ──
+  // We `await` the send here because serverless function lifecycles end with
+  // the response, but we never let an email failure roll back the order.
+  try {
+    const result = await sendOrderConfirmationEmail(data as Order)
+    if (result.error) {
+      console.error("[orders] order confirmation email failed:", result.error)
+    }
+  } catch (e) {
+    console.error("[orders] order confirmation email threw:", e)
+  }
+
   return NextResponse.json(data, { status: 201 })
 }

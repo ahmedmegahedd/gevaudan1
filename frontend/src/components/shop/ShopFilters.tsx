@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { storeConfig } from "@/config/store.config"
 import type { Category } from "@/types"
 
-const { primaryColor, accentColor, midColor1 } = storeConfig.theme
+const { accentColor } = storeConfig.theme
 
 interface ShopFiltersProps {
   categories: Category[]
@@ -43,26 +43,26 @@ export default function ShopFilters({
     onClose?.()
   }
 
-  const dividerColor = `${midColor1}80` // midColor1 at ~50% opacity
+  const dividerColor = "rgba(255,255,255,0.08)"
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 space-y-6">
+      <div className="flex-1 space-y-10">
         {/* Mobile drawer header */}
         {isMobile && (
           <div
-            className="flex items-center justify-between pb-4 border-b"
-            style={{ borderColor: dividerColor }}
+            className="flex items-center justify-between pb-5"
+            style={{ borderBottom: `1px solid ${dividerColor}` }}
           >
             <h2
-              className="text-sm font-semibold uppercase tracking-widest"
-              style={{ color: accentColor }}
+              className="text-[11px] uppercase font-medium"
+              style={{ color: accentColor, letterSpacing: "0.2em" }}
             >
               Filters
             </h2>
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-11 h-11 transition-colors hover:opacity-70"
+              className="flex items-center justify-center w-11 h-11 hover:opacity-70"
               style={{ color: "#fff" }}
               aria-label="Close filters"
             >
@@ -73,76 +73,81 @@ export default function ShopFilters({
           </div>
         )}
 
-        {/* Desktop sidebar section label */}
-        {!isMobile && (
+        {/* Section: Category */}
+        <div>
           <p
-            className="text-[10px] uppercase tracking-widest font-semibold"
-            style={{ color: accentColor, opacity: 0.7 }}
+            className="text-[10px] uppercase font-medium mb-5"
+            style={{ color: accentColor, letterSpacing: "0.2em" }}
           >
             Category
           </p>
-        )}
-
-        {/* Category list */}
-        <ul className={isMobile ? "" : "space-y-0"}>
-          {/* "All" option */}
-          <CategoryItem
-            label="All"
-            isActive={activeCategory === null}
-            onClick={() => setCategory(null)}
-            isMobile={isMobile}
-            dividerColor={dividerColor}
-            accentColor={accentColor}
-          />
-
-          {categories.map((cat) => (
+          <ul>
             <CategoryItem
-              key={cat.id}
-              label={cat.name}
-              isActive={activeCategory === cat.slug}
-              onClick={() => setCategory(cat.slug)}
-              isMobile={isMobile}
+              label="All"
+              isActive={activeCategory === null}
+              onClick={() => setCategory(null)}
               dividerColor={dividerColor}
               accentColor={accentColor}
             />
-          ))}
-        </ul>
+            {categories.map((cat) => (
+              <CategoryItem
+                key={cat.id}
+                label={cat.name}
+                isActive={activeCategory === cat.slug}
+                onClick={() => setCategory(cat.slug)}
+                dividerColor={dividerColor}
+                accentColor={accentColor}
+              />
+            ))}
+          </ul>
+        </div>
 
-        {/* Price range */}
-        <div className={isMobile ? "pt-2" : "pt-4"}>
+        {/* Section: Price */}
+        <div>
           <p
-            className="text-[10px] uppercase tracking-widest font-semibold mb-3"
-            style={{ color: accentColor, opacity: isMobile ? 1 : 0.7 }}
+            className="text-[10px] uppercase font-medium mb-5"
+            style={{ color: accentColor, letterSpacing: "0.2em" }}
           >
             Price ({currency})
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <input
               type="number"
               placeholder="Min"
               defaultValue={minPrice}
               min={0}
-              className="w-full border px-3 text-sm focus:outline-none focus:border-opacity-100 transition-colors"
+              className="w-full text-sm focus:outline-none"
               style={{
-                borderColor: `${accentColor}60`,
-                backgroundColor: isMobile ? "rgba(255,255,255,0.08)" : "#d4e9f7",
-                color: isMobile ? "#fff" : primaryColor,
+                background: "transparent",
+                border: "none",
+                borderBottom: "1px solid rgba(255,255,255,0.2)",
+                color: "#fff",
+                padding: "10px 2px",
                 minHeight: "44px",
+                borderRadius: 0,
               }}
               onBlur={(e) => updateParam("minPrice", e.target.value)}
             />
-            <span className="shrink-0 text-sm" style={{ color: isMobile ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>–</span>
+            <span
+              className="shrink-0 text-sm"
+              style={{ color: "rgba(255,255,255,0.4)" }}
+            >
+              –
+            </span>
             <input
               type="number"
               placeholder="Max"
               defaultValue={maxPrice}
               min={0}
-              className="w-full border px-3 text-sm focus:outline-none transition-colors"
+              className="w-full text-sm focus:outline-none"
               style={{
-                borderColor: `${accentColor}60`,
-                backgroundColor: isMobile ? "rgba(255,255,255,0.08)" : "#d4e9f7",
-                color: isMobile ? "#fff" : primaryColor,
+                background: "transparent",
+                border: "none",
+                borderBottom: "1px solid rgba(255,255,255,0.2)",
+                color: "#fff",
+                padding: "10px 2px",
                 minHeight: "44px",
+                borderRadius: 0,
               }}
               onBlur={(e) => updateParam("maxPrice", e.target.value)}
             />
@@ -152,11 +157,18 @@ export default function ShopFilters({
 
       {/* Mobile: Apply / Done button pinned to bottom */}
       {isMobile && (
-        <div className="pt-6 mt-6 border-t" style={{ borderColor: dividerColor }}>
+        <div
+          className="pt-8 mt-8"
+          style={{ borderTop: `1px solid ${dividerColor}` }}
+        >
           <button
             onClick={onClose}
-            className="w-full py-4 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: accentColor }}
+            className="w-full text-[11px] uppercase font-medium text-white hover:opacity-85 rounded-[2px]"
+            style={{
+              backgroundColor: accentColor,
+              height: "52px",
+              letterSpacing: "0.25em",
+            }}
           >
             Done
           </button>
@@ -170,50 +182,34 @@ function CategoryItem({
   label,
   isActive,
   onClick,
-  isMobile,
   dividerColor,
   accentColor,
 }: {
   label: string
   isActive: boolean
   onClick: () => void
-  isMobile: boolean
   dividerColor: string
   accentColor: string
 }) {
-  if (isMobile) {
-    return (
-      <li style={{ borderBottom: `0.5px solid ${dividerColor}` }}>
-        <button
-          onClick={onClick}
-          className="w-full text-left px-0 py-3.5 min-h-[44px] text-sm transition-colors flex items-center gap-3"
-          style={{ color: isActive ? "#fff" : "rgba(255,255,255,0.65)" }}
-        >
-          {/* Active left accent bar */}
-          <span
-            className="shrink-0 w-0.5 h-4 rounded-full transition-all"
-            style={{ backgroundColor: isActive ? accentColor : "transparent" }}
-          />
-          <span style={{ fontWeight: isActive ? 600 : 400 }}>{label}</span>
-        </button>
-      </li>
-    )
-  }
-
-  // Desktop sidebar style
   return (
-    <li style={{ borderBottom: `0.5px solid ${dividerColor}` }}>
+    <li style={{ borderBottom: `1px solid ${dividerColor}` }}>
       <button
         onClick={onClick}
-        className="w-full text-left py-2.5 min-h-[40px] text-sm transition-colors flex items-center gap-2.5"
-        style={{ color: isActive ? "#fff" : "rgba(255,255,255,0.55)" }}
+        className="w-full text-left py-4 min-h-[44px] text-sm flex items-center gap-3"
+        style={{
+          color: isActive ? "#fff" : "rgba(255,255,255,0.55)",
+        }}
       >
         <span
-          className="shrink-0 w-0.5 h-3.5 rounded-full transition-all"
-          style={{ backgroundColor: isActive ? accentColor : "transparent" }}
+          className="shrink-0 w-0.5 h-4 rounded-full"
+          style={{
+            backgroundColor: isActive ? accentColor : "transparent",
+            transition: "background-color 0.3s ease",
+          }}
         />
-        <span style={{ fontWeight: isActive ? 600 : 400 }}>{label}</span>
+        <span style={{ fontWeight: isActive ? 500 : 400 }}>{label}</span>
       </button>
     </li>
   )
 }
+

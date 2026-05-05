@@ -77,24 +77,33 @@ export default function CheckoutRecommendations() {
   if (products.length === 0) return null
 
   return (
-    <div className="mb-8 border rounded" style={{ borderColor: "#e5e7eb" }}>
+    <div
+      className="mb-12 rounded-card overflow-hidden card-shadow"
+      style={{ backgroundColor: "#ffffff" }}
+    >
       {/* Collapsible header */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-between w-full px-4 py-3.5 text-left"
+        className="flex items-center justify-between w-full px-6 py-5 text-left"
         aria-expanded={open}
       >
         <span
-          className="text-base font-semibold"
-          style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+          className="text-lg md:text-xl"
+          style={{
+            fontFamily: "var(--font-heading)",
+            color: "var(--color-primary)",
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+          }}
         >
           Complete Your Look
         </span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4 transition-transform duration-300 shrink-0"
+          className="h-4 w-4 shrink-0"
           style={{
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 0.3s ease",
             color: "var(--color-accent)",
           }}
           fill="none"
@@ -109,14 +118,14 @@ export default function CheckoutRecommendations() {
       {/* Animated body */}
       <div
         style={{
-          maxHeight: open ? "600px" : "0px",
+          maxHeight: open ? "700px" : "0px",
           overflow: "hidden",
           transition: "max-height 0.35s ease",
         }}
       >
         <div
-          className="grid grid-cols-2 sm:grid-cols-4 gap-px border-t"
-          style={{ borderColor: "#e5e7eb", backgroundColor: "#e5e7eb" }}
+          className="grid grid-cols-2 sm:grid-cols-4 gap-5 p-6"
+          style={{ borderTop: "1px solid var(--divider-soft)" }}
         >
           {products.map((product) => (
             <RecoCard key={product.id} product={product} onAdd={() => {
@@ -138,14 +147,19 @@ function RecoCard({ product, onAdd }: { product: Product; onAdd: () => void }) {
   const mainImage = product.images[0] ?? null
 
   return (
-    <div className="bg-[#d4e9f7] flex flex-col">
-      <Link href={`/shop/${product.slug}`} className="relative aspect-[3/4] block overflow-hidden" style={{ backgroundColor: "#a8c8e0" }}>
+    <div className="flex flex-col">
+      <Link
+        href={`/shop/${product.slug}`}
+        className="relative aspect-[3/4] block overflow-hidden rounded-[2px]"
+        style={{ backgroundColor: "#a8c8e0" }}
+      >
         {mainImage ? (
           <Image
             src={mainImage}
             alt={product.name}
             fill
-            className="object-cover hover:scale-105 transition-transform duration-500"
+            className="object-cover hover:scale-105"
+            style={{ transition: "transform 0.4s ease" }}
             sizes="(max-width: 640px) 50vw, 25vw"
           />
         ) : (
@@ -155,22 +169,27 @@ function RecoCard({ product, onAdd }: { product: Product; onAdd: () => void }) {
         )}
       </Link>
 
-      <div className="px-3 pt-2 pb-3 flex flex-col gap-1 flex-1">
+      <div className="pt-4 pb-2 flex flex-col gap-2 flex-1">
         <Link href={`/shop/${product.slug}`}>
           <p
-            className="text-sm font-medium leading-snug line-clamp-2"
-            style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)" }}
+            className="text-sm leading-snug line-clamp-2"
+            style={{
+              color: "var(--color-primary)",
+              fontFamily: "var(--font-heading)",
+              fontWeight: 500,
+              letterSpacing: "0.02em",
+            }}
           >
             {product.name}
           </p>
         </Link>
-        <p className="text-sm font-semibold" style={{ color: "var(--color-accent)" }}>
+        <p className="price-text text-base" style={{ color: "var(--color-accent)" }}>
           {currency} {product.price.toLocaleString()}
         </p>
         <button
           onClick={onAdd}
-          className="mt-auto w-full py-2 text-xs uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-          style={{ backgroundColor: "var(--color-primary)" }}
+          className="mt-3 w-full py-2.5 text-[10px] uppercase font-medium text-white hover:opacity-85 rounded-[2px]"
+          style={{ backgroundColor: "var(--color-primary)", letterSpacing: "0.18em" }}
         >
           Add to Cart
         </button>

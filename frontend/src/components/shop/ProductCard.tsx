@@ -7,6 +7,7 @@ import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { useWishlistStore } from "@/store/wishlistStore"
 import { useToastStore } from "@/store/toastStore"
+import Stars from "@/components/shop/Stars"
 import type { Product } from "@/types"
 
 interface ProductCardProps {
@@ -45,16 +46,21 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className="group flex flex-col"
+      className="group flex flex-col rounded-card overflow-hidden card-shadow"
+      style={{ backgroundColor: "#ffffff" }}
     >
       {/* Image */}
-      <div className="relative aspect-[3/4] overflow-hidden mb-3" style={{ backgroundColor: "#a8c8e0" }}>
+      <div
+        className="relative aspect-[3/4] overflow-hidden"
+        style={{ backgroundColor: "#a8c8e0" }}
+      >
         {displayImage ? (
           <Image
             src={displayImage}
             alt={product.name}
             fill
-            className={`object-cover transition-all duration-300 ${outOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
+            className={`object-cover ${outOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
+            style={{ transition: "transform 0.4s ease" }}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
@@ -65,8 +71,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Out of stock badge */}
         {outOfStock && (
-          <div className="absolute inset-0 flex items-end justify-center pb-4">
-            <span className="bg-black/60 text-white text-xs uppercase tracking-widest font-semibold px-3 py-1.5">
+          <div className="absolute inset-0 flex items-end justify-center pb-5">
+            <span
+              className="bg-black/60 text-white text-[10px] uppercase font-medium px-4 py-2"
+              style={{ letterSpacing: "0.18em" }}
+            >
               Out of Stock
             </span>
           </div>
@@ -75,7 +84,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Wishlist heart — top-right */}
         <button
           onClick={handleToggleWishlist}
-          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm transition-transform hover:scale-110 z-10"
+          className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:scale-110 z-10"
           aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
         >
           <HeartIcon filled={wishlisted} color={storeConfig.theme.accentColor} />
@@ -85,7 +94,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {!outOfStock && (
           <button
             onClick={handleAddToCart}
-            className="absolute bottom-2 right-2 w-10 h-10 flex items-center justify-center text-white md:hidden rounded-sm"
+            className="absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center text-white md:hidden rounded-[2px]"
             style={{ backgroundColor: "var(--color-primary)" }}
             aria-label={`Add ${product.name} to cart`}
           >
@@ -93,16 +102,19 @@ export default function ProductCard({ product }: ProductCardProps) {
           </button>
         )}
 
-        {/* Desktop hover overlay */}
+        {/* Desktop hover overlay — Add to Cart */}
         {outOfStock ? (
-          <div className="absolute bottom-0 left-0 right-0 py-3 text-xs uppercase tracking-widest font-semibold text-white/70 text-center opacity-0 group-hover:opacity-100 transition-opacity hidden md:block bg-black/50">
+          <div
+            className="absolute bottom-0 left-0 right-0 py-4 text-[11px] uppercase font-medium text-white/70 text-center opacity-0 group-hover:opacity-100 hidden md:block bg-black/55"
+            style={{ letterSpacing: "0.18em" }}
+          >
             Out of Stock
           </div>
         ) : (
           <button
             onClick={handleAddToCart}
-            className="absolute bottom-0 left-0 right-0 py-3 text-xs uppercase tracking-widest font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity hidden md:block"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            className="absolute bottom-0 left-0 right-0 py-4 text-[11px] uppercase font-medium text-white opacity-0 group-hover:opacity-100 hidden md:block"
+            style={{ backgroundColor: "var(--color-primary)", letterSpacing: "0.18em" }}
             aria-label={`Add ${product.name} to cart`}
           >
             Add to Cart
@@ -111,23 +123,49 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="flex flex-col gap-1 px-1">
-        <p className="text-gray-500 uppercase tracking-wider text-xs">
+      <div className="flex flex-col gap-2 p-6">
+        <p
+          className="text-[10px] uppercase font-medium"
+          style={{ color: "var(--color-mid1)", letterSpacing: "0.15em" }}
+        >
           {product.category?.name}
         </p>
         <h3
-          className="text-base font-medium leading-snug"
-          style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)" }}
+          className="text-lg leading-snug"
+          style={{
+            color: "var(--color-primary)",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+          }}
         >
           {product.name}
         </h3>
+        {typeof product.review_count === "number" && product.review_count > 0 && (
+          <div className="flex items-center gap-2">
+            <Stars
+              value={product.avg_rating ?? 0}
+              size={12}
+              ariaLabelValue={product.avg_rating ?? 0}
+            />
+            <span
+              className="text-xs"
+              style={{ color: "rgba(6,18,34,0.5)" }}
+            >
+              ({product.review_count})
+            </span>
+          </div>
+        )}
         <ColorSwatches
           variants={product.variants}
           colorImages={product.color_images ?? {}}
-          mainImage={mainImage ?? ""}
+          stockByVariant={product.stock_by_variant ?? {}}
           onPreview={setPreviewImage}
         />
-        <p className="text-base font-semibold" style={{ color: "var(--color-accent)" }}>
+        <p
+          className="price-text text-xl mt-1"
+          style={{ color: "var(--color-accent)" }}
+        >
           {currency} {product.price.toLocaleString()}
         </p>
       </div>
@@ -153,11 +191,11 @@ const NEUTRAL_SWATCH = "#c8c4bc"
 interface ColorSwatchesProps {
   variants: Record<string, string[]>
   colorImages: Record<string, string>
-  mainImage: string
+  stockByVariant: Record<string, number>
   onPreview: (url: string | null) => void
 }
 
-function ColorSwatches({ variants, colorImages, mainImage, onPreview }: ColorSwatchesProps) {
+function ColorSwatches({ variants, colorImages, stockByVariant, onPreview }: ColorSwatchesProps) {
   const [active, setActive] = useState<string | null>(null)
   const colorKey = Object.keys(variants).find((k) => /colou?r/i.test(k))
   if (!colorKey) return null
@@ -169,9 +207,14 @@ function ColorSwatches({ variants, colorImages, mainImage, onPreview }: ColorSwa
   const visible = colors.slice(0, MAX)
   const overflow = colors.length - MAX
 
+  function isOOS(color: string): boolean {
+    return stockByVariant[color] === 0
+  }
+
   function handleClick(e: React.MouseEvent, color: string) {
     e.preventDefault()
     e.stopPropagation()
+    if (isOOS(color)) return
     const img = colorImages[color]
     if (!img) return
     if (active === color) {
@@ -185,6 +228,7 @@ function ColorSwatches({ variants, colorImages, mainImage, onPreview }: ColorSwa
   }
 
   function handleMouseEnter(color: string) {
+    if (isOOS(color)) return
     const img = colorImages[color]
     if (img) onPreview(img)
   }
@@ -199,28 +243,32 @@ function ColorSwatches({ variants, colorImages, mainImage, onPreview }: ColorSwa
   }
 
   return (
-    <div className="flex items-center" style={{ gap: 4, marginTop: 2, marginBottom: 2 }}>
+    <div className="flex items-center" style={{ gap: 6, marginTop: 2, marginBottom: 2 }}>
       {visible.map((color) => {
         const resolved = isValidCssColor(color) ? color : NEUTRAL_SWATCH
         const hasImage = !!colorImages[color]
         const isActive = active === color
+        const oos = isOOS(color)
         return (
           <button
             key={color}
             type="button"
-            title={color}
+            title={oos ? "Out of stock" : color}
             onClick={(e) => handleClick(e, color)}
             onMouseEnter={() => handleMouseEnter(color)}
             onMouseLeave={handleMouseLeave}
-            aria-label={color}
+            aria-label={oos ? `${color} — out of stock` : color}
+            aria-disabled={oos || undefined}
+            disabled={oos}
+            className={oos ? "swatch-oos" : undefined}
             style={{
               width: 16,
               height: 16,
               borderRadius: "50%",
               backgroundColor: resolved,
-              border: isActive ? `2px solid var(--color-accent)` : `1.5px solid rgba(0,0,0,0.15)`,
+              border: isActive ? `2px solid var(--color-accent)` : `1px solid rgba(6,18,34,0.1)`,
               flexShrink: 0,
-              cursor: hasImage ? "pointer" : "default",
+              cursor: oos ? "not-allowed" : hasImage ? "pointer" : "default",
               outline: "none",
               padding: 0,
             }}

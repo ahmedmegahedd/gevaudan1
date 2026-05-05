@@ -2,7 +2,8 @@
 export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse bg-gray-200 ${className}`}
+      className={`animate-pulse ${className}`}
+      style={{ backgroundColor: "rgba(6,18,34,0.06)" }}
       aria-hidden="true"
     />
   )
@@ -10,18 +11,23 @@ export function Skeleton({ className = "" }: { className?: string }) {
 
 export function ProductCardSkeleton() {
   return (
-    <div className="flex flex-col gap-3">
+    <div
+      className="flex flex-col rounded-card overflow-hidden card-shadow"
+      style={{ backgroundColor: "#ffffff" }}
+    >
       <Skeleton className="aspect-[3/4] w-full" />
-      <Skeleton className="h-3 w-1/3" />
-      <Skeleton className="h-4 w-3/4" />
-      <Skeleton className="h-4 w-1/4" />
+      <div className="p-6 space-y-3">
+        <Skeleton className="h-3 w-1/3" />
+        <Skeleton className="h-5 w-3/4" />
+        <Skeleton className="h-5 w-1/3" />
+      </div>
     </div>
   )
 }
 
 export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-5 md:gap-8">
       {Array.from({ length: count }).map((_, i) => (
         <ProductCardSkeleton key={i} />
       ))}
@@ -31,20 +37,20 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 
 export function ProductDetailSkeleton() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="space-y-4">
-          <Skeleton className="aspect-[3/4] w-full" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 md:py-24">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-16 lg:gap-20">
+        <div className="md:col-span-3 space-y-5">
+          <Skeleton className="aspect-[3/4] w-full rounded-card" />
           <div className="flex gap-3">
-            {[1, 2, 3].map((i) => <Skeleton key={i} className="w-20 aspect-square" />)}
+            {[1, 2, 3].map((i) => <Skeleton key={i} className="w-24 aspect-square rounded-[2px]" />)}
           </div>
         </div>
-        <div className="space-y-6">
+        <div className="md:col-span-2 space-y-8">
           <Skeleton className="h-3 w-1/4" />
-          <Skeleton className="h-10 w-3/4" />
-          <Skeleton className="h-6 w-1/4" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-3/4" />
+          <Skeleton className="h-8 w-1/3" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-[52px] w-full rounded-[2px]" />
         </div>
       </div>
     </div>

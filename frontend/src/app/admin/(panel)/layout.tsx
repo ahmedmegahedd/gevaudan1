@@ -1,10 +1,19 @@
 import { storeConfig } from "@/config/store.config"
 import AdminSignOutButton from "@/components/admin/AdminSignOutButton"
 import AdminNav from "@/components/admin/AdminNav"
+import { createClient } from "@/lib/supabase/server"
+
+export const dynamic = "force-dynamic"
 
 // Auth + role checks are handled entirely in middleware (matcher: /admin/:path*)
 // By the time this layout renders, the request is already verified as an admin.
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient()
+  const { count: pendingReturns } = await supabase
+    .from("return_requests")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending")
+
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#d4e9f7" }}>
       {/* Admin header */}
@@ -25,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </span>
           </div>
 
-          <AdminNav />
+          <AdminNav pendingReturns={pendingReturns ?? 0} />
         </div>
 
         <AdminSignOutButton />

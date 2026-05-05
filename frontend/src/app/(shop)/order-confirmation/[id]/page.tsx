@@ -37,20 +37,23 @@ export default async function OrderConfirmationPage({ params }: Props) {
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
 
   return (
-    <div className="min-h-screen bg-[#d4e9f7] flex items-start justify-center py-12 px-4">
-      <div className="bg-[#d4e9f7] w-full max-w-md rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: "#e5e7eb" }}>
+    <div className="min-h-screen flex items-start justify-center py-16 md:py-24 px-4">
+      <div
+        className="w-full max-w-md overflow-hidden rounded-card card-shadow"
+        style={{ backgroundColor: "#ffffff" }}
+      >
         {/* Accent top bar */}
-        <div className="h-1.5" style={{ backgroundColor: theme.accentColor }} />
+        <div className="h-1" style={{ backgroundColor: theme.accentColor }} />
 
-        <div className="px-6 pt-8 pb-8 space-y-6">
+        <div className="px-6 pt-10 pb-10 space-y-8">
           {/* Header */}
-          <div className="flex flex-col items-center text-center space-y-4">
+          <div className="flex flex-col items-center text-center space-y-5">
             {/* Static checkmark circle */}
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
+              className="w-20 h-20 rounded-full flex items-center justify-center"
               style={{ backgroundColor: `${theme.accentColor}18` }}
             >
-              <svg width="32" height="32" viewBox="0 0 52 52" fill="none">
+              <svg width="36" height="36" viewBox="0 0 52 52" fill="none">
                 <circle cx="26" cy="26" r="25" stroke={theme.accentColor} strokeWidth="2" fill="none" />
                 <path
                   d="M14 27l8 8 16-18"
@@ -63,16 +66,22 @@ export default async function OrderConfirmationPage({ params }: Props) {
               </svg>
             </div>
 
-            <div>
+            <div className="space-y-2">
               <h1
-                className="text-2xl font-bold mb-1"
-                style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+                className="text-[28px]"
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  color: "var(--color-primary)",
+                  fontWeight: 500,
+                  letterSpacing: "0.02em",
+                  lineHeight: 1.2,
+                }}
               >
                 Order Placed Successfully!
               </h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm" style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.7 }}>
                 Thank you for shopping with{" "}
-                <span className="font-semibold" style={{ color: "var(--color-primary)" }}>
+                <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                   {brand.name}
                 </span>
               </p>
@@ -80,16 +89,18 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
             {/* Order ID */}
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-mono font-semibold"
-              style={{ backgroundColor: `${theme.accentColor}18`, color: theme.accentColor }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-mono"
+              style={{ backgroundColor: `${theme.accentColor}18`, color: theme.accentColor, fontWeight: 500 }}
             >
-              <span className="text-xs font-sans font-normal text-gray-500">Order</span>
+              <span className="text-xs font-sans" style={{ color: "rgba(6,18,34,0.5)", fontWeight: 400 }}>
+                Order
+              </span>
               #{shortId}
             </div>
 
-            <p className="text-sm text-gray-500 leading-relaxed">
+            <p className="text-sm" style={{ color: "rgba(6,18,34,0.55)", lineHeight: 1.8 }}>
               We will contact you on{" "}
-              <span className="font-semibold" style={{ color: "var(--color-primary)" }}>
+              <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                 {o.customer_info.phone}
               </span>{" "}
               to confirm your order and arrange delivery.
@@ -97,68 +108,100 @@ export default async function OrderConfirmationPage({ params }: Props) {
           </div>
 
           {/* Delivery info */}
-          <div className="rounded-xl px-4 py-3 text-sm space-y-1" style={{ backgroundColor: "#a8c8e0" }}>
-            <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Delivery To</p>
-            <p style={{ color: "var(--color-primary)" }}>
+          <div
+            className="rounded-card px-5 py-4 text-sm space-y-2"
+            style={{ backgroundColor: "rgba(168,200,224,0.4)" }}
+          >
+            <p
+              className="text-[10px] uppercase font-medium mb-2"
+              style={{ color: "rgba(6,18,34,0.5)", letterSpacing: "0.18em" }}
+            >
+              Delivery To
+            </p>
+            <p style={{ color: "var(--color-primary)", lineHeight: 1.7 }}>
               {o.delivery_address.city} — {o.delivery_address.address}
             </p>
             {o.delivery_address.notes && (
-              <p className="text-gray-400 text-xs">{o.delivery_address.notes}</p>
+              <p className="text-xs" style={{ color: "rgba(6,18,34,0.4)" }}>
+                {o.delivery_address.notes}
+              </p>
             )}
           </div>
 
           {/* Order items */}
-          <div className="border rounded-xl overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+          <div className="rounded-card overflow-hidden" style={{ border: "1px solid var(--divider-soft)" }}>
             <div
-              className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider"
-              style={{ backgroundColor: "#f9fafb", color: "var(--color-primary)" }}
+              className="px-5 py-3 text-[10px] uppercase font-medium"
+              style={{
+                backgroundColor: "rgba(6,18,34,0.04)",
+                color: "var(--color-primary)",
+                letterSpacing: "0.18em",
+              }}
             >
               Your Items
             </div>
-            <ul className="divide-y divide-gray-100">
+            <ul>
               {o.items.map((item, i) => {
                 const variantLabel = item.variant
                   ? Object.entries(item.variant).map(([k, v]) => `${k}: ${v}`).join(", ")
                   : null
                 return (
-                  <li key={i} className="flex justify-between items-start px-4 py-3 text-sm gap-3">
+                  <li
+                    key={i}
+                    className="flex justify-between items-start px-5 py-4 text-sm gap-3"
+                    style={i > 0 ? { borderTop: "1px solid var(--divider-soft)" } : undefined}
+                  >
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate" style={{ color: "var(--color-primary)" }}>
+                      <p
+                        className="truncate"
+                        style={{
+                          color: "var(--color-primary)",
+                          fontFamily: "var(--font-heading)",
+                          fontWeight: 500,
+                        }}
+                      >
                         {item.name}
                       </p>
                       {variantLabel && (
-                        <p className="text-xs text-gray-400 mt-0.5">{variantLabel}</p>
+                        <p className="text-xs mt-1" style={{ color: "rgba(6,18,34,0.4)" }}>{variantLabel}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0">
-                      <span style={{ color: theme.accentColor }} className="font-medium">
+                      <span className="price-text" style={{ color: theme.accentColor }}>
                         {currency} {(item.price * item.quantity).toLocaleString()}
                       </span>
                       {item.quantity > 1 && (
-                        <p className="text-xs text-gray-400">×{item.quantity}</p>
+                        <p className="text-xs" style={{ color: "rgba(6,18,34,0.4)" }}>×{item.quantity}</p>
                       )}
                     </div>
                   </li>
                 )
               })}
             </ul>
-            <div className="px-4 py-3 space-y-1.5 border-t text-sm" style={{ borderColor: "#e5e7eb" }}>
-              <div className="flex justify-between text-gray-500">
+            <div
+              className="px-5 py-4 space-y-2 text-sm"
+              style={{ borderTop: "1px solid var(--divider-soft)" }}
+            >
+              <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.5)" }}>
                 <span>Subtotal</span>
                 <span>{currency} {o.subtotal.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between text-gray-500">
+              <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.5)" }}>
                 <span>Delivery</span>
                 <span style={{ color: o.delivery_fee === 0 ? "#16a34a" : undefined }}>
                   {o.delivery_fee === 0 ? "Free" : `${currency} ${o.delivery_fee.toLocaleString()}`}
                 </span>
               </div>
               <div
-                className="flex justify-between font-bold text-base pt-2 border-t"
-                style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}
+                className="flex justify-between text-base pt-3"
+                style={{
+                  borderTop: "1px solid var(--divider-soft)",
+                  color: "var(--color-primary)",
+                  fontWeight: 500,
+                }}
               >
                 <span>Total</span>
-                <span>{currency} {o.total.toLocaleString()}</span>
+                <span className="price-text">{currency} {o.total.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -168,8 +211,12 @@ export default async function OrderConfirmationPage({ params }: Props) {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-3 py-3.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "#25D366" }}
+            className="flex w-full items-center justify-center gap-3 text-[11px] uppercase font-medium text-white hover:opacity-90 rounded-[2px]"
+            style={{
+              backgroundColor: "#25D366",
+              height: "52px",
+              letterSpacing: "0.18em",
+            }}
           >
             <WhatsAppIcon />
             Chat with us on WhatsApp
@@ -178,8 +225,12 @@ export default async function OrderConfirmationPage({ params }: Props) {
           {/* Continue shopping */}
           <Link
             href="/shop"
-            className="flex w-full items-center justify-center py-3.5 rounded-xl text-sm font-semibold uppercase tracking-widest text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            className="flex w-full items-center justify-center text-[11px] uppercase font-medium text-white hover:opacity-85 rounded-[2px]"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              height: "52px",
+              letterSpacing: "0.25em",
+            }}
           >
             Continue Shopping
           </Link>

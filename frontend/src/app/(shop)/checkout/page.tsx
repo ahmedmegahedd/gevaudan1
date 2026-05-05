@@ -20,6 +20,12 @@ const schema = z.object({
     .string()
     .min(7, "Phone number is required")
     .regex(/^[0-9+\s()-]+$/, "Enter a valid phone number"),
+  email: z
+    .string()
+    .trim()
+    .email("Please enter a valid email address")
+    .optional()
+    .or(z.literal("")),
   city: z.enum(cities as [string, ...string[]]),
   address: z.string().min(5, "Full address is required"),
   notes: z.string().optional(),
@@ -108,8 +114,14 @@ export default function CheckoutPage() {
       variant: Object.keys(i.selectedVariants).length > 0 ? i.selectedVariants : undefined,
     }))
 
+    const trimmedEmail = values.email?.trim() ?? ""
+
     const { data, error } = await clientApi.placeOrder({
-      customer_info: { name: values.name, phone: values.phone },
+      customer_info: {
+        name: values.name,
+        phone: values.phone,
+        email: trimmedEmail || undefined,
+      },
       delivery_address: {
         city: values.city,
         address: values.address,
@@ -155,10 +167,16 @@ export default function CheckoutPage() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-24 md:pb-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-10 py-12 md:py-24 pb-32 md:pb-24">
         <h1
-          className="text-3xl md:text-4xl font-bold mb-6 md:mb-8"
-          style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+          className="text-[36px] md:text-[56px] mb-12 md:mb-16"
+          style={{
+            fontFamily: "var(--font-heading)",
+            color: "var(--color-primary)",
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+            lineHeight: 1.1,
+          }}
         >
           Checkout
         </h1>
@@ -168,149 +186,204 @@ export default function CheckoutPage() {
 
         {/* Mobile compact summary */}
         <div
-          className="md:hidden border px-4 py-3 mb-6 rounded"
-          style={{ backgroundColor: "#d4e9f7", borderColor: "#e5e7eb" }}
+          className="md:hidden px-5 py-4 mb-10 rounded-card card-shadow"
+          style={{ backgroundColor: "#ffffff" }}
         >
-          <div className="flex justify-between text-sm font-medium" style={{ color: "var(--color-primary)" }}>
+          <div
+            className="flex justify-between text-base"
+            style={{ color: "var(--color-primary)", fontWeight: 500 }}
+          >
             <span>{items.length} item{items.length !== 1 ? "s" : ""}</span>
-            <span>{currency} {total.toLocaleString()}</span>
+            <span className="price-text">{currency} {total.toLocaleString()}</span>
           </div>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs mt-2" style={{ color: "rgba(6,18,34,0.4)" }}>
             Delivery: {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-16">
           {/* ── Form ── */}
           <form
             id="checkout-form"
             onSubmit={handleSubmit(onSubmit)}
-            className="md:col-span-3 space-y-5"
+            className="md:col-span-3 space-y-10"
             noValidate
           >
             <h2
-              className="text-lg font-semibold"
-              style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)" }}
+              className="text-[22px] md:text-[28px]"
+              style={{
+                color: "var(--color-primary)",
+                fontFamily: "var(--font-heading)",
+                fontWeight: 500,
+                letterSpacing: "0.02em",
+              }}
             >
               Your Details
             </h2>
 
-            <Field label="Full Name" error={errors.name?.message}>
-              <input
-                {...register("name")}
-                type="text"
-                placeholder="Jane Doe"
-                className={inputClass(!!errors.name)}
-              />
-            </Field>
+            <div className="space-y-8">
+              <Field label="Full Name" error={errors.name?.message}>
+                <input
+                  {...register("name")}
+                  type="text"
+                  placeholder="Jane Doe"
+                  className={inputClass(!!errors.name)}
+                />
+              </Field>
 
-            <Field label="Phone Number" error={errors.phone?.message}>
-              <input
-                {...register("phone")}
-                type="tel"
-                placeholder="+20 100 123 4567"
-                className={inputClass(!!errors.phone)}
-              />
-            </Field>
+              <Field label="Phone Number" error={errors.phone?.message}>
+                <input
+                  {...register("phone")}
+                  type="tel"
+                  placeholder="+20 100 123 4567"
+                  className={inputClass(!!errors.phone)}
+                />
+              </Field>
 
-            <Field label="City" error={errors.city?.message}>
-              <select {...register("city")} className={inputClass(!!errors.city)}>
-                <option value="">Select your city…</option>
-                {cities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-            </Field>
+              <Field
+                label="Email (optional — for order confirmation)"
+                error={errors.email?.message}
+              >
+                <input
+                  {...register("email")}
+                  type="email"
+                  placeholder="you@email.com"
+                  autoComplete="email"
+                  className={inputClass(!!errors.email)}
+                />
+              </Field>
 
-            <Field label="Full Address" error={errors.address?.message}>
-              <textarea
-                {...register("address")}
-                rows={3}
-                placeholder="Street name, building number, floor, apartment…"
-                className={inputClass(!!errors.address)}
-              />
-            </Field>
+              <Field label="City" error={errors.city?.message}>
+                <select {...register("city")} className={inputClass(!!errors.city)}>
+                  <option value="">Select your city…</option>
+                  {cities.map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </Field>
 
-            <Field label="Notes (optional)" error={undefined}>
-              <textarea
-                {...register("notes")}
-                rows={2}
-                placeholder="Any special instructions for delivery…"
-                className={inputClass(false)}
-              />
-            </Field>
+              <Field label="Full Address" error={errors.address?.message}>
+                <textarea
+                  {...register("address")}
+                  rows={3}
+                  placeholder="Street name, building number, floor, apartment…"
+                  className={inputClass(!!errors.address)}
+                />
+              </Field>
 
-            {/* ── Promo Code ── */}
-            <div>
-              <p className="block text-sm font-medium mb-1" style={{ color: "var(--color-primary)" }}>
-                Promo Code
-              </p>
-              {promo ? (
-                <div
-                  className="flex items-center justify-between px-3 py-2.5 border text-sm"
-                  style={{ borderColor: theme.accentColor, backgroundColor: `${theme.accentColor}12` }}
+              <Field label="Notes (optional)" error={undefined}>
+                <textarea
+                  {...register("notes")}
+                  rows={2}
+                  placeholder="Any special instructions for delivery…"
+                  className={inputClass(false)}
+                />
+              </Field>
+
+              {/* ── Promo Code ── */}
+              <div>
+                <p
+                  className="block text-[11px] uppercase font-medium mb-3"
+                  style={{ color: "var(--color-primary)", letterSpacing: "0.15em" }}
                 >
-                  <span className="font-medium" style={{ color: theme.accentColor }}>
-                    ✓ {promo.message}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={removePromo}
-                    className="text-xs text-gray-400 hover:text-red-500 transition-colors ml-3"
+                  Promo Code
+                </p>
+                {promo ? (
+                  <div
+                    className="flex items-center justify-between px-4 py-4 rounded-card text-sm"
+                    style={{
+                      border: `1px solid ${theme.accentColor}`,
+                      backgroundColor: `${theme.accentColor}12`,
+                    }}
                   >
-                    Remove
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={promoInput}
-                    onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError("") }}
-                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyPromo())}
-                    placeholder="Enter promo code"
-                    className={inputClass(!!promoError)}
-                    style={{ flex: 1 }}
-                  />
-                  <button
-                    type="button"
-                    onClick={applyPromo}
-                    disabled={promoLoading || !promoInput.trim()}
-                    className="px-4 text-sm font-semibold text-white shrink-0 transition-opacity hover:opacity-80 disabled:opacity-40"
-                    style={{ backgroundColor: theme.accentColor, minHeight: "48px" }}
-                  >
-                    {promoLoading ? "…" : "Apply"}
-                  </button>
-                </div>
-              )}
-              {promoError && <p className="mt-1 text-xs text-red-500">{promoError}</p>}
+                    <span className="font-medium" style={{ color: theme.accentColor }}>
+                      ✓ {promo.message}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={removePromo}
+                      className="text-xs uppercase ml-3 hover:text-red-500"
+                      style={{
+                        color: "rgba(6,18,34,0.5)",
+                        letterSpacing: "0.15em",
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-3 items-end">
+                    <input
+                      type="text"
+                      value={promoInput}
+                      onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError("") }}
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyPromo())}
+                      placeholder="Enter promo code"
+                      className={inputClass(!!promoError)}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      disabled={promoLoading || !promoInput.trim()}
+                      className="text-[11px] uppercase font-medium text-white shrink-0 hover:opacity-85 disabled:opacity-40 rounded-[2px]"
+                      style={{
+                        backgroundColor: theme.accentColor,
+                        height: "52px",
+                        padding: "0 24px",
+                        letterSpacing: "0.18em",
+                      }}
+                    >
+                      {promoLoading ? "…" : "Apply"}
+                    </button>
+                  </div>
+                )}
+                {promoError && (
+                  <p className="mt-2 text-xs" style={{ color: "#dc2626" }}>{promoError}</p>
+                )}
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="hidden md:block w-full py-4 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ backgroundColor: "var(--color-primary)", minHeight: "48px" }}
+              className="hidden md:flex items-center justify-center w-full text-[11px] uppercase font-medium text-white hover:opacity-85 disabled:opacity-50 disabled:cursor-not-allowed rounded-[2px]"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                height: "60px",
+                letterSpacing: "0.25em",
+              }}
             >
               {isSubmitting ? "Placing Order…" : "Place Order (Cash on Delivery)"}
             </button>
 
-            <p className="text-xs text-gray-400 text-center hidden md:block">
+            <p
+              className="text-xs text-center hidden md:block"
+              style={{ color: "rgba(6,18,34,0.4)", lineHeight: 1.7 }}
+            >
               No payment required now. We will call you to confirm your order.
             </p>
           </form>
 
           {/* ── Order summary sidebar (desktop) ── */}
           <aside className="hidden md:block md:col-span-2">
-            <div className="border p-5 space-y-4 sticky top-20" style={{ borderColor: "#e5e7eb" }}>
+            <div
+              className="sticky top-24 p-8 space-y-6 card-shadow rounded-card"
+              style={{ backgroundColor: "#ffffff" }}
+            >
               <h2
-                className="text-base font-semibold"
-                style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)" }}
+                className="text-[22px]"
+                style={{
+                  color: "var(--color-primary)",
+                  fontFamily: "var(--font-heading)",
+                  fontWeight: 500,
+                  letterSpacing: "0.02em",
+                }}
               >
                 Order Summary
               </h2>
 
-              <ul className="space-y-3 text-sm">
+              <ul className="space-y-5 text-sm">
                 {items.map((item) => {
                   const variantLabel = Object.entries(item.selectedVariants)
                     .map(([k, v]) => `${k}: ${v}`)
@@ -318,20 +391,33 @@ export default function CheckoutPage() {
                   return (
                     <li
                       key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`}
-                      className="flex justify-between gap-2"
+                      className="flex justify-between gap-3"
                     >
                       <div className="flex-1">
-                        <p className="font-medium" style={{ color: "var(--color-primary)" }}>
+                        <p
+                          style={{
+                            color: "var(--color-primary)",
+                            fontFamily: "var(--font-heading)",
+                            fontWeight: 500,
+                          }}
+                        >
                           {item.product.name}
                           {item.quantity > 1 && (
-                            <span className="text-gray-400 ml-1">×{item.quantity}</span>
+                            <span className="ml-1" style={{ color: "rgba(6,18,34,0.4)" }}>
+                              ×{item.quantity}
+                            </span>
                           )}
                         </p>
                         {variantLabel && (
-                          <p className="text-xs text-gray-400">{variantLabel}</p>
+                          <p className="text-xs mt-1" style={{ color: "rgba(6,18,34,0.4)" }}>
+                            {variantLabel}
+                          </p>
                         )}
                       </div>
-                      <span className="shrink-0" style={{ color: "var(--color-accent)" }}>
+                      <span
+                        className="price-text shrink-0"
+                        style={{ color: "var(--color-accent)" }}
+                      >
                         {currency} {(item.product.price * item.quantity).toLocaleString()}
                       </span>
                     </li>
@@ -339,14 +425,17 @@ export default function CheckoutPage() {
                 })}
               </ul>
 
-              <div className="border-t pt-3 space-y-2 text-sm" style={{ borderColor: "#e5e7eb" }}>
-                <div className="flex justify-between text-gray-600">
+              <div
+                className="pt-5 space-y-3 text-sm"
+                style={{ borderTop: "1px solid var(--divider-soft)" }}
+              >
+                <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.6)" }}>
                   <span>Subtotal</span>
                   <span>{currency} {sub.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.6)" }}>
                   <span>Delivery</span>
-                  <span style={{ color: fee === 0 ? "green" : undefined }}>
+                  <span style={{ color: fee === 0 ? "#16a34a" : undefined }}>
                     {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
                   </span>
                 </div>
@@ -357,11 +446,15 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div
-                  className="flex justify-between font-bold pt-2 border-t"
-                  style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}
+                  className="flex justify-between text-lg pt-3"
+                  style={{
+                    borderTop: "1px solid var(--divider-soft)",
+                    color: "var(--color-primary)",
+                    fontWeight: 500,
+                  }}
                 >
                   <span>Total</span>
-                  <span>{currency} {total.toLocaleString()}</span>
+                  <span className="price-text">{currency} {total.toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -370,19 +463,29 @@ export default function CheckoutPage() {
 
         {/* ── Mobile sticky submit ── */}
         <div
-          className="fixed bottom-0 left-0 right-0 md:hidden border-t px-4 py-4 z-40"
-          style={{ backgroundColor: "var(--color-primary)", borderColor: "rgba(255,255,255,0.1)" }}
+          className="fixed bottom-0 left-0 right-0 md:hidden px-4 py-4 z-40"
+          style={{
+            backgroundColor: "var(--color-primary)",
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+          }}
         >
           <button
             type="submit"
             form="checkout-form"
             disabled={isSubmitting}
-            className="w-full text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "var(--color-accent)", height: "48px" }}
+            className="w-full text-[11px] uppercase font-medium text-white hover:opacity-85 disabled:opacity-50 disabled:cursor-not-allowed rounded-[2px]"
+            style={{
+              backgroundColor: "var(--color-accent)",
+              height: "52px",
+              letterSpacing: "0.22em",
+            }}
           >
             {isSubmitting ? "Placing Order…" : "Place Order (Cash on Delivery)"}
           </button>
-          <p className="text-xs text-gray-400 text-center mt-2">
+          <p
+            className="text-xs text-center mt-2"
+            style={{ color: "rgba(255,255,255,0.5)" }}
+          >
             No payment required now.
           </p>
         </div>
@@ -413,15 +516,15 @@ function OrderSuccessModal({
       style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
     >
       <div
-        className="success-card bg-[#d4e9f7] w-full sm:max-w-md sm:rounded-2xl overflow-y-auto"
+        className="success-card bg-[#d4e9f7] w-full sm:max-w-md sm:rounded-card overflow-y-auto"
         style={{ maxHeight: "100dvh" }}
       >
         {/* Top accent bar */}
-        <div className="h-1.5 w-full" style={{ backgroundColor: theme.accentColor }} />
+        <div className="h-1 w-full" style={{ backgroundColor: theme.accentColor }} />
 
-        <div className="px-6 pt-8 pb-6 space-y-6">
+        <div className="px-6 pt-10 pb-8 space-y-8">
           {/* Animated checkmark */}
-          <div className="flex flex-col items-center text-center space-y-4">
+          <div className="flex flex-col items-center text-center space-y-5">
             <div className="success-check-wrap">
               <svg
                 width="72"
@@ -452,16 +555,22 @@ function OrderSuccessModal({
               </svg>
             </div>
 
-            <div>
+            <div className="space-y-2">
               <h2
-                className="text-2xl font-bold mb-1"
-                style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+                className="text-[28px]"
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  color: "var(--color-primary)",
+                  fontWeight: 500,
+                  letterSpacing: "0.02em",
+                  lineHeight: 1.2,
+                }}
               >
                 Order Placed Successfully!
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm" style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.7 }}>
                 Thank you for shopping with{" "}
-                <span className="font-semibold" style={{ color: "var(--color-primary)" }}>
+                <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                   {brand.name}
                 </span>
               </p>
@@ -469,16 +578,18 @@ function OrderSuccessModal({
 
             {/* Order ID pill */}
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-mono font-semibold"
-              style={{ backgroundColor: `${theme.accentColor}18`, color: theme.accentColor }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-mono"
+              style={{ backgroundColor: `${theme.accentColor}18`, color: theme.accentColor, fontWeight: 500 }}
             >
-              <span className="text-xs font-sans font-normal text-gray-500">Order</span>
+              <span className="text-xs font-sans" style={{ color: "rgba(6,18,34,0.5)", fontWeight: 400 }}>
+                Order
+              </span>
               #{shortId}
             </div>
 
-            <p className="text-sm text-gray-500 leading-relaxed">
+            <p className="text-sm" style={{ color: "rgba(6,18,34,0.55)", lineHeight: 1.8 }}>
               We will contact you on{" "}
-              <span className="font-semibold" style={{ color: "var(--color-primary)" }}>
+              <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                 {data.phone}
               </span>{" "}
               to confirm your order and arrange delivery.
@@ -486,54 +597,76 @@ function OrderSuccessModal({
           </div>
 
           {/* Order summary */}
-          <div className="border rounded-xl overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+          <div className="rounded-card overflow-hidden" style={{ border: "1px solid var(--divider-soft)" }}>
             <div
-              className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider"
-              style={{ backgroundColor: "#f9fafb", color: "var(--color-primary)" }}
+              className="px-5 py-3 text-[10px] uppercase font-medium"
+              style={{
+                backgroundColor: "rgba(6,18,34,0.04)",
+                color: "var(--color-primary)",
+                letterSpacing: "0.18em",
+              }}
             >
               Your Items
             </div>
-            <ul className="divide-y" style={{ borderColor: "#f3f4f6" }}>
+            <ul>
               {data.items.map((item, i) => (
-                <li key={i} className="flex justify-between items-start px-4 py-3 text-sm gap-3">
+                <li
+                  key={i}
+                  className="flex justify-between items-start px-5 py-4 text-sm gap-3"
+                  style={i > 0 ? { borderTop: "1px solid var(--divider-soft)" } : undefined}
+                >
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate" style={{ color: "var(--color-primary)" }}>
+                    <p
+                      className="truncate"
+                      style={{
+                        color: "var(--color-primary)",
+                        fontFamily: "var(--font-heading)",
+                        fontWeight: 500,
+                      }}
+                    >
                       {item.name}
                     </p>
                     {item.variant && (
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs mt-1" style={{ color: "rgba(6,18,34,0.4)" }}>
                         {Object.entries(item.variant).map(([k, v]) => `${k}: ${v}`).join(", ")}
                       </p>
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <span style={{ color: theme.accentColor }} className="font-medium">
+                    <span className="price-text" style={{ color: theme.accentColor }}>
                       {currency} {(item.price * item.quantity).toLocaleString()}
                     </span>
                     {item.quantity > 1 && (
-                      <p className="text-xs text-gray-400">×{item.quantity}</p>
+                      <p className="text-xs" style={{ color: "rgba(6,18,34,0.4)" }}>×{item.quantity}</p>
                     )}
                   </div>
                 </li>
               ))}
             </ul>
-            <div className="px-4 py-3 space-y-1.5 border-t text-sm" style={{ borderColor: "#e5e7eb" }}>
-              <div className="flex justify-between text-gray-500">
+            <div
+              className="px-5 py-4 space-y-2 text-sm"
+              style={{ borderTop: "1px solid var(--divider-soft)" }}
+            >
+              <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.5)" }}>
                 <span>Subtotal</span>
                 <span>{currency} {data.subtotal.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between text-gray-500">
+              <div className="flex justify-between" style={{ color: "rgba(6,18,34,0.5)" }}>
                 <span>Delivery</span>
                 <span style={{ color: data.deliveryFee === 0 ? "#16a34a" : undefined }}>
                   {data.deliveryFee === 0 ? "Free" : `${currency} ${data.deliveryFee.toLocaleString()}`}
                 </span>
               </div>
               <div
-                className="flex justify-between font-bold text-base pt-2 border-t"
-                style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}
+                className="flex justify-between text-base pt-3"
+                style={{
+                  borderTop: "1px solid var(--divider-soft)",
+                  color: "var(--color-primary)",
+                  fontWeight: 500,
+                }}
               >
                 <span>Total</span>
-                <span>{currency} {data.total.toLocaleString()}</span>
+                <span className="price-text">{currency} {data.total.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -543,8 +676,12 @@ function OrderSuccessModal({
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-3 py-3.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "#25D366" }}
+            className="flex w-full items-center justify-center gap-3 text-[11px] uppercase font-medium text-white hover:opacity-90 rounded-[2px]"
+            style={{
+              backgroundColor: "#25D366",
+              height: "52px",
+              letterSpacing: "0.18em",
+            }}
           >
             <WhatsAppIcon />
             Chat with us on WhatsApp
@@ -553,8 +690,12 @@ function OrderSuccessModal({
           {/* Continue shopping */}
           <button
             onClick={onContinue}
-            className="w-full py-3.5 rounded-xl text-sm font-semibold uppercase tracking-widest transition-opacity hover:opacity-80 text-white"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            className="w-full text-[11px] uppercase font-medium text-white hover:opacity-85 rounded-[2px]"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              height: "52px",
+              letterSpacing: "0.25em",
+            }}
           >
             Continue Shopping
           </button>
@@ -567,10 +708,7 @@ function OrderSuccessModal({
 // ── Helpers ──────────────────────────────────────────────────
 
 function inputClass(hasError: boolean) {
-  return [
-    "w-full border px-3 text-base focus:outline-none transition-colors bg-[#d4e9f7]",
-    hasError ? "border-red-400" : "border-gray-300 focus:border-[var(--color-accent)]",
-  ].join(" ") + " min-h-[48px]"
+  return ["input-underline", hasError ? "has-error" : ""].join(" ")
 }
 
 function Field({
@@ -583,12 +721,15 @@ function Field({
   children: React.ReactNode
 }) {
   return (
-    <div className="space-y-1">
-      <label className="block text-sm font-medium" style={{ color: "var(--color-primary)" }}>
+    <div className="space-y-2">
+      <label
+        className="block text-[11px] uppercase font-medium"
+        style={{ color: "var(--color-primary)", letterSpacing: "0.15em" }}
+      >
         {label}
       </label>
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs" style={{ color: "#dc2626" }}>{error}</p>}
     </div>
   )
 }

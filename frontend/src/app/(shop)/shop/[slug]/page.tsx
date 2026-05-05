@@ -5,8 +5,11 @@ import { createClient } from "@/lib/supabase/server"
 export const dynamic = 'force-dynamic'
 import { storeConfig } from "@/config/store.config"
 import ProductDetail from "@/components/shop/ProductDetail"
+import ProductTabs from "@/components/shop/ProductTabs"
 import ProductCard from "@/components/shop/ProductCard"
+import ReviewsSection from "@/components/shop/ReviewsSection"
 import { getRecommendedProducts } from "@/lib/recommendations"
+import { attachRatings } from "@/lib/reviews"
 import type { Product } from "@/types"
 
 interface Props {
@@ -53,34 +56,55 @@ export default async function ProductPage({ params }: Props) {
 
   if (!product) notFound()
 
-  const recommended = await getRecommendedProducts({
+  const recommendedRaw = await getRecommendedProducts({
     categoryId: product.category_id,
     excludeIds: [product.id],
   })
+  const recommended = await attachRatings(recommendedRaw as Product[])
+
+  const p = product as Product
 
   return (
     <>
-      <ProductDetail product={product as Product} />
+      <ProductDetail product={p} />
+
+      <ProductTabs
+        description={p.description}
+        composition={p.composition}
+        measurements={p.measurements}
+      />
 
       {recommended.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-32 md:py-12 border-t" style={{ borderColor: "#e5e7eb" }}>
-          <h2
-            className="text-2xl md:text-3xl font-bold mb-6"
-            style={{ fontFamily: `var(--font-heading)`, color: "var(--color-primary)" }}
-          >
-            Complete Your Look
-          </h2>
+        <section
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 md:py-24"
+          style={{ borderTop: "1px solid var(--divider-soft)" }}
+        >
+          <div className="section-title mb-12 md:mb-16">
+            <h2
+              className="text-[28px] md:text-[40px]"
+              style={{
+                fontFamily: "var(--font-heading)",
+                color: "var(--color-primary)",
+                fontWeight: 500,
+                letterSpacing: "0.02em",
+              }}
+            >
+              Complete Your Look
+            </h2>
+          </div>
 
           {/* Mobile: horizontal scroll; Desktop: 4-column grid */}
-          <div className="flex gap-4 overflow-x-auto pb-2 md:pb-0 md:grid md:grid-cols-4 md:gap-6 scrollbar-hide">
-            {recommended.map((p) => (
-              <div key={p.id} className="shrink-0 w-48 md:w-auto">
-                <ProductCard product={p as Product} />
+          <div className="flex gap-5 overflow-x-auto pb-2 md:pb-0 md:grid md:grid-cols-4 md:gap-8 scrollbar-hide">
+            {recommended.map((rec) => (
+              <div key={rec.id} className="shrink-0 w-56 md:w-auto">
+                <ProductCard product={rec as Product} />
               </div>
             ))}
           </div>
         </section>
       )}
+
+      <ReviewsSection productId={p.id} />
     </>
   )
 }

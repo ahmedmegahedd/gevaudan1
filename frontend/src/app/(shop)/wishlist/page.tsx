@@ -9,17 +9,26 @@ export default function WishlistPage() {
   const items = useWishlistStore((s) => s.items)
 
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-12 md:py-24">
       {/* Header */}
-      <div className="mb-10">
+      <div className="mb-12 md:mb-16 text-center">
         <h1
-          className="text-3xl md:text-4xl font-bold tracking-wider mb-2"
-          style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)" }}
+          className="text-[36px] md:text-[56px] mb-4"
+          style={{
+            color: "var(--color-primary)",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+            lineHeight: 1.1,
+          }}
         >
           Wishlist
         </h1>
         {items.length > 0 && (
-          <p className="text-sm text-gray-500 uppercase tracking-wider">
+          <p
+            className="text-[11px] uppercase"
+            style={{ color: "rgba(6,18,34,0.5)", letterSpacing: "0.2em" }}
+          >
             {items.length} {items.length === 1 ? "item" : "items"}
           </p>
         )}
@@ -27,10 +36,10 @@ export default function WishlistPage() {
 
       {items.length === 0 ? (
         /* Empty state */
-        <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">
+        <div className="flex flex-col items-center justify-center py-24 md:py-32 gap-8 text-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-16 w-16 opacity-20"
+            className="h-20 w-20 opacity-20"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -41,23 +50,29 @@ export default function WishlistPage() {
           </svg>
           <div>
             <p
-              className="text-2xl font-semibold mb-2"
-              style={{ color: "var(--color-primary)", fontFamily: "var(--font-heading)" }}
+              className="text-2xl md:text-3xl mb-3"
+              style={{
+                color: "var(--color-primary)",
+                fontFamily: "var(--font-heading)",
+                fontWeight: 500,
+                letterSpacing: "0.02em",
+              }}
             >
               Your wishlist is empty
             </p>
-            <p className="text-gray-500 text-sm">Save items you love and come back to them anytime.</p>
+            <p
+              className="text-base"
+              style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.8 }}
+            >
+              Save items you love and come back to them anytime.
+            </p>
           </div>
-          <Link
-            href="/shop"
-            className="mt-2 px-8 py-3 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: storeConfig.theme.accentColor }}
-          >
+          <Link href="/shop" className="luxe-solid-btn">
             Shop Now
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-8">
           {items.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

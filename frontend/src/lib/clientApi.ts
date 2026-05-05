@@ -79,7 +79,7 @@ export const clientApi = {
   },
 
   async placeOrder(order: {
-    customer_info: { name: string; phone: string }
+    customer_info: { name: string; phone: string; email?: string }
     delivery_address: { city: string; address: string; notes?: string }
     items: OrderItem[]
     subtotal: number
@@ -196,6 +196,41 @@ export const clientApi = {
       .update({ display_order: displayOrder })
       .eq("collection_id", collectionId)
       .eq("product_id", productId)
+    if (error) return { error: error.message }
+    return { data: true }
+  },
+
+  // ── Reviews (admin) ───────────────────────────────────────
+
+  async setReviewApproval(id: string, status: "approved" | "rejected" | "pending") {
+    const supabase = createClient()
+    const value = status === "approved" ? true : status === "rejected" ? false : null
+    const { error } = await supabase
+      .from("reviews")
+      .update({ is_approved: value })
+      .eq("id", id)
+    if (error) return { error: error.message }
+    return { data: true }
+  },
+
+  async deleteReview(id: string) {
+    const supabase = createClient()
+    const { error } = await supabase.from("reviews").delete().eq("id", id)
+    if (error) return { error: error.message }
+    return { data: true }
+  },
+
+  // ── Returns & Exchanges (admin) ───────────────────────────
+
+  async updateReturnRequest(
+    id: string,
+    payload: { status?: "pending" | "approved" | "rejected"; admin_notes?: string | null }
+  ) {
+    const supabase = createClient()
+    const { error } = await supabase
+      .from("return_requests")
+      .update(payload)
+      .eq("id", id)
     if (error) return { error: error.message }
     return { data: true }
   },

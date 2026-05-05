@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { storeConfig } from "@/config/store.config"
 import { createClient } from "@/lib/supabase/server"
 import ShopPageClient from "@/components/shop/ShopPageClient"
+import { attachRatings } from "@/lib/reviews"
 import type { Product, Category } from "@/types"
 
 export const dynamic = "force-dynamic"
@@ -52,12 +53,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   }
 
   const { data: products } = await query
+  const enriched = products ? await attachRatings(products as Product[]) : []
 
   const activeCategory = searchParams.category ?? null
 
   return (
     <ShopPageClient
-      products={(products as Product[]) ?? []}
+      products={enriched}
       categories={(categories as Category[]) ?? []}
       activeCategory={activeCategory}
       minPrice={searchParams.minPrice ?? ""}

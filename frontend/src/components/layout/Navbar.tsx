@@ -14,6 +14,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
   { label: "Collections", href: "/collections" },
+  { label: "Returns & Exchange", href: "/returns" },
 ]
 
 export default function Navbar() {
@@ -32,17 +33,17 @@ export default function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 w-full"
       style={{ backgroundColor: "var(--color-primary)" }}
     >
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 h-[60px] md:h-[70px] flex items-center justify-between gap-4">
         {/* Logo / Brand */}
         <Link href="/" className="flex flex-col leading-none shrink-0" onClick={() => setMenuOpen(false)}>
           <span
-            className="text-xl md:text-2xl font-bold tracking-wider text-white"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="text-2xl md:text-3xl font-semibold text-white"
+            style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.04em" }}
           >
             {brand.name}
           </span>
           <span
-            className="text-[10px] uppercase tracking-[0.3em] font-light"
+            className="text-[10px] uppercase tracking-[0.3em] font-light mt-0.5"
             style={{ color: "var(--color-accent)" }}
           >
             {brand.subtitle}
@@ -50,13 +51,14 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop: nav links */}
-        <div className="hidden md:flex items-center gap-6 flex-1 justify-end">
-          <ul className="flex items-center gap-6">
+        <div className="hidden md:flex items-center flex-1 justify-end">
+          <ul className="flex items-center gap-10">
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm uppercase tracking-wider text-white/70 hover:text-white transition-colors"
+                    className="text-[11px] uppercase font-medium text-white/70 hover:text-white"
+                    style={{ letterSpacing: "0.15em" }}
                   >
                     {link.label}
                   </Link>
@@ -67,7 +69,8 @@ export default function Navbar() {
               <li>
                 <Link
                   href="/wishlist"
-                  className="relative flex items-center gap-1.5 text-sm uppercase tracking-wider text-white/70 hover:text-white transition-colors"
+                  className="relative flex items-center gap-2 text-[11px] uppercase font-medium text-white/70 hover:text-white"
+                  style={{ letterSpacing: "0.15em" }}
                   aria-label="Wishlist"
                 >
                   <HeartIcon />
@@ -87,7 +90,8 @@ export default function Navbar() {
               <li>
                 <Link
                   href="/cart"
-                  className="relative flex items-center gap-1.5 text-sm uppercase tracking-wider text-white/70 hover:text-white transition-colors"
+                  className="relative flex items-center gap-2 text-[11px] uppercase font-medium text-white/70 hover:text-white"
+                  style={{ letterSpacing: "0.15em" }}
                   aria-label="Cart"
                 >
                   <CartIcon />
@@ -107,8 +111,8 @@ export default function Navbar() {
               <li>
                 <Link
                   href="/admin"
-                  className="flex items-center gap-1.5 text-xs uppercase tracking-widest font-semibold px-3 py-1.5 transition-opacity hover:opacity-80"
-                  style={{ backgroundColor: "#447794", color: "#fff" }}
+                  className="flex items-center gap-1.5 text-[10px] uppercase font-semibold px-4 py-2 rounded-[2px] hover:opacity-80"
+                  style={{ backgroundColor: "var(--color-accent)", color: "#fff", letterSpacing: "0.18em" }}
                 >
                   <AdminIcon />
                   Admin
@@ -165,30 +169,36 @@ export default function Navbar() {
       {/* Mobile nav drawer */}
       {menuOpen && (
         <div
-          className="md:hidden w-full border-t"
-          style={{ backgroundColor: "var(--color-mid2)", borderColor: "rgba(255,255,255,0.08)" }}
+          className="md:hidden w-full"
+          style={{
+            backgroundColor: "var(--color-mid2)",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+          }}
         >
           {/* Logo / brand at top of drawer */}
           <MobileDrawerLogo />
 
           <ul className="flex flex-col">
             {navLinks.map((link) => (
-              <li key={link.href} className="border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <li
+                key={link.href}
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+              >
                 <Link
                   href={link.href}
-                  className="block px-5 py-4 text-base font-medium text-white/80 hover:text-white transition-colors"
-                  style={{ fontFamily: "var(--font-heading)" }}
+                  className="block px-6 py-5 text-base font-medium text-white/80 hover:text-white"
+                  style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.02em" }}
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
-            <li className="border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <li style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <Link
                 href="/wishlist"
-                className="flex items-center gap-2 px-5 py-4 text-base font-medium text-white/80 hover:text-white transition-colors"
-                style={{ fontFamily: "var(--font-heading)" }}
+                className="flex items-center gap-2 px-6 py-5 text-base font-medium text-white/80 hover:text-white"
+                style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.02em" }}
                 onClick={() => setMenuOpen(false)}
               >
                 Wishlist
@@ -202,11 +212,11 @@ export default function Navbar() {
                 )}
               </Link>
             </li>
-            <li className="border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <li style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <Link
                 href="/cart"
-                className="flex items-center gap-2 px-5 py-4 text-base font-medium text-white/80 hover:text-white transition-colors"
-                style={{ fontFamily: "var(--font-heading)" }}
+                className="flex items-center gap-2 px-6 py-5 text-base font-medium text-white/80 hover:text-white"
+                style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.02em" }}
                 onClick={() => setMenuOpen(false)}
               >
                 Cart
@@ -223,8 +233,8 @@ export default function Navbar() {
             <li>
               <Link
                 href="/admin"
-                className="flex items-center gap-2 px-5 py-4 text-base font-semibold transition-colors"
-                style={{ backgroundColor: "#447794", color: "#fff" }}
+                className="flex items-center gap-2 px-6 py-5 text-base font-semibold"
+                style={{ backgroundColor: "var(--color-accent)", color: "#fff", letterSpacing: "0.05em" }}
                 onClick={() => setMenuOpen(false)}
               >
                 <AdminIcon />
@@ -243,8 +253,8 @@ function MobileDrawerLogo() {
 
   return (
     <div
-      className="flex items-center justify-center py-8 border-b"
-      style={{ borderColor: "rgba(255,255,255,0.08)" }}
+      className="flex items-center justify-center py-10"
+      style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
     >
       {!imgError ? (
         <Image
@@ -258,8 +268,8 @@ function MobileDrawerLogo() {
         />
       ) : (
         <span
-          className="text-xl font-bold tracking-wider text-white"
-          style={{ fontFamily: "var(--font-heading)" }}
+          className="text-2xl font-semibold text-white"
+          style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.04em" }}
         >
           {brand.name}
         </span>

@@ -41,19 +41,19 @@ export default function CookieConsent() {
       `}</style>
 
       <div
-        className="pointer-events-auto w-full max-w-[480px] rounded-sm shadow-2xl overflow-hidden"
+        className="pointer-events-auto w-full max-w-[480px] rounded-card overflow-hidden card-shadow"
         style={{
           backgroundColor: primaryColor,
           borderTop: `2px solid ${accentColor}`,
         }}
       >
-        <div className="px-5 py-4 space-y-4">
+        <div className="px-6 py-6 space-y-5">
           {/* Icon + text */}
           <div className="flex gap-3">
             <span className="text-xl shrink-0 mt-0.5" aria-hidden>🍪</span>
-            <p className="text-sm leading-relaxed" style={{ color: accentColor }}>
+            <p className="text-sm" style={{ color: accentColor, lineHeight: 1.7 }}>
               We use cookies to improve your experience on{" "}
-              <span className="font-semibold text-white">{storeConfig.brand.name}</span>.
+              <span style={{ color: "#ffffff", fontWeight: 500 }}>{storeConfig.brand.name}</span>.
               By continuing to browse, you agree to our use of cookies.
             </p>
           </div>
@@ -62,15 +62,25 @@ export default function CookieConsent() {
           <div className="flex gap-3">
             <button
               onClick={() => dismiss("accepted")}
-              className="flex-1 py-2.5 text-xs uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-              style={{ backgroundColor: accentColor }}
+              className="flex-1 text-[11px] uppercase font-medium text-white hover:opacity-85 rounded-[2px]"
+              style={{
+                backgroundColor: accentColor,
+                height: "44px",
+                letterSpacing: "0.18em",
+              }}
             >
               Accept
             </button>
             <button
               onClick={() => dismiss("declined")}
-              className="flex-1 py-2.5 text-xs uppercase tracking-widest font-semibold border transition-opacity hover:opacity-70"
-              style={{ borderColor: accentColor, color: accentColor, backgroundColor: "transparent" }}
+              className="flex-1 text-[11px] uppercase font-medium hover:opacity-70 rounded-[2px]"
+              style={{
+                border: `1px solid ${accentColor}`,
+                color: accentColor,
+                backgroundColor: "transparent",
+                height: "44px",
+                letterSpacing: "0.18em",
+              }}
             >
               Decline
             </button>

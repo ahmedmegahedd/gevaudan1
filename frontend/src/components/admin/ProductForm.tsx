@@ -22,6 +22,8 @@ const schema = z.object({
     .min(1, "Slug is required")
     .regex(/^[a-z0-9-]+$/, "Slug: lowercase letters, numbers, hyphens only"),
   description: z.string().optional(),
+  composition: z.string().optional(),
+  measurements: z.string().optional(),
   model_info: z.string().optional(),
   price: z.preprocess((v) => Number(v), z.number().min(0)),
   category_id: z.string().optional(),
@@ -34,6 +36,8 @@ type FormValues = {
   name: string
   slug: string
   description?: string
+  composition?: string
+  measurements?: string
   model_info?: string
   price: number
   category_id?: string
@@ -146,6 +150,11 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
     (initialData?.variant_stock as Record<string, number> | null) ?? {}
   )
 
+  // Per-color stock state (separate from combination-based variant_stock)
+  const [stockByVariant, setStockByVariant] = useState<Record<string, number>>(
+    (initialData?.stock_by_variant as Record<string, number> | null) ?? {}
+  )
+
   // Images state: mix of existing URLs and new local files
   const [images, setImages] = useState<ImageEntry[]>(
     initialData
@@ -174,6 +183,8 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       name: initialData?.name ?? "",
       slug: initialData?.slug ?? "",
       description: initialData?.description ?? "",
+      composition: initialData?.composition ?? "",
+      measurements: initialData?.measurements ?? "",
       model_info: initialData?.model_info ?? "",
       price: initialData?.price ?? 0,
       category_id: initialData?.category_id ?? "",
@@ -312,7 +323,9 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
     const payload = {
       name: values.name,
       slug: values.slug,
-      description: values.description ?? null,
+      description: values.description?.trim() || null,
+      composition: values.composition?.trim() || null,
+      measurements: values.measurements?.trim() || null,
       model_info: values.model_info?.trim() || null,
       price: values.price,
       category_id: values.category_id || null,
@@ -322,6 +335,8 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       variants,
       images: imageUrls,
       variant_stock: Object.keys(variantStock).length > 0 ? variantStock : null,
+      stock_by_variant:
+        Object.keys(stockByVariant).length > 0 ? stockByVariant : {},
       color_images: Object.keys(colorImages).length > 0 ? colorImages : null,
       // If variant_stock is set, total stock = sum of all variant stocks
       ...(Object.keys(variantStock).length > 0
@@ -342,6 +357,33 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
         setImageError(error)
         useToastStore.getState().addToast(error, "error")
         return
+      }
+
+      // Detect stock 0 → positive transition and notify the waitlist
+      const prevStock = initialData!.stock ?? 0
+      const newStock = (payload.stock as number | undefined) ?? values.stock ?? 0
+      if (prevStock === 0 && newStock > 0) {
+        try {
+          const res = await fetch("/api/stock-notify/trigger", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ product_id: initialData!.id }),
+          })
+          const json = await res.json().catch(() => ({}))
+          if (res.ok && typeof json.sent === "number" && json.sent > 0) {
+            useToastStore
+              .getState()
+              .addToast(
+                `Notified ${json.sent} subscriber${json.sent === 1 ? "" : "s"} that this product is back in stock`,
+                "success"
+              )
+          }
+        } catch {
+          // Non-blocking — the product still saved; surface a soft warning
+          useToastStore
+            .getState()
+            .addToast("Saved, but failed to send back-in-stock emails", "info")
+        }
       }
     }
 
@@ -400,6 +442,24 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
             {...register("description")}
             rows={4}
             placeholder="Describe the product…"
+            className={input(false)}
+          />
+        </Field>
+
+        <Field label="Composition" error={errors.composition?.message}>
+          <textarea
+            {...register("composition")}
+            rows={3}
+            placeholder="e.g. 95% Cotton, 5% Elastane"
+            className={input(false)}
+          />
+        </Field>
+
+        <Field label="Measurements" error={errors.measurements?.message}>
+          <textarea
+            {...register("measurements")}
+            rows={3}
+            placeholder="e.g. Length: 120cm, Bust: 92cm, Waist: 76cm"
             className={input(false)}
           />
         </Field>
@@ -493,6 +553,8 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
                     <ColorPickerField
                       value={group.value}
                       onChange={(v) => updateVariantValue(i, v)}
+                      stockMap={stockByVariant}
+                      setStockMap={setStockByVariant}
                     />
                   ) : (
                     <>
@@ -934,13 +996,32 @@ function input(hasError: boolean) {
   ].join(" ") + " min-h-[48px]"
 }
 
-function ColorPickerField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function ColorPickerField({
+  value,
+  onChange,
+  stockMap,
+  setStockMap,
+}: {
+  value: string
+  onChange: (v: string) => void
+  stockMap?: Record<string, number>
+  setStockMap?: (next: Record<string, number>) => void
+}) {
   const colors = value.split(",").map((c) => c.trim()).filter(Boolean)
 
   function updateColor(index: number, hex: string) {
+    const oldHex = colors[index]
     const next = [...colors]
     next[index] = hex
     onChange(next.join(", "))
+
+    // Migrate stock entry to the new hex key
+    if (stockMap && setStockMap && oldHex && oldHex !== hex && oldHex in stockMap) {
+      const nextMap = { ...stockMap }
+      nextMap[hex] = nextMap[oldHex]
+      delete nextMap[oldHex]
+      setStockMap(nextMap)
+    }
   }
 
   function addColor() {
@@ -948,13 +1029,33 @@ function ColorPickerField({ value, onChange }: { value: string; onChange: (v: st
   }
 
   function removeColor(index: number) {
+    const removed = colors[index]
     onChange(colors.filter((_, i) => i !== index).join(", "))
+    if (stockMap && setStockMap && removed && removed in stockMap) {
+      const nextMap = { ...stockMap }
+      delete nextMap[removed]
+      setStockMap(nextMap)
+    }
   }
 
+  function setStock(hex: string, raw: string) {
+    if (!stockMap || !setStockMap) return
+    const nextMap = { ...stockMap }
+    if (raw === "") {
+      delete nextMap[hex]
+    } else {
+      const n = Math.max(0, parseInt(raw, 10) || 0)
+      nextMap[hex] = n
+    }
+    setStockMap(nextMap)
+  }
+
+  const showStockInputs = !!stockMap && !!setStockMap
+
   return (
-    <div className="flex flex-wrap items-center gap-2 min-h-[48px] border border-gray-300 px-3 py-2 bg-white">
+    <div className="flex flex-wrap items-start gap-3 min-h-[48px] border border-gray-300 px-3 py-3 bg-white">
       {colors.map((color, i) => (
-        <div key={i} className="relative group flex flex-col items-center gap-0.5">
+        <div key={i} className="relative group flex flex-col items-center gap-1">
           <label
             className="relative w-9 h-9 rounded-full overflow-hidden cursor-pointer border-2 transition-transform hover:scale-110"
             style={{ borderColor: "#d1d5db" }}
@@ -972,6 +1073,20 @@ function ColorPickerField({ value, onChange }: { value: string; onChange: (v: st
             />
           </label>
           <span className="text-[9px] font-mono text-gray-400 leading-none">{color}</span>
+          {showStockInputs && (
+            <input
+              type="number"
+              min={0}
+              step={1}
+              value={stockMap![color] ?? ""}
+              onChange={(e) => setStock(color, e.target.value)}
+              placeholder="qty"
+              aria-label={`Stock for ${color}`}
+              title={`Stock for ${color}`}
+              className="w-14 border px-1 py-0.5 text-[10px] text-center focus:outline-none focus:border-[var(--color-accent)] bg-white"
+              style={{ borderColor: "#e5e7eb" }}
+            />
+          )}
           <button
             type="button"
             onClick={() => removeColor(i)}
@@ -985,7 +1100,7 @@ function ColorPickerField({ value, onChange }: { value: string; onChange: (v: st
       <button
         type="button"
         onClick={addColor}
-        className="w-9 h-9 rounded-full border-2 border-dashed flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors text-lg leading-none"
+        className="w-9 h-9 rounded-full border-2 border-dashed flex items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-400 transition-colors text-lg leading-none mt-0.5"
         style={{ borderColor: "#d1d5db" }}
         aria-label="Add color"
       >

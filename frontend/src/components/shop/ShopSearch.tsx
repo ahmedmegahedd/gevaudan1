@@ -83,12 +83,12 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
   return (
     <div ref={containerRef} className="relative">
       <div
-        className="flex items-center border overflow-hidden"
-        style={{ borderColor: primaryColor }}
+        className="flex items-center overflow-hidden card-shadow rounded-card"
+        style={{ backgroundColor: "#ffffff" }}
       >
         {/* Magnifier icon */}
-        <span className="pl-3 shrink-0" style={{ color: primaryColor }}>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <span className="pl-5 shrink-0" style={{ color: primaryColor }}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z" />
           </svg>
         </span>
@@ -101,13 +101,18 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
           onKeyDown={onKey}
           onFocus={() => query.length >= 2 && suggestions.length > 0 && setShowSuggestions(true)}
           placeholder="Search products…"
-          className="flex-1 h-11 px-3 text-sm focus:outline-none bg-[#d4e9f7]"
+          className="flex-1 h-12 px-4 text-base focus:outline-none bg-transparent"
           style={{ color: primaryColor }}
           aria-label="Search products"
         />
 
         {query && (
-          <button onClick={clear} className="px-2 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Clear">
+          <button
+            onClick={clear}
+            className="px-3 hover:opacity-70"
+            style={{ color: "rgba(6,18,34,0.4)" }}
+            aria-label="Clear"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -116,8 +121,8 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
 
         <button
           onClick={() => submit()}
-          className="h-11 px-5 text-xs uppercase tracking-wider font-semibold text-white shrink-0 transition-opacity hover:opacity-80"
-          style={{ backgroundColor: primaryColor }}
+          className="h-12 px-6 text-[11px] uppercase font-medium text-white shrink-0 hover:opacity-85"
+          style={{ backgroundColor: primaryColor, letterSpacing: "0.18em" }}
         >
           Search
         </button>
@@ -126,28 +131,38 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
       {/* Suggestions dropdown */}
       {showSuggestions && suggestions.length > 0 && (
         <div
-          className="absolute left-0 right-0 top-full mt-1 z-40 shadow-xl overflow-hidden border"
-          style={{ backgroundColor: "#d4e9f7", borderColor: "#e5e7eb" }}
+          className="absolute left-0 right-0 top-full mt-2 z-40 overflow-hidden card-shadow rounded-card"
+          style={{ backgroundColor: "#ffffff" }}
         >
-          {suggestions.map((p) => (
+          {suggestions.map((p, i) => (
             <button
               key={p.id}
               onClick={() => { setShowSuggestions(false); router.push(`/shop/${p.slug}`) }}
-              className="flex items-center gap-3 w-full px-3 py-2.5 text-left hover:bg-[#a8c8e0] transition-colors border-b last:border-0"
-              style={{ borderColor: "#f3f4f6" }}
+              className="flex items-center gap-4 w-full px-4 py-3 text-left hover:bg-[rgba(168,200,224,0.3)]"
+              style={i > 0 ? { borderTop: "1px solid var(--divider-soft)" } : undefined}
             >
-              <div className="relative w-9 h-12 shrink-0 overflow-hidden" style={{ backgroundColor: "#a8c8e0" }}>
+              <div className="relative w-10 h-14 shrink-0 overflow-hidden rounded-[2px]" style={{ backgroundColor: "#a8c8e0" }}>
                 {p.images?.[0] ? (
-                  <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="36px" />
+                  <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="40px" />
                 ) : null}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate" style={{ color: primaryColor }}>{p.name}</p>
-                <p className="text-xs font-semibold" style={{ color: accentColor }}>
+                <p
+                  className="text-sm truncate"
+                  style={{
+                    color: primaryColor,
+                    fontFamily: "var(--font-heading)",
+                    fontWeight: 500,
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {p.name}
+                </p>
+                <p className="price-text text-sm" style={{ color: accentColor }}>
                   {currency} {p.price?.toLocaleString()}
                 </p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "rgba(6,18,34,0.3)" }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </button>
@@ -155,8 +170,12 @@ export default function ShopSearch({ initialQuery, activeCategory, minPrice, max
 
           <button
             onClick={() => submit()}
-            className="flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-xs font-medium border-t hover:bg-[#a8c8e0] transition-colors"
-            style={{ borderColor: "#f3f4f6", color: accentColor }}
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 text-[11px] uppercase font-medium hover:bg-[rgba(168,200,224,0.3)]"
+            style={{
+              borderTop: "1px solid var(--divider-soft)",
+              color: accentColor,
+              letterSpacing: "0.15em",
+            }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z" />

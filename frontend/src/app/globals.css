@@ -11,6 +11,16 @@
   --color-mid2: #123249;
   --color-text-light: #ffffff;
   --color-text-on-accent: #ffffff;
+
+  /* ── Luxury design tokens ── */
+  --transition-base: 0.3s ease;
+  --transition-image: 0.4s ease;
+  --shadow-card: 0 2px 20px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 6px 30px rgba(0, 0, 0, 0.08);
+  --divider-soft: rgba(6, 18, 34, 0.1);
+  --tracking-heading: 0.02em;
+  --tracking-label: 0.15em;
+  --line-height-body: 1.8;
 }
 
 /* Prevent horizontal overflow at root level */
@@ -20,16 +30,38 @@ html, body {
 
 html {
   background-color: #d4e9f7 !important;
+  scroll-behavior: smooth;
 }
 
 body {
   color: var(--foreground);
   background-color: #d4e9f7 !important;
   font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: var(--line-height-body);
 }
 
+/* ── Headings: elegant Cormorant Garamond, refined letter-spacing ── */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading), Georgia, serif;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.2;
+}
+
+/* ── Smooth transitions on interactive elements ── */
+a, button {
+  transition: color var(--transition-base),
+              background-color var(--transition-base),
+              border-color var(--transition-base),
+              opacity var(--transition-base),
+              transform var(--transition-base),
+              box-shadow var(--transition-base);
+}
+
+/* ── Inputs: minimum 16px to prevent mobile zoom ── */
+input, select, textarea {
+  font-size: 16px;
+  font-family: inherit;
 }
 
 @layer utilities {
@@ -44,6 +76,210 @@ h1, h2, h3, h4, h5, h6 {
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* ── Luxury heading scales ── */
+  .heading-1 {
+    font-family: var(--font-heading), Georgia, serif;
+    font-size: 36px;
+    line-height: 1.1;
+    letter-spacing: var(--tracking-heading);
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .heading-1 { font-size: 56px; }
+  }
+
+  .heading-2 {
+    font-family: var(--font-heading), Georgia, serif;
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-heading);
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .heading-2 { font-size: 40px; }
+  }
+
+  .heading-3 {
+    font-family: var(--font-heading), Georgia, serif;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-heading);
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .heading-3 { font-size: 28px; }
+  }
+
+  /* ── All-caps section labels ── */
+  .label-caps {
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ── Price text: Cormorant Garamond, elegant ── */
+  .price-text {
+    font-family: var(--font-heading), Georgia, serif;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Section title with decorative side lines ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    text-align: center;
+  }
+  .section-title::before,
+  .section-title::after {
+    content: "";
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background-color: var(--divider-soft);
+  }
+  @media (min-width: 768px) {
+    .section-title::before,
+    .section-title::after {
+      max-width: 80px;
+    }
+  }
+
+  /* ── Soft divider ── */
+  .divider-soft {
+    border-color: var(--divider-soft);
+  }
+
+  /* ── Bottom-border-only input ── */
+  .input-underline {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid var(--divider-soft);
+    padding: 14px 4px;
+    font-size: 16px;
+    color: var(--color-primary);
+    transition: border-color var(--transition-base);
+    outline: none;
+    border-radius: 0;
+  }
+  .input-underline:focus {
+    border-bottom-color: var(--color-accent);
+  }
+  .input-underline::placeholder {
+    color: rgba(6, 18, 34, 0.4);
+  }
+  .input-underline.has-error {
+    border-bottom-color: #ef4444;
+  }
+
+  /* ── Luxury card shadow ── */
+  .card-shadow {
+    box-shadow: var(--shadow-card);
+    transition: box-shadow var(--transition-base);
+  }
+  .card-shadow:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* ── Body text leading ── */
+  .leading-luxe {
+    line-height: 1.8;
+  }
+
+  /* ── Out-of-stock color swatch (dim + diagonal red strike) ── */
+  .swatch-oos {
+    position: relative;
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .swatch-oos::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -2px;
+    right: -2px;
+    height: 1px;
+    background-color: #dc2626;
+    transform: translateY(-50%) rotate(45deg);
+    transform-origin: center;
+    pointer-events: none;
+  }
+
+  /* ── Luxury outline / solid buttons ── */
+  .luxe-outline-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 48px;
+    height: 52px;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    background-color: transparent;
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-weight: 500;
+    border-radius: 2px;
+    transition: all var(--transition-base);
+  }
+  .luxe-outline-btn:hover {
+    background-color: var(--color-primary);
+    color: #ffffff;
+  }
+
+  .luxe-solid-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 48px;
+    height: 52px;
+    background-color: var(--color-accent);
+    color: #ffffff;
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-weight: 500;
+    border-radius: 2px;
+    transition: all var(--transition-base);
+  }
+  .luxe-solid-btn:hover {
+    opacity: 0.85;
+  }
+  .luxe-solid-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .luxe-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 48px;
+    height: 52px;
+    background-color: var(--color-primary);
+    color: #ffffff;
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-weight: 500;
+    border-radius: 2px;
+    transition: all var(--transition-base);
+  }
+  .luxe-primary-btn:hover {
+    opacity: 0.85;
+  }
+  .luxe-primary-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
 

@@ -9,49 +9,70 @@ export default function Footer() {
 
   return (
     <footer
-      className="border-t mt-auto"
+      className="mt-auto"
       style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-16 md:py-24">
         {/* Newsletter */}
         <div
-          className="mb-10 pb-10 border-b"
-          style={{ borderColor: "rgba(255,255,255,0.1)" }}
+          className="mb-16 pb-16"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}
         >
           <div className="max-w-xl">
             <h3
-              className="text-xl font-bold tracking-wider mb-1"
-              style={{ fontFamily: "var(--font-heading)", color: "var(--color-accent)" }}
+              className="text-2xl md:text-3xl mb-3"
+              style={{
+                fontFamily: "var(--font-heading)",
+                color: "var(--color-accent)",
+                fontWeight: 500,
+                letterSpacing: "0.02em",
+              }}
             >
               Stay in the Loop
             </h3>
-            <p className="text-sm text-white/60 mb-4">
+            <p
+              className="text-sm mb-6"
+              style={{ color: "rgba(255,255,255,0.6)", lineHeight: 1.8 }}
+            >
               Be the first to know about new collections, exclusive offers, and style tips.
             </p>
             <NewsletterForm />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
           {/* Brand */}
           <div>
             <p
-              className="text-2xl font-bold tracking-widest mb-2"
-              style={{ color: "var(--color-accent)", fontFamily: "var(--font-heading)" }}
+              className="text-3xl mb-3"
+              style={{
+                color: "var(--color-accent)",
+                fontFamily: "var(--font-heading)",
+                fontWeight: 500,
+                letterSpacing: "0.04em",
+              }}
             >
               {brand.name}
             </p>
-            <p className="text-white/60 text-sm leading-relaxed">{brand.tagline}</p>
+            <p
+              className="text-sm"
+              style={{ color: "rgba(255,255,255,0.6)", lineHeight: 1.8 }}
+            >
+              {brand.tagline}
+            </p>
           </div>
 
           {/* Delivery cities */}
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-semibold text-white/40 mb-4">
+            <h3
+              className="text-[10px] uppercase font-medium mb-6"
+              style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.2em" }}
+            >
               We Deliver To
             </h3>
-            <ul className="space-y-1">
+            <ul className="space-y-2">
               {delivery.cities.map((city) => (
-                <li key={city} className="text-sm text-white/70">
+                <li key={city} className="text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
                   {city}
                 </li>
               ))}
@@ -60,14 +81,18 @@ export default function Footer() {
 
           {/* Social / Contact */}
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-semibold text-white/40 mb-4">
+            <h3
+              className="text-[10px] uppercase font-medium mb-6"
+              style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.2em" }}
+            >
               Find Us
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               <li>
                 <a
                   href={`mailto:${contact.email}`}
-                  className="text-sm text-white/70 hover:text-white transition-colors"
+                  className="text-sm hover:text-white"
+                  style={{ color: "rgba(255,255,255,0.7)" }}
                 >
                   {contact.email}
                 </a>
@@ -77,7 +102,8 @@ export default function Footer() {
                   href={`https://instagram.com/${contact.instagram.replace("@", "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-white/70 hover:text-white transition-colors"
+                  className="text-sm hover:text-white"
+                  style={{ color: "rgba(255,255,255,0.7)" }}
                 >
                   Instagram: {contact.instagram}
                 </a>
@@ -87,7 +113,8 @@ export default function Footer() {
                   href={`https://facebook.com/${contact.facebook}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-white/70 hover:text-white transition-colors"
+                  className="text-sm hover:text-white"
+                  style={{ color: "rgba(255,255,255,0.7)" }}
                 >
                   Facebook: {contact.facebook}
                 </a>
@@ -96,8 +123,14 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/10 text-center">
-          <p className="text-xs text-white/40">
+        <div
+          className="mt-16 pt-8 text-center"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
+        >
+          <p
+            className="text-[11px] uppercase"
+            style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.2em" }}
+          >
             &copy; {year} {brand.name}. All rights reserved.
           </p>
         </div>
@@ -144,8 +177,11 @@ function NewsletterForm() {
   if (status === "success") {
     return (
       <div
-        className="flex items-center gap-2 px-4 py-3 rounded-sm text-sm font-medium"
-        style={{ backgroundColor: "rgba(68,119,148,0.25)", color: storeConfig.theme.accentColor }}
+        className="flex items-center gap-3 px-5 py-4 rounded-card text-sm"
+        style={{
+          backgroundColor: "rgba(68,119,148,0.25)",
+          color: storeConfig.theme.accentColor,
+        }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -157,28 +193,41 @@ function NewsletterForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <div className="flex gap-2">
+      <div className="flex gap-3 items-end">
         <input
           type="email"
           value={email}
           onChange={(e) => { setEmail(e.target.value); if (status === "error") setStatus("idle") }}
           placeholder="your@email.com"
           required
-          className="flex-1 h-11 px-3 text-sm bg-white/10 border text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors rounded-sm"
-          style={{ borderColor: status === "error" ? "#f87171" : "rgba(255,255,255,0.2)" }}
+          className="flex-1 text-base focus:outline-none"
+          style={{
+            background: "transparent",
+            border: "none",
+            borderBottom: `1px solid ${status === "error" ? "#f87171" : "rgba(255,255,255,0.2)"}`,
+            color: "#fff",
+            padding: "12px 2px",
+            minHeight: "52px",
+            borderRadius: 0,
+          }}
           aria-label="Email address"
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className="h-11 px-5 text-xs uppercase tracking-widest font-semibold text-white shrink-0 rounded-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-          style={{ backgroundColor: storeConfig.theme.accentColor }}
+          className="text-[11px] uppercase font-medium text-white shrink-0 hover:opacity-85 disabled:opacity-50 rounded-[2px]"
+          style={{
+            backgroundColor: storeConfig.theme.accentColor,
+            height: "52px",
+            padding: "0 28px",
+            letterSpacing: "0.2em",
+          }}
         >
           {status === "loading" ? "…" : "Subscribe"}
         </button>
       </div>
       {status === "error" && message && (
-        <p className="mt-2 text-xs text-red-400">{message}</p>
+        <p className="mt-3 text-xs" style={{ color: "#fca5a5" }}>{message}</p>
       )}
     </form>
   )

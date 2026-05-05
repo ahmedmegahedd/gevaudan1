@@ -5,6 +5,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { storeConfig } from "@/config/store.config"
 import ProductCard from "@/components/shop/ProductCard"
+import { attachRatings } from "@/lib/reviews"
 import type { Collection, CollectionProduct, Product, Category } from "@/types"
 
 export const dynamic = "force-dynamic"
@@ -58,15 +59,16 @@ export default async function CollectionDetailPage({ params }: Props) {
   const collection = await getCollection(params.slug)
   if (!collection) notFound()
 
-  const products = collection.products
+  const productsRaw = collection.products
     .map((cp) => cp.product)
     .filter(Boolean) as ProductWithCategory[]
+  const products = await attachRatings(productsRaw)
 
   return (
     <>
       {/* Hero */}
       <section
-        className="relative flex items-end justify-start min-h-[40vh] md:min-h-[50vh] px-4 sm:px-8 pb-10 overflow-hidden"
+        className="relative flex items-end justify-start min-h-[55vh] md:min-h-[65vh] px-4 sm:px-6 lg:px-10 pb-16 md:pb-20 pt-32 overflow-hidden"
         style={{ backgroundColor: "var(--color-primary)" }}
       >
         {collection.cover_image && (
@@ -86,44 +88,64 @@ export default async function CollectionDetailPage({ params }: Props) {
           </>
         )}
 
-        <div className="relative z-10 max-w-3xl">
+        <div className="relative z-10 max-w-3xl mx-auto md:mx-0 w-full">
           <Link
             href="/collections"
-            className="text-xs uppercase tracking-widest mb-4 inline-block transition-opacity hover:opacity-70"
-            style={{ color: "var(--color-accent)" }}
+            className="text-[11px] uppercase mb-8 inline-block hover:opacity-70"
+            style={{
+              color: "var(--color-accent)",
+              letterSpacing: "0.25em",
+            }}
           >
             ← All Collections
           </Link>
           <h1
-            className="text-4xl md:text-6xl font-bold text-white mb-3"
-            style={{ fontFamily: "var(--font-heading)", lineHeight: 1.1 }}
+            className="text-[36px] md:text-[56px] lg:text-[64px] text-white mb-6"
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontWeight: 500,
+              lineHeight: 1.05,
+              letterSpacing: "0.02em",
+            }}
           >
             {collection.name}
           </h1>
           {collection.description && (
-            <p className="text-white/60 text-base md:text-lg max-w-xl">{collection.description}</p>
+            <p
+              className="text-white/70 text-base md:text-lg max-w-xl"
+              style={{ lineHeight: 1.8 }}
+            >
+              {collection.description}
+            </p>
           )}
-          <p className="text-white/40 text-sm mt-3">
-            {products.length} product{products.length !== 1 ? "s" : ""}
+          <p
+            className="text-[11px] uppercase mt-6"
+            style={{
+              color: "rgba(255,255,255,0.4)",
+              letterSpacing: "0.2em",
+            }}
+          >
+            {products.length} {products.length !== 1 ? "Pieces" : "Piece"}
           </p>
         </div>
       </section>
 
       {/* Products grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 md:py-24">
         {products.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-gray-400 mb-6">No products in this collection yet.</p>
-            <Link
-              href="/shop"
-              className="inline-block text-sm font-semibold uppercase tracking-widest px-8 py-3 text-white"
-              style={{ backgroundColor: "var(--color-primary)" }}
+          <div className="text-center py-24">
+            <p
+              className="text-base mb-8"
+              style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.8 }}
             >
+              No products in this collection yet.
+            </p>
+            <Link href="/shop" className="luxe-primary-btn">
               Browse All Products
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-8">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

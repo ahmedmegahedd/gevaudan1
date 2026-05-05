@@ -18,19 +18,26 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-24 md:py-32 text-center">
         <h1
-          className="text-3xl md:text-4xl font-bold mb-4"
-          style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+          className="text-[36px] md:text-[56px] mb-6"
+          style={{
+            fontFamily: "var(--font-heading)",
+            color: "var(--color-primary)",
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+            lineHeight: 1.1,
+          }}
         >
           Your Cart
         </h1>
-        <p className="text-gray-500 mb-8">Your cart is empty.</p>
-        <Link
-          href="/shop"
-          className="inline-block px-8 py-3 text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-          style={{ backgroundColor: "var(--color-primary)" }}
+        <p
+          className="text-base mb-12"
+          style={{ color: "rgba(6,18,34,0.5)", lineHeight: 1.8 }}
         >
+          Your cart is empty.
+        </p>
+        <Link href="/shop" className="luxe-primary-btn">
           Continue Shopping
         </Link>
       </div>
@@ -38,17 +45,23 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-48 lg:pb-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 md:py-24 pb-48 lg:pb-24">
       <h1
-        className="text-3xl md:text-4xl font-bold mb-6 md:mb-10"
-        style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+        className="text-[36px] md:text-[56px] mb-12 md:mb-16"
+        style={{
+          fontFamily: "var(--font-heading)",
+          color: "var(--color-primary)",
+          fontWeight: 500,
+          letterSpacing: "0.02em",
+          lineHeight: 1.1,
+        }}
       >
         Your Cart
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         {/* ── Cart Items ── */}
-        <div className="lg:col-span-2 space-y-5 md:space-y-6">
+        <div className="lg:col-span-2 space-y-8 md:space-y-10">
           {items.map((item) => {
             const variantLabel = Object.entries(item.selectedVariants)
               .map(([k, v]) => `${k}: ${v}`)
@@ -57,18 +70,21 @@ export default function CartPage() {
             return (
               <div
                 key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`}
-                className="flex gap-3 sm:gap-4 pb-5 md:pb-6 border-b"
-                style={{ borderColor: "#e5e7eb" }}
+                className="flex gap-5 sm:gap-6 pb-8 md:pb-10"
+                style={{ borderBottom: "1px solid var(--divider-soft)" }}
               >
-                {/* Image — smaller on mobile */}
-                <div className="relative w-20 sm:w-24 aspect-[3/4] shrink-0 overflow-hidden" style={{ backgroundColor: "#a8c8e0" }}>
+                {/* Image */}
+                <div
+                  className="relative w-24 sm:w-28 aspect-[3/4] shrink-0 overflow-hidden rounded-card"
+                  style={{ backgroundColor: "#a8c8e0" }}
+                >
                   {item.product.images[0] ? (
                     <Image
                       src={item.product.images[0]}
                       alt={item.product.name}
                       fill
                       className="object-cover"
-                      sizes="96px"
+                      sizes="112px"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-xs">
@@ -78,17 +94,31 @@ export default function CartPage() {
                 </div>
 
                 {/* Details */}
-                <div className="flex-1 flex flex-col gap-1 min-w-0">
+                <div className="flex-1 flex flex-col gap-2 min-w-0">
                   <h2
-                    className="font-semibold text-base leading-tight"
-                    style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+                    className="text-lg md:text-xl"
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      color: "var(--color-primary)",
+                      fontWeight: 500,
+                      letterSpacing: "0.02em",
+                      lineHeight: 1.2,
+                    }}
                   >
                     {item.product.name}
                   </h2>
                   {variantLabel && (
-                    <p className="text-xs text-gray-500">{variantLabel}</p>
+                    <p
+                      className="text-xs uppercase"
+                      style={{ color: "rgba(6,18,34,0.5)", letterSpacing: "0.1em" }}
+                    >
+                      {variantLabel}
+                    </p>
                   )}
-                  <p className="text-sm font-semibold" style={{ color: "var(--color-accent)" }}>
+                  <p
+                    className="price-text text-base"
+                    style={{ color: "var(--color-accent)" }}
+                  >
                     {currency} {item.product.price.toLocaleString()}
                   </p>
 
@@ -96,23 +126,26 @@ export default function CartPage() {
                     const rk = getRealVariantKeys(item.product.variants)
                     const s = getVariantStock(item.product.stock, item.product.variant_stock, item.selectedVariants, rk)
                     return item.quantity >= s && s > 0 ? (
-                      <p className="text-xs text-red-500">Max stock reached ({s})</p>
+                      <p className="text-xs" style={{ color: "#dc2626" }}>Max stock reached ({s})</p>
                     ) : null
                   })()}
 
-                  <div className="flex items-center gap-3 mt-2">
-                    {/* Quantity controls — min 40px touch targets */}
-                    <div className="flex items-center border" style={{ borderColor: "#d1d5db" }}>
+                  <div className="flex items-center gap-5 mt-4">
+                    {/* Quantity controls */}
+                    <div
+                      className="flex items-center rounded-[2px]"
+                      style={{ border: "1px solid rgba(6,18,34,0.15)" }}
+                    >
                       <button
                         onClick={() =>
                           updateQuantity(item.product.id, item.selectedVariants, item.quantity - 1)
                         }
-                        className="w-10 h-10 flex items-center justify-center hover:bg-[#a8c8e0] transition-colors text-sm"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#a8c8e0] text-base"
                         aria-label="Decrease"
                       >
                         −
                       </button>
-                      <span className="w-8 text-center text-sm">{item.quantity}</span>
+                      <span className="w-10 text-center text-sm font-medium">{item.quantity}</span>
                       <button
                         onClick={() =>
                           updateQuantity(item.product.id, item.selectedVariants, item.quantity + 1)
@@ -122,7 +155,7 @@ export default function CartPage() {
                           const s = getVariantStock(item.product.stock, item.product.variant_stock, item.selectedVariants, rk)
                           return item.quantity >= s
                         })()}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-[#a8c8e0] transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#a8c8e0] text-base disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Increase"
                       >
                         +
@@ -134,7 +167,11 @@ export default function CartPage() {
                         removeItem(item.product.id, item.selectedVariants)
                         useToastStore.getState().addToast("Item removed from cart", "info")
                       }}
-                      className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                      className="text-[10px] uppercase font-medium hover:text-red-500"
+                      style={{
+                        color: "rgba(6,18,34,0.4)",
+                        letterSpacing: "0.18em",
+                      }}
                     >
                       Remove
                     </button>
@@ -143,7 +180,10 @@ export default function CartPage() {
 
                 {/* Item subtotal */}
                 <div className="text-right shrink-0">
-                  <p className="text-sm font-semibold" style={{ color: "var(--color-primary)" }}>
+                  <p
+                    className="price-text text-base"
+                    style={{ color: "var(--color-primary)" }}
+                  >
                     {currency} {(item.product.price * item.quantity).toLocaleString()}
                   </p>
                 </div>
@@ -152,111 +192,122 @@ export default function CartPage() {
           })}
         </div>
 
-        {/* ── Continue Shopping ── */}
-        <div className="lg:col-span-2">
-          <Link
-            href="/shop"
-            className="group inline-flex w-full lg:w-auto items-center justify-center gap-2 px-6 py-3 text-sm uppercase tracking-widest font-semibold border transition-colors"
-            style={{
-              borderColor: storeConfig.theme.accentColor,
-              color: storeConfig.theme.accentColor,
-              backgroundColor: "transparent",
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget
-              el.style.backgroundColor = storeConfig.theme.accentColor
-              el.style.color = "#fff"
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget
-              el.style.backgroundColor = "transparent"
-              el.style.color = storeConfig.theme.accentColor
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            Continue Shopping
-          </Link>
-        </div>
-
-        {/* ── Order Summary — Desktop sidebar (hidden on mobile) ── */}
+        {/* ── Order Summary — Desktop sidebar ── */}
         <div className="hidden lg:block lg:col-span-1">
-          <div className="border p-6 space-y-4 sticky top-20" style={{ borderColor: "#e5e7eb" }}>
+          <div
+            className="sticky top-24 p-8 space-y-6 card-shadow rounded-card"
+            style={{ backgroundColor: "#ffffff" }}
+          >
             <h2
-              className="text-lg font-bold"
-              style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
+              className="text-[22px]"
+              style={{
+                fontFamily: "var(--font-heading)",
+                color: "var(--color-primary)",
+                fontWeight: 500,
+                letterSpacing: "0.02em",
+              }}
             >
               Order Summary
             </h2>
 
-            <div className="space-y-2 text-sm">
+            <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
+                <span style={{ color: "rgba(6,18,34,0.6)" }}>Subtotal</span>
                 <span style={{ color: "var(--color-primary)" }}>
                   {currency} {sub.toLocaleString()}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-gray-600">Delivery</span>
-                <span style={{ color: fee === 0 ? "green" : "var(--color-primary)" }}>
+                <span style={{ color: "rgba(6,18,34,0.6)" }}>Delivery</span>
+                <span style={{ color: fee === 0 ? "#16a34a" : "var(--color-primary)" }}>
                   {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
                 </span>
               </div>
 
               {fee > 0 && (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs" style={{ color: "rgba(6,18,34,0.4)", lineHeight: 1.7 }}>
                   Free delivery on orders above {currency} {freeAbove.toLocaleString()}
                 </p>
               )}
             </div>
 
             <div
-              className="flex justify-between font-bold text-base pt-4 border-t"
-              style={{ borderColor: "#e5e7eb", color: "var(--color-primary)" }}
+              className="flex justify-between text-lg pt-5"
+              style={{
+                borderTop: "1px solid var(--divider-soft)",
+                color: "var(--color-primary)",
+              }}
             >
-              <span>Total</span>
-              <span>
+              <span style={{ fontWeight: 500 }}>Total</span>
+              <span className="price-text" style={{ fontWeight: 500 }}>
                 {currency} {orderTotal.toLocaleString()}
               </span>
             </div>
 
             <Link
               href="/checkout"
-              className="block w-full py-4 text-center text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--color-primary)" }}
+              className="flex items-center justify-center w-full text-[11px] uppercase font-medium text-white hover:opacity-85 rounded-[2px]"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                height: "52px",
+                letterSpacing: "0.25em",
+              }}
             >
               Proceed to Order
             </Link>
 
             <Link
               href="/shop"
-              className="block text-center text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2"
+              className="block text-center text-[11px] uppercase font-medium hover:opacity-100"
+              style={{
+                color: "rgba(6,18,34,0.5)",
+                letterSpacing: "0.18em",
+              }}
             >
               Continue Shopping
             </Link>
           </div>
         </div>
+
+        {/* ── Continue Shopping (mobile/tablet) ── */}
+        <div className="lg:hidden">
+          <Link
+            href="/shop"
+            className="luxe-outline-btn w-full"
+            style={{ borderColor: "var(--color-accent)", color: "var(--color-accent)" }}
+          >
+            ← Continue Shopping
+          </Link>
+        </div>
       </div>
 
       {/* ── Mobile sticky order summary bar ── */}
-      <div className="fixed bottom-0 left-0 right-0 lg:hidden border-t px-4 py-4 space-y-2 z-40"
-        style={{ backgroundColor: "var(--color-primary)", borderColor: "rgba(255,255,255,0.1)" }}>
-        <div className="flex justify-between text-sm text-white/70">
+      <div
+        className="fixed bottom-0 left-0 right-0 lg:hidden px-4 py-4 space-y-2 z-40"
+        style={{
+          backgroundColor: "var(--color-primary)",
+          borderTop: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        <div className="flex justify-between text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
           <span>Delivery</span>
           <span style={{ color: fee === 0 ? "#6ee7b7" : "rgba(255,255,255,0.7)" }}>
             {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
           </span>
         </div>
-        <div className="flex justify-between font-bold text-white">
+        <div className="flex justify-between text-base text-white" style={{ fontWeight: 500 }}>
           <span>Total</span>
-          <span>{currency} {orderTotal.toLocaleString()}</span>
+          <span className="price-text">{currency} {orderTotal.toLocaleString()}</span>
         </div>
         <Link
           href="/checkout"
-          className="block w-full py-4 text-center text-sm uppercase tracking-widest font-semibold text-white transition-opacity hover:opacity-80"
-          style={{ backgroundColor: "var(--color-accent)" }}
+          className="flex items-center justify-center w-full text-[11px] uppercase font-medium text-white hover:opacity-85 rounded-[2px]"
+          style={{
+            backgroundColor: "var(--color-accent)",
+            height: "52px",
+            letterSpacing: "0.25em",
+          }}
         >
           Proceed to Order
         </Link>

@@ -48,6 +48,8 @@ export interface Product {
   name: string
   slug: string
   description: string | null
+  composition: string | null
+  measurements: string | null
   price: number
   images: string[]
   category_id: string | null
@@ -56,6 +58,8 @@ export interface Product {
   stock: number
   /** Per-combination stock: key = variant values joined by "|", e.g. "M|Black": 5 */
   variant_stock: Record<string, number> | null
+  /** Per-color stock for color-only availability checks: { "#FF0000": 5, "#0000FF": 0 } */
+  stock_by_variant: Record<string, number> | null
   /** Maps color name → image URL, e.g. { "Black": "https://..." } */
   color_images: Record<string, string> | null
   is_active: boolean
@@ -64,6 +68,31 @@ export interface Product {
   created_at: string
   /** Populated when joined */
   category?: Category
+  /** Optional review aggregates — populated by `attachRatings()` on the server. */
+  avg_rating?: number
+  review_count?: number
+}
+
+// ────────────────────────────────────────────────────────────
+// Reviews
+// ────────────────────────────────────────────────────────────
+
+/**
+ * Review.is_approved is tri-state:
+ *   null  → pending (default for new submissions)
+ *   true  → approved (visible to customers)
+ *   false → rejected (admin explicitly hid it)
+ */
+export interface Review {
+  id: string
+  product_id: string
+  display_name: string
+  review_text: string
+  rating: number
+  is_approved: boolean | null
+  created_at: string
+  /** Populated by admin queries */
+  product?: { name: string; slug: string } | null
 }
 
 export type OrderStatus = "pending" | "confirmed" | "delivered" | "cancelled"
@@ -71,6 +100,8 @@ export type OrderStatus = "pending" | "confirmed" | "delivered" | "cancelled"
 export interface CustomerInfo {
   name: string
   phone: string
+  /** Optional — collected on checkout for transactional emails. */
+  email?: string
 }
 
 export interface DeliveryAddress {
@@ -113,6 +144,38 @@ export interface PromoCode {
   expires_at: string | null
   is_active: boolean
   created_at: string
+}
+
+// ────────────────────────────────────────────────────────────
+// Returns & Exchanges
+// ────────────────────────────────────────────────────────────
+
+export type ReturnRequestType = "refund" | "exchange"
+export type ReturnRequestStatus = "pending" | "approved" | "rejected"
+
+export interface ReturnRequestItem {
+  product_id: string
+  name: string
+  price: number
+  quantity: number
+  variant?: Record<string, string>
+}
+
+export interface ReturnRequest {
+  id: string
+  order_id: string
+  customer_name: string
+  customer_phone: string
+  request_type: ReturnRequestType
+  reason: string
+  items: ReturnRequestItem[]
+  exchange_product_id: string | null
+  status: ReturnRequestStatus
+  admin_notes: string | null
+  created_at: string
+  /** Populated by joins (admin) */
+  order?: Order | null
+  exchange_product?: { id: string; name: string; slug: string; price: number; images: string[] } | null
 }
 
 // ────────────────────────────────────────────────────────────

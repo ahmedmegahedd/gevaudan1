@@ -29,7 +29,11 @@ export default function CategoryProductManager({ categoryId, categoryProducts, o
   }, [unassigned, search])
 
   function setBusy(id: string, v: boolean) {
-    setBusyIds((prev) => { const s = new Set(prev); v ? s.add(id) : s.delete(id); return s })
+    setBusyIds((prev) => {
+      const s = new Set(prev)
+      if (v) s.add(id); else s.delete(id)
+      return s
+    })
   }
 
   async function handleAdd(product: Product) {
