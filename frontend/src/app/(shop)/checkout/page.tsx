@@ -8,6 +8,7 @@ import { z } from "zod"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { clientApi } from "@/lib/clientApi"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import CheckoutRecommendations from "@/components/shop/CheckoutRecommendations"
 import type { OrderItem } from "@/types"
 
@@ -41,6 +42,7 @@ interface PromoState {
 
 interface SuccessData {
   orderId: string
+  orderNumber: number
   phone: string
   items: OrderItem[]
   subtotal: number
@@ -142,6 +144,7 @@ export default function CheckoutPage() {
 
     setSuccess({
       orderId: data.id,
+      orderNumber: data.order_number,
       phone: values.phone,
       items: orderItems,
       subtotal: sub,
@@ -503,10 +506,10 @@ function OrderSuccessModal({
   data: SuccessData
   onContinue: () => void
 }) {
-  const shortId = data.orderId.slice(0, 8).toUpperCase()
+  const shortId = formatOrderNumber(data.orderNumber)
   const waNumber = brand.whatsapp.replace(/[^0-9]/g, "")
   const waMessage = encodeURIComponent(
-    `Hi! I just placed order #${shortId} on ${brand.name}`
+    `Hi! I just placed order ${shortId} on ${brand.name}`
   )
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
 

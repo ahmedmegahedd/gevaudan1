@@ -6,7 +6,7 @@ import { useState } from "react"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { useWishlistStore } from "@/store/wishlistStore"
-import { useToastStore } from "@/store/toastStore"
+import { useAddedToCartStore } from "@/store/addedToCartStore"
 import Stars from "@/components/shop/Stars"
 import type { Product } from "@/types"
 
@@ -21,11 +21,13 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { currency } = storeConfig.delivery
 
   const mainImage = product.images[0] ?? null
+  const secondaryImage = product.images[1] ?? null
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const displayImage = previewImage ?? mainImage
 
   function handleToggleWishlist(e: React.MouseEvent) {
     e.preventDefault()
+    e.stopPropagation()
     toggleWishlist(product)
   }
 
@@ -33,141 +35,169 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault()
+    e.stopPropagation()
     if (outOfStock) return
-    // Add with the first available option for each variant (quick-add from grid)
+    // Quick-add: pick the first available option for each variant
     const defaultVariants: Record<string, string> = {}
     for (const [key, values] of Object.entries(product.variants)) {
       if (values.length > 0) defaultVariants[key] = values[0]
     }
     addItem(product, defaultVariants, 1)
-    useToastStore.getState().addToast("Added to cart", "success")
+    useAddedToCartStore.getState().show(product, defaultVariants, 1)
   }
 
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className="group flex flex-col rounded-card overflow-hidden card-shadow"
-      style={{ backgroundColor: "#ffffff" }}
+      className="group flex flex-col"
     >
-      {/* Image */}
+      {/* ── Image (no card chrome — floats on the page) ── */}
       <div
-        className="relative aspect-[3/4] overflow-hidden"
-        style={{ backgroundColor: "#E0D5C2" }}
+        className="relative aspect-[3/4] overflow-hidden rounded-[2px]"
+        style={{
+          backgroundColor: "var(--color-cream-deep)",
+          // Hairline border that becomes a touch more present on hover
+          boxShadow: "inset 0 0 0 1px rgba(61,20,25,0.06)",
+        }}
       >
+        {/* Primary image */}
         {displayImage ? (
           <Image
             src={displayImage}
             alt={product.name}
             fill
-            className={`object-cover ${outOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
-            style={{ transition: "transform 0.4s ease" }}
+            className={outOfStock ? "object-cover grayscale opacity-70" : "object-cover"}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-gray-300 text-xs">No image</span>
+            <span
+              className="text-[10px] uppercase"
+              style={{ color: "rgba(61,20,25,0.35)", letterSpacing: "0.18em" }}
+            >
+              No image
+            </span>
           </div>
+        )}
+
+        {/* Cross-fade to second image on hover (desktop) — only when not previewing a swatch */}
+        {!previewImage && secondaryImage && !outOfStock && (
+          <Image
+            src={secondaryImage}
+            alt=""
+            aria-hidden="true"
+            fill
+            className="object-cover opacity-0 group-hover:opacity-100 hidden md:block"
+            style={{ transition: "opacity 0.6s ease" }}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
         )}
 
         {/* Out of stock badge */}
         {outOfStock && (
-          <div className="absolute inset-0 flex items-end justify-center pb-5">
+          <div className="absolute inset-0 flex items-end justify-center pb-6 z-10">
             <span
-              className="bg-black/60 text-white text-[10px] uppercase font-medium px-4 py-2"
-              style={{ letterSpacing: "0.18em" }}
+              className="text-[10px] uppercase font-medium px-4 py-2"
+              style={{
+                backgroundColor: "rgba(61,20,25,0.85)",
+                color: "var(--color-cream)",
+                letterSpacing: "0.22em",
+              }}
             >
               Out of Stock
             </span>
           </div>
         )}
 
-        {/* Wishlist heart — top-right */}
+        {/* Wishlist heart — top-right, refined */}
         <button
           onClick={handleToggleWishlist}
-          className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:scale-110 z-10"
+          className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full z-20 hover:scale-110"
+          style={{
+            backgroundColor: "rgba(241,233,217,0.92)",
+            backdropFilter: "blur(4px)",
+          }}
           aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
         >
-          <HeartIcon filled={wishlisted} color={storeConfig.theme.accentColor} />
+          <HeartIcon filled={wishlisted} color="var(--color-primary)" />
         </button>
 
-        {/* Always-visible add to cart button on mobile (bottom-right corner) */}
+        {/* ── Quick-add pill ── */}
         {!outOfStock && (
-          <button
-            onClick={handleAddToCart}
-            className="absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center text-white md:hidden rounded-[2px]"
-            style={{ backgroundColor: "var(--color-primary)" }}
-            aria-label={`Add ${product.name} to cart`}
-          >
-            <CartIconSmall />
-          </button>
-        )}
-
-        {/* Desktop hover overlay — Add to Cart */}
-        {outOfStock ? (
           <div
-            className="absolute bottom-0 left-0 right-0 py-4 text-[11px] uppercase font-medium text-white/70 text-center opacity-0 group-hover:opacity-100 hidden md:block bg-black/55"
-            style={{ letterSpacing: "0.18em" }}
+            className="absolute inset-x-3 bottom-3 z-20 flex justify-center"
+            style={{ pointerEvents: "none" }}
           >
-            Out of Stock
+            <button
+              onClick={handleAddToCart}
+              className="quick-add-pill pointer-events-auto opacity-100 md:opacity-0 group-hover:opacity-100 translate-y-0 md:translate-y-2 group-hover:translate-y-0"
+              style={{
+                transition: "opacity 0.35s ease, transform 0.35s ease",
+              }}
+              aria-label={`Add ${product.name} to cart`}
+            >
+              <span className="quick-add-pill-icon">+</span>
+              <span className="quick-add-pill-text">Add to Cart</span>
+            </button>
           </div>
-        ) : (
-          <button
-            onClick={handleAddToCart}
-            className="absolute bottom-0 left-0 right-0 py-4 text-[11px] uppercase font-medium text-white opacity-0 group-hover:opacity-100 hidden md:block"
-            style={{ backgroundColor: "var(--color-primary)", letterSpacing: "0.18em" }}
-            aria-label={`Add ${product.name} to cart`}
-          >
-            Add to Cart
-          </button>
         )}
       </div>
 
-      {/* Info */}
-      <div className="flex flex-col gap-2 p-6">
-        <p
-          className="text-[10px] uppercase font-medium"
-          style={{ color: "var(--color-mid1)", letterSpacing: "0.15em" }}
-        >
-          {product.category?.name}
-        </p>
-        <h3
-          className="text-lg leading-snug"
-          style={{
-            color: "var(--color-primary)",
-            fontFamily: "var(--font-heading)",
-            fontWeight: 500,
-            letterSpacing: "0.02em",
-          }}
-        >
-          {product.name}
-        </h3>
+      {/* ── Info (no card padding — text aligns to image edges) ── */}
+      <div className="flex flex-col gap-1.5 pt-4 pb-2 px-1">
+        {product.category?.name && (
+          <p
+            className="text-[10px] uppercase font-medium"
+            style={{ color: "var(--color-accent)", letterSpacing: "0.22em" }}
+          >
+            {product.category.name}
+          </p>
+        )}
+
+        {/* Name + price on the same line for an editorial layout */}
+        <div className="flex items-baseline justify-between gap-3 mt-1">
+          <h3
+            className="text-base md:text-lg leading-tight truncate"
+            style={{
+              color: "var(--color-primary)",
+              fontFamily: "var(--font-heading)",
+              fontWeight: 500,
+              letterSpacing: "0.01em",
+            }}
+          >
+            {product.name}
+          </h3>
+          <p
+            className="price-text text-base md:text-lg whitespace-nowrap"
+            style={{ color: "var(--color-primary)" }}
+          >
+            {currency} {product.price.toLocaleString()}
+          </p>
+        </div>
+
+        {/* Reviews + swatches stay quietly below */}
         {typeof product.review_count === "number" && product.review_count > 0 && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-1">
             <Stars
               value={product.avg_rating ?? 0}
-              size={12}
+              size={11}
               ariaLabelValue={product.avg_rating ?? 0}
             />
             <span
-              className="text-xs"
-              style={{ color: "rgba(61,20,25,0.5)" }}
+              className="text-[10px]"
+              style={{ color: "rgba(61,20,25,0.45)", letterSpacing: "0.05em" }}
             >
               ({product.review_count})
             </span>
           </div>
         )}
+
         <ColorSwatches
           variants={product.variants}
           colorImages={product.color_images ?? {}}
           stockByVariant={product.stock_by_variant ?? {}}
           onPreview={setPreviewImage}
         />
-        <p
-          className="price-text text-xl mt-1"
-          style={{ color: "var(--color-accent)" }}
-        >
-          {currency} {product.price.toLocaleString()}
-        </p>
       </div>
     </Link>
   )
@@ -288,19 +318,19 @@ function ColorSwatches({ variants, colorImages, stockByVariant, onPreview }: Col
 }
 
 function HeartIcon({ filled, color }: { filled: boolean; color: string }) {
+  // Use `style.color` + `currentColor` so CSS-variable values are honored
+  // (raw SVG attributes don't resolve `var(--…)`).
   return filled ? (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill={color}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      style={{ color }}
+    >
       <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
     </svg>
   ) : (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-    </svg>
-  )
-}
-
-function CartIconSmall() {
-  return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className="h-4 w-4"
@@ -308,12 +338,10 @@ function CartIconSmall() {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={1.5}
+      style={{ color }}
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
     </svg>
   )
 }
+

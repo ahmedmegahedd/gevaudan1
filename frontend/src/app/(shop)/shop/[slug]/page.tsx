@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server"
 export const dynamic = 'force-dynamic'
 import { storeConfig } from "@/config/store.config"
 import ProductDetail from "@/components/shop/ProductDetail"
-import ProductTabs from "@/components/shop/ProductTabs"
 import ProductCard from "@/components/shop/ProductCard"
 import ReviewsSection from "@/components/shop/ReviewsSection"
 import { getRecommendedProducts } from "@/lib/recommendations"
@@ -67,12 +66,6 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <ProductDetail product={p} />
-
-      <ProductTabs
-        description={p.description}
-        composition={p.composition}
-        measurements={p.measurements}
-      />
 
       {recommended.length > 0 && (
         <section

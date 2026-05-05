@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { storeConfig } from "@/config/store.config"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { Order } from "@/types"
 
 interface Props {
@@ -29,10 +30,10 @@ export default async function OrderConfirmationPage({ params }: Props) {
   const { currency } = storeConfig.delivery
   const { brand, theme } = storeConfig
 
-  const shortId = o.id.slice(0, 8).toUpperCase()
+  const shortId = formatOrderNumber(o.order_number)
   const waNumber = brand.whatsapp.replace(/[^0-9]/g, "")
   const waMessage = encodeURIComponent(
-    `Hi! I just placed order #${shortId} on ${brand.name}`
+    `Hi! I just placed order ${shortId} on ${brand.name}`
   )
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
 

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { storeConfig } from "@/config/store.config"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { Order, OrderItem, ReturnRequestType } from "@/types"
 
 const { currency } = storeConfig.delivery
@@ -299,7 +300,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
                 setOrderIdInput(e.target.value)
                 if (lookupError) setLookupError("")
               }}
-              placeholder="e.g. 7d3b1e08-4a90-4a1d-9f2c-..."
+              placeholder="e.g. G00012"
               className="input-underline"
               autoFocus
             />
@@ -447,7 +448,7 @@ function Step2({
     month: "short",
     year: "numeric",
   })
-  const shortId = order.id.slice(0, 8).toUpperCase()
+  const shortId = formatOrderNumber(order.order_number)
 
   return (
     <div className="space-y-8">
@@ -466,7 +467,7 @@ function Step2({
               letterSpacing: "0.02em",
             }}
           >
-            Order #{shortId}
+            Order {shortId}
           </h2>
           <p
             className="text-[10px] uppercase"
@@ -930,7 +931,7 @@ function Step4({
   onBack,
   onSubmit,
 }: Step4Props) {
-  const shortId = order.id.slice(0, 8).toUpperCase()
+  const shortId = formatOrderNumber(order.order_number)
 
   return (
     <div className="space-y-8">
@@ -951,7 +952,7 @@ function Step4({
         </h2>
 
         <ReviewRow label="Order">
-          <span className="font-mono">#{shortId}</span>
+          <span className="font-mono">{shortId}</span>
         </ReviewRow>
 
         <ReviewRow label="Type">

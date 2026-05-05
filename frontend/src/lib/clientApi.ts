@@ -87,7 +87,7 @@ export const clientApi = {
     discount_amount?: number
     total: number
     promo_code?: string | null
-  }): Promise<{ data?: { id: string }; error?: string }> {
+  }): Promise<{ data?: { id: string; order_number: number }; error?: string }> {
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -96,7 +96,7 @@ export const clientApi = {
       })
       const json = await res.json()
       if (!res.ok) return { error: json.error ?? "Failed to place order" }
-      return { data: json as { id: string } }
+      return { data: json as { id: string; order_number: number } }
     } catch {
       return { error: "Network error — please try again" }
     }

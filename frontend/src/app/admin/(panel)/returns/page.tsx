@@ -11,7 +11,7 @@ export default async function AdminReturnsPage() {
 
   const { data } = await supabase
     .from("return_requests")
-    .select("*")
+    .select("*, order:orders(order_number)")
     .order("created_at", { ascending: false })
 
   return <ReturnsAdminClient requests={(data as ReturnRequest[]) ?? []} />

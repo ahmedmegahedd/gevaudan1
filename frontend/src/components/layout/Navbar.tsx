@@ -34,16 +34,24 @@ export default function Navbar() {
       style={{ backgroundColor: "var(--color-primary)" }}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 h-[60px] md:h-[70px] flex items-center justify-between gap-4">
-        {/* Logo / Brand */}
-        <Link href="/" className="flex flex-col leading-none shrink-0" onClick={() => setMenuOpen(false)}>
+        {/* Logo / Brand — Zapfino has tall ascenders/descenders, so size it down
+            on mobile and clamp line-height to keep it inside the navbar. */}
+        <Link
+          href="/"
+          className="flex flex-col leading-none shrink-0 overflow-hidden"
+          onClick={() => setMenuOpen(false)}
+        >
           <span
-            className="brand-script text-white"
-            style={{ fontSize: 28 }}
+            className="brand-script text-white block"
+            style={{
+              fontSize: "clamp(20px, 5.5vw, 30px)",
+              lineHeight: 0.95,
+            }}
           >
             {brand.name}
           </span>
           <span
-            className="text-[10px] uppercase tracking-[0.3em] font-light mt-1"
+            className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] font-light mt-0.5"
             style={{ color: "var(--color-cream)" }}
           >
             {brand.subtitle}

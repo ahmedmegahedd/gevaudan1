@@ -206,6 +206,50 @@ input, select, textarea {
        em size, so callers should pin the size explicitly via font-size. */
   }
 
+  /* ── Quick-add pill (ProductCard hover CTA) ── */
+  .quick-add-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 18px 0 14px;
+    background-color: var(--color-cream);
+    color: var(--color-primary);
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 500;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(61, 20, 25, 0.18);
+    transition: background-color var(--transition-base), color var(--transition-base);
+  }
+  .quick-add-pill:hover {
+    background-color: var(--color-primary);
+    color: var(--color-cream);
+  }
+  .quick-add-pill-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background-color: var(--color-primary);
+    color: var(--color-cream);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1;
+    transition: background-color var(--transition-base), color var(--transition-base);
+  }
+  .quick-add-pill:hover .quick-add-pill-icon {
+    background-color: var(--color-cream);
+    color: var(--color-primary);
+  }
+  .quick-add-pill-text {
+    display: inline-block;
+  }
+
   /* ── Out-of-stock color swatch (dim + diagonal red strike) ── */
   .swatch-oos {
     position: relative;
@@ -304,6 +348,24 @@ input, select, textarea {
 }
 .luxe-toast {
   animation: luxe-toast-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Added-to-cart mini popup ── */
+@keyframes cart-popup-in-desktop {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes cart-popup-in-mobile {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cart-popup {
+  animation: cart-popup-in-mobile 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (min-width: 640px) {
+  .cart-popup {
+    animation: cart-popup-in-desktop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 }
 
 /* ── Order success modal animations ── */

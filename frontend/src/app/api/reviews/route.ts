@@ -62,7 +62,12 @@ export async function POST(request: NextRequest) {
   })
 
   if (error) {
-    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 })
+    // Log the real Supabase error so it surfaces in the dev terminal / Vercel logs
+    console.error("[api/reviews] insert failed:", error)
+    return NextResponse.json(
+      { error: error.message ?? "Something went wrong. Please try again.", code: error.code },
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({ success: true })

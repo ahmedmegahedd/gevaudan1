@@ -4,6 +4,7 @@ import { storeConfig } from "@/config/store.config"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import ToastContainer from "@/components/ui/Toast"
+import AddedToCartPopup from "@/components/ui/AddedToCartPopup"
 import CookieConsent from "@/components/ui/CookieConsent"
 import "./globals.css"
 
@@ -49,6 +50,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1 pt-[60px] md:pt-[70px]">{children}</main>
         <Footer />
+        <AddedToCartPopup />
         <ToastContainer />
         <CookieConsent />
       </body>

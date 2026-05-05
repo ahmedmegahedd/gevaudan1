@@ -4,6 +4,7 @@ import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { storeConfig } from "@/config/store.config"
 import OrderStatusForm from "@/components/admin/OrderStatusForm"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { Order, OrderStatus } from "@/types"
 
 export const dynamic = "force-dynamic"
@@ -36,7 +37,7 @@ export default async function OrderDetailPage({ params }: Props) {
   if (!raw) notFound()
 
   const order = raw as Order
-  const shortId = order.id.slice(0, 8).toUpperCase()
+  const shortId = formatOrderNumber(order.order_number)
 
   // Fetch product images for each order item
   const productIds = order.items.map((i) => i.product_id).filter(Boolean)
@@ -54,7 +55,7 @@ export default async function OrderDetailPage({ params }: Props) {
   // WhatsApp message
   const waPhone = order.customer_info.phone.replace(/[^0-9]/g, "")
   const waMessage = encodeURIComponent(
-    `Hi ${order.customer_info.name}, your order #${shortId} from ${brand.name} is ${order.status}. Thank you!`
+    `Hi ${order.customer_info.name}, your order ${shortId} from ${brand.name} is ${order.status}. Thank you!`
   )
   const waLink = `https://wa.me/${waPhone}?text=${waMessage}`
 
@@ -78,7 +79,7 @@ export default async function OrderDetailPage({ params }: Props) {
             className="text-2xl font-bold"
             style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
           >
-            Order #{shortId}
+            Order {shortId}
           </h1>
           <p className="text-xs text-gray-400 mt-1">
             {orderDate.toLocaleDateString("en-GB", {

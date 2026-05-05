@@ -4,6 +4,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { storeConfig } from "@/config/store.config"
 import ReturnRequestDetail from "./ReturnRequestDetail"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { Order, ReturnRequest } from "@/types"
 
 export const dynamic = "force-dynamic"
@@ -79,7 +80,7 @@ export default async function ReturnRequestPage({ params }: Props) {
         ← All Requests
       </Link>
 
-      <PageHeader request={req} />
+      <PageHeader request={req} order={order} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         <div className="space-y-6">
@@ -200,9 +201,11 @@ export default async function ReturnRequestPage({ params }: Props) {
   )
 }
 
-function PageHeader({ request }: { request: ReturnRequest }) {
+function PageHeader({ request, order }: { request: ReturnRequest; order: Order | null }) {
   const shortId = request.id.slice(0, 8).toUpperCase()
-  const orderShort = request.order_id.slice(0, 8).toUpperCase()
+  const orderLabel = order
+    ? formatOrderNumber(order.order_number)
+    : `#${request.order_id.slice(0, 8).toUpperCase()}`
   const date = new Date(request.created_at).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
@@ -224,7 +227,7 @@ function PageHeader({ request }: { request: ReturnRequest }) {
             className="font-mono hover:underline"
             style={{ color: "var(--color-accent)" }}
           >
-            #{orderShort}
+            {orderLabel}
           </Link>{" "}
           · {date}
         </p>

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { serverApi } from "@/lib/serverApi"
 import { storeConfig } from "@/config/store.config"
 import OrderCard from "@/components/admin/OrderCard"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { OrderStatus } from "@/types"
 
 export const dynamic = "force-dynamic"
@@ -76,7 +77,7 @@ export default async function AdminOrdersPage() {
                   }}
                 >
                   <td className="px-4 py-3 font-mono text-xs text-gray-500">
-                    #{order.id.slice(0, 8).toUpperCase()}
+                    {formatOrderNumber(order.order_number)}
                   </td>
                   <td className="px-4 py-3 font-medium" style={{ color: "var(--color-primary)" }}>
                     {order.customer_info.name}

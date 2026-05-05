@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import Link from "next/link"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { ReturnRequest } from "@/types"
 
 type Tab = "all" | "pending" | "refund" | "exchange"
@@ -157,7 +158,9 @@ export default function ReturnsAdminClient({ requests }: Props) {
                           style={{ color: "var(--color-accent)" }}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          #{r.order_id.slice(0, 8).toUpperCase()}
+                          {r.order?.order_number
+                            ? formatOrderNumber(r.order.order_number)
+                            : `#${r.order_id.slice(0, 8).toUpperCase()}`}
                         </Link>
                       </td>
                       <td className="px-4 py-3 align-top">

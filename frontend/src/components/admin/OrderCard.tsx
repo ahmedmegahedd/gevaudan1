@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { Order, OrderStatus } from "@/types"
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export default function OrderCard({ order, currency, statusColors }: Props) {
-  const shortId = order.id.slice(0, 8).toUpperCase()
+  const shortId = formatOrderNumber(order.order_number)
   const isPending = order.status === "pending"
 
   return (
@@ -27,7 +28,7 @@ export default function OrderCard({ order, currency, statusColors }: Props) {
           <p className="font-semibold text-sm" style={{ color: "var(--color-primary)" }}>
             {order.customer_info.name}
           </p>
-          <p className="text-xs text-gray-400 font-mono mt-0.5">#{shortId}</p>
+          <p className="text-xs text-gray-400 font-mono mt-0.5">{shortId}</p>
         </div>
         <span
           className="text-xs font-semibold px-2 py-1 rounded-full capitalize shrink-0"

@@ -121,6 +121,8 @@ export interface OrderItem {
 
 export interface Order {
   id: string
+  /** Sequential, customer-facing order number (e.g. 1, 2, 3 …). Display via `formatOrderNumber()`. */
+  order_number: number
   customer_info: CustomerInfo
   delivery_address: DeliveryAddress
   items: OrderItem[]

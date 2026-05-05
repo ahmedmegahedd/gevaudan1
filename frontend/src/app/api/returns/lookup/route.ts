@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
 import { z } from "zod"
+import { parseOrderNumber } from "@/lib/orderNumber"
 import type { Order } from "@/types"
 
 const RETURN_WINDOW_DAYS = 14
 const RETURN_WINDOW_MS = RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000
 
 const schema = z.object({
-  order_id: z.string().min(8, "Order ID is required"),
+  order_id: z.string().trim().min(1, "Order ID is required"),
 })
 
 export async function POST(request: NextRequest) {
@@ -31,28 +32,28 @@ export async function POST(request: NextRequest) {
     { cookies: { getAll: () => [], setAll: () => {} } }
   )
 
-  // Accept either the full UUID or a short prefix (first 8 chars uppercase, what
-  // we show on the confirmation screen). Match either way.
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderIdRaw)
+  // Accept any of:
+  //   1. "G00012" / "g12" / "12"   →  look up by sequential order_number
+  //   2. Full UUID                 →  look up by id
   let order: Order | null = null
 
-  if (isUuid) {
+  const numeric = parseOrderNumber(orderIdRaw)
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderIdRaw)
+
+  if (numeric !== null) {
+    const { data } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("order_number", numeric)
+      .maybeSingle()
+    order = (data as Order) ?? null
+  } else if (isUuid) {
     const { data } = await supabase
       .from("orders")
       .select("*")
       .eq("id", orderIdRaw)
       .maybeSingle()
     order = (data as Order) ?? null
-  } else {
-    const prefix = orderIdRaw.toLowerCase().replace(/[^0-9a-f-]/g, "")
-    if (prefix.length >= 4) {
-      const { data } = await supabase
-        .from("orders")
-        .select("*")
-        .ilike("id::text", `${prefix}%`)
-        .limit(1)
-      order = ((data as Order[] | null) ?? [])[0] ?? null
-    }
   }
 
   if (!order) {

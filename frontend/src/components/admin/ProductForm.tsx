@@ -682,10 +682,15 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
         )}
       </Section>
 
-      {/* ── Variant Stock ── */}
+      {/* ── Variant Stock — colors only ── */}
       {(() => {
+        // Only build per-color stock rows. Other variant dimensions (Size, etc.)
+        // are excluded so the table stays focused and small.
         const activeGroups = variantGroups.filter(
-          (g) => g.key.trim() && g.value.trim()
+          (g) =>
+            g.key.trim() &&
+            g.value.trim() &&
+            /colou?r/i.test(g.key.trim())
         )
         if (activeGroups.length === 0) return null
 

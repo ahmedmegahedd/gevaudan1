@@ -12,6 +12,7 @@ import {
   Text,
 } from "@react-email/components"
 import { storeConfig } from "@/config/store.config"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import type { Order } from "@/types"
 
 // Brand primary (deep burgundy) and accent (wine). The NAVY/ACCENT names
@@ -32,16 +33,16 @@ interface OrderConfirmationProps {
 export default function OrderConfirmation({ order }: OrderConfirmationProps) {
   const { brand, delivery } = storeConfig
   const currency = delivery.currency
-  const shortId = order.id.slice(0, 8).toUpperCase()
+  const shortId = formatOrderNumber(order.order_number)
   const waNumber = brand.whatsapp.replace(/[^0-9]/g, "")
   const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(
-    `Hi! I just placed order #${shortId} on ${brand.name}`
+    `Hi! I just placed order ${shortId} on ${brand.name}`
   )}`
 
   return (
     <Html lang="en">
       <Head />
-      <Preview>Order #{shortId} confirmed — thank you for shopping with {brand.name}</Preview>
+      <Preview>Order {shortId} confirmed — thank you for shopping with {brand.name}</Preview>
       <Body
         style={{
           margin: 0,

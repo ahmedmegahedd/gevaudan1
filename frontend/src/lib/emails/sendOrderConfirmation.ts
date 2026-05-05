@@ -1,6 +1,7 @@
 import { render } from "@react-email/components"
 import { sendEmail } from "@/lib/email"
 import { storeConfig } from "@/config/store.config"
+import { formatOrderNumber } from "@/lib/orderNumber"
 import OrderConfirmation from "./OrderConfirmation"
 import type { Order } from "@/types"
 
@@ -26,8 +27,8 @@ export async function sendOrderConfirmationEmail(
   if (!email) return { skipped: true }
 
   const { brand } = storeConfig
-  const shortId = order.id.slice(0, 8).toUpperCase()
-  const subject = `Order #${shortId} confirmed — thank you from ${brand.name}`
+  const shortId = formatOrderNumber(order.order_number)
+  const subject = `Order ${shortId} confirmed — thank you from ${brand.name}`
 
   const html = await render(OrderConfirmation({ order }))
 

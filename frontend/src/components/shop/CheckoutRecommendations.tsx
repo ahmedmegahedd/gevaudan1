@@ -6,7 +6,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
-import { useToastStore } from "@/store/toastStore"
+import { useAddedToCartStore } from "@/store/addedToCartStore"
 import type { Product } from "@/types"
 
 const { currency } = storeConfig.delivery
@@ -134,7 +134,7 @@ export default function CheckoutRecommendations() {
                 if (values.length > 0) defaultVariants[key] = values[0]
               }
               addItem(product, defaultVariants, 1)
-              useToastStore.getState().addToast("Added to cart", "success")
+              useAddedToCartStore.getState().show(product, defaultVariants, 1)
             }} />
           ))}
         </div>
