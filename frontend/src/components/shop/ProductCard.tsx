@@ -31,16 +31,38 @@ export default function ProductCard({ product }: ProductCardProps) {
     toggleWishlist(product)
   }
 
-  const outOfStock = product.stock === 0
+  // ── Per-color stock + OOS helpers ──
+  const stockByVariant: Record<string, number> = product.stock_by_variant ?? {}
+  const colorKey = Object.keys(product.variants).find((k) => /colou?r/i.test(k))
+  const colorOptions = colorKey ? product.variants[colorKey] ?? [] : []
+
+  function isColorOOS(c: string): boolean {
+    return stockByVariant[c] === 0
+  }
+
+  // Treat a product as out-of-stock if total stock is 0, OR (when it has
+  // colors) every color is explicitly marked OOS in stock_by_variant.
+  const allColorsOOS =
+    colorOptions.length > 0 && colorOptions.every(isColorOOS)
+  const outOfStock = product.stock === 0 || allColorsOOS
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
     if (outOfStock) return
-    // Quick-add: pick the first available option for each variant
+
+    // Quick-add: pick the first IN-STOCK option for each variant. For colors,
+    // skip OOS values; for other variants (size, etc.) take the first option.
     const defaultVariants: Record<string, string> = {}
     for (const [key, values] of Object.entries(product.variants)) {
-      if (values.length > 0) defaultVariants[key] = values[0]
+      if (values.length === 0) continue
+      if (key === colorKey) {
+        const inStock = values.find((v) => !isColorOOS(v))
+        if (!inStock) return // belt-and-braces: refuse if no color is available
+        defaultVariants[key] = inStock
+      } else {
+        defaultVariants[key] = values[0]
+      }
     }
     addItem(product, defaultVariants, 1)
     useAddedToCartStore.getState().show(product, defaultVariants, 1)

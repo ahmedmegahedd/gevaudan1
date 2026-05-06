@@ -250,23 +250,30 @@ input, select, textarea {
     display: inline-block;
   }
 
-  /* ── Out-of-stock color swatch (dim + diagonal red strike) ── */
+  /* ── Out-of-stock color swatch (dimmed, with a red X overlay) ── */
   .swatch-oos {
     position: relative;
-    opacity: 0.4;
+    opacity: 0.45;
     cursor: not-allowed;
   }
+  .swatch-oos::before,
   .swatch-oos::after {
     content: "";
     position: absolute;
     top: 50%;
-    left: -2px;
-    right: -2px;
-    height: 1px;
+    left: -3px;
+    right: -3px;
+    height: 1.5px;
     background-color: #dc2626;
-    transform: translateY(-50%) rotate(45deg);
     transform-origin: center;
     pointer-events: none;
+    border-radius: 1px;
+  }
+  .swatch-oos::after {
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .swatch-oos::before {
+    transform: translateY(-50%) rotate(-45deg);
   }
 
   /* ── Luxury outline / solid buttons ── */
