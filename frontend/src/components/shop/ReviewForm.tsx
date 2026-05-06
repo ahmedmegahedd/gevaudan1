@@ -125,7 +125,7 @@ export default function ReviewForm({ productId }: ReviewFormProps) {
                 className="leading-none p-1"
                 style={{
                   fontSize: 28,
-                  color: filled ? "var(--color-accent)" : "rgba(61,20,25,0.2)",
+                  color: filled ? "var(--color-accent)" : "rgba(42,61,46,0.2)",
                   background: "transparent",
                   border: "none",
                   cursor: "pointer",
@@ -188,7 +188,7 @@ export default function ReviewForm({ productId }: ReviewFormProps) {
             color:
               text.trim().length > 0 && text.trim().length < 20
                 ? "#dc2626"
-                : "rgba(61,20,25,0.4)",
+                : "rgba(42,61,46,0.4)",
           }}
         >
           {text.trim().length}/20 characters minimum

@@ -3,54 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --background: #F1E9D9;
-  --foreground: #2A1A1F;
-  --color-primary: #5C1F2A;          /* deep burgundy */
-  --color-accent: #8B3A48;           /* softer wine */
-  --color-mid1: #7A2A38;
-  --color-mid2: #3D1419;
-  --color-cream: #F1E9D9;            /* warm cream — page background */
-  --color-cream-deep: #E0D5C2;       /* warmer sand — image placeholder, subtle surfaces */
-  --color-text-light: #F1E9D9;
-  --color-text-on-accent: #F1E9D9;
-
-  /* ── Luxury design tokens ── */
-  --transition-base: 0.3s ease;
-  --transition-image: 0.4s ease;
-  --shadow-card: 0 2px 20px rgba(61, 20, 25, 0.08);
-  --shadow-card-hover: 0 6px 30px rgba(61, 20, 25, 0.12);
-  --divider-soft: rgba(92, 31, 42, 0.12);
-  --tracking-heading: 0.02em;
-  --tracking-label: 0.15em;
-  --line-height-body: 1.8;
-}
-
-/* ──────────────────────────────────────────────────────────────────
-   Homepage palette preview: Deep Forest Green + Warm Bone/Ivory.
-   Scoped to <html data-palette="forest"> via PalettePreview client
-   component on the homepage. Every other route falls through to the
-   default burgundy palette above.
-   ────────────────────────────────────────────────────────────────── */
-html[data-palette="forest"] {
   --background: #EFE6D6;
   --foreground: #1F2A21;
   --color-primary: #2A3D2E;          /* deep forest green */
   --color-accent: #4A5D4D;            /* mossy mid-green */
   --color-mid1: #3D4D3F;
   --color-mid2: #1A2B1D;              /* espresso forest */
-  --color-cream: #EFE6D6;             /* warm bone */
-  --color-cream-deep: #DCD2BD;        /* deeper sand */
+  --color-cream: #EFE6D6;             /* warm bone — page background */
+  --color-cream-deep: #DCD2BD;        /* deeper sand — image placeholder, subtle surfaces */
   --color-text-light: #EFE6D6;
   --color-text-on-accent: #EFE6D6;
 
+  /* ── Luxury design tokens ── */
+  --transition-base: 0.3s ease;
+  --transition-image: 0.4s ease;
   --shadow-card: 0 2px 20px rgba(42, 61, 46, 0.08);
   --shadow-card-hover: 0 6px 30px rgba(42, 61, 46, 0.12);
   --divider-soft: rgba(42, 61, 46, 0.12);
-
-  background-color: #EFE6D6 !important;
-}
-html[data-palette="forest"] body {
-  background-color: #EFE6D6 !important;
+  --tracking-heading: 0.02em;
+  --tracking-label: 0.15em;
+  --line-height-body: 1.8;
 }
 
 /* Prevent horizontal overflow at root level */
@@ -59,13 +31,13 @@ html, body {
 }
 
 html {
-  background-color: #F1E9D9 !important;
+  background-color: #EFE6D6 !important;
   scroll-behavior: smooth;
 }
 
 body {
   color: var(--foreground);
-  background-color: #F1E9D9 !important;
+  background-color: #EFE6D6 !important;
   font-family: var(--font-body), system-ui, sans-serif;
   font-size: 16px;
   line-height: var(--line-height-body);
@@ -202,7 +174,7 @@ input, select, textarea {
     border-bottom-color: var(--color-accent);
   }
   .input-underline::placeholder {
-    color: rgba(61, 20, 25, 0.4);
+    color: rgba(42, 61, 46, 0.4);
   }
   .input-underline.has-error {
     border-bottom-color: #ef4444;
@@ -249,7 +221,7 @@ input, select, textarea {
     letter-spacing: 0.18em;
     font-weight: 500;
     border-radius: 999px;
-    box-shadow: 0 6px 18px rgba(61, 20, 25, 0.18);
+    box-shadow: 0 6px 18px rgba(42, 61, 46, 0.18);
     transition: background-color var(--transition-base), color var(--transition-base);
   }
   .quick-add-pill:hover {

@@ -87,7 +87,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           {/* Main image */}
           <div
             className="group relative aspect-[3/4] overflow-hidden w-full rounded-card"
-            style={{ backgroundColor: "#E0D5C2" }}
+            style={{ backgroundColor: "#DCD2BD" }}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
@@ -272,9 +272,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       }}
                       className="relative min-h-[48px] min-w-[48px] px-5 py-3 text-sm overflow-hidden rounded-[2px]"
                       style={{
-                        border: `1px solid ${isSelected ? "var(--color-primary)" : "rgba(61,20,25,0.15)"}`,
+                        border: `1px solid ${isSelected ? "var(--color-primary)" : "rgba(42,61,46,0.15)"}`,
                         backgroundColor: isSelected ? "var(--color-primary)" : "transparent",
-                        color: isSelected ? "#fff" : optionOOS ? "rgba(61,20,25,0.25)" : "var(--color-primary)",
+                        color: isSelected ? "#fff" : optionOOS ? "rgba(42,61,46,0.25)" : "var(--color-primary)",
                         textDecoration: optionOOS && !isSelected ? "line-through" : "none",
                         letterSpacing: "0.05em",
                         cursor: optionOOS ? "not-allowed" : "pointer",
@@ -306,11 +306,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </p>
             <div
               className="flex items-center w-fit rounded-[2px]"
-              style={{ border: "1px solid rgba(61,20,25,0.15)" }}
+              style={{ border: "1px solid rgba(42,61,46,0.15)" }}
             >
               <button
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-[#E0D5C2]"
+                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-[#DCD2BD]"
                 aria-label="Decrease quantity"
               >
                 −
@@ -319,7 +319,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <button
                 onClick={() => setQuantity((q) => Math.min(selectedStock, q + 1))}
                 disabled={quantity >= selectedStock}
-                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-[#E0D5C2] disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-12 h-12 text-lg flex items-center justify-center hover:bg-[#DCD2BD] disabled:opacity-30 disabled:cursor-not-allowed"
                 aria-label="Increase quantity"
               >
                 +
@@ -537,12 +537,12 @@ function MaterialCare({ variants }: { variants: Record<string, string[]> }) {
 
       <div style={{ maxHeight: open ? "400px" : "0px", overflow: "hidden", transition: "max-height 0.35s ease" }}>
         <div className="pt-5 pb-2 space-y-5">
-          <p className="text-base" style={{ color: "rgba(61,20,25,0.7)", lineHeight: 1.8 }}>{material}</p>
+          <p className="text-base" style={{ color: "rgba(42,61,46,0.7)", lineHeight: 1.8 }}>{material}</p>
           <div className="grid grid-cols-2 gap-4">
             {CARE_INSTRUCTIONS.map(({ label, icon }) => (
               <div key={label} className="flex items-center gap-3">
                 <span style={{ color: "var(--color-accent)" }}>{icon}</span>
-                <span className="text-xs" style={{ color: "rgba(61,20,25,0.6)" }}>{label}</span>
+                <span className="text-xs" style={{ color: "rgba(42,61,46,0.6)" }}>{label}</span>
               </div>
             ))}
           </div>
@@ -620,11 +620,11 @@ function SizeGuide({ rawRows }: { rawRows?: string[] }) {
             </thead>
             <tbody>
               {dataRows.map((row, i) => (
-                <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "rgba(61,20,25,0.04)" : "rgba(61,20,25,0.08)" }}>
+                <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "rgba(42,61,46,0.04)" : "rgba(42,61,46,0.08)" }}>
                   <td className="px-4 py-3 font-medium" style={{ color: "var(--color-primary)" }}>{row.size}</td>
-                  <td className="px-4 py-3" style={{ color: "rgba(61,20,25,0.65)" }}>{row.col2}</td>
-                  <td className="px-4 py-3" style={{ color: "rgba(61,20,25,0.65)" }}>{row.col3}</td>
-                  <td className="px-4 py-3" style={{ color: "rgba(61,20,25,0.65)" }}>{row.col4 ?? ""}</td>
+                  <td className="px-4 py-3" style={{ color: "rgba(42,61,46,0.65)" }}>{row.col2}</td>
+                  <td className="px-4 py-3" style={{ color: "rgba(42,61,46,0.65)" }}>{row.col3}</td>
+                  <td className="px-4 py-3" style={{ color: "rgba(42,61,46,0.65)" }}>{row.col4 ?? ""}</td>
                 </tr>
               ))}
             </tbody>

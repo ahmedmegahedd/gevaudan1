@@ -7,12 +7,12 @@ export const storeConfig = {
     whatsapp: "+201001234567",
   },
   theme: {
-    // ── Brand identity: deep burgundy on warm cream ──
-    primaryColor: "#5C1F2A",   // deep burgundy — dark surfaces, primary CTAs, headings
-    accentColor: "#8B3A48",    // softer wine — accent text, highlights, secondary CTAs
-    midColor1: "#7A2A38",      // mid burgundy
-    midColor2: "#3D1419",      // espresso burgundy — deepest shadows
-    creamColor: "#F1E9D9",     // warm cream — page background, light surfaces
+    // ── Brand identity: deep forest green on warm bone/ivory ──
+    primaryColor: "#2A3D2E",   // deep forest green — dark surfaces, primary CTAs, headings
+    accentColor: "#4A5D4D",    // mossy mid-green — accent text, highlights, secondary CTAs
+    midColor1: "#3D4D3F",      // mid forest
+    midColor2: "#1A2B1D",      // espresso forest — deepest shadows
+    creamColor: "#EFE6D6",     // warm bone — page background, light surfaces
     fontHeading: "Cormorant Garamond",
     fontBody: "Inter",
     fontScript: "Zapfino",

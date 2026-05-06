@@ -83,7 +83,7 @@ export default async function CollectionDetailPage({ params }: Props) {
             />
             <div
               className="absolute inset-0"
-              style={{ background: "linear-gradient(to top, rgba(61,20,25,0.9) 0%, rgba(61,20,25,0.3) 100%)" }}
+              style={{ background: "linear-gradient(to top, rgba(42,61,46,0.9) 0%, rgba(42,61,46,0.3) 100%)" }}
             />
           </>
         )}
@@ -136,7 +136,7 @@ export default async function CollectionDetailPage({ params }: Props) {
           <div className="text-center py-24">
             <p
               className="text-base mb-8"
-              style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.8 }}
+              style={{ color: "rgba(42,61,46,0.5)", lineHeight: 1.8 }}
             >
               No products in this collection yet.
             </p>

@@ -209,7 +209,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
         </h1>
         <p
           className="text-base md:text-lg max-w-xl mx-auto"
-          style={{ color: "rgba(61,20,25,0.55)", lineHeight: 1.8 }}
+          style={{ color: "rgba(42,61,46,0.55)", lineHeight: 1.8 }}
         >
           Within {RETURN_WINDOW_DAYS} days of your order, we&rsquo;re happy to
           exchange or refund. Start by entering your order ID.
@@ -238,7 +238,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
                     className="flex items-center justify-center w-7 h-7 rounded-full text-[11px]"
                     style={{
                       backgroundColor: active || done ? "var(--color-accent)" : "transparent",
-                      color: active || done ? "#fff" : "rgba(61,20,25,0.5)",
+                      color: active || done ? "#fff" : "rgba(42,61,46,0.5)",
                       border: active || done ? "1px solid var(--color-accent)" : "1px solid var(--divider-soft)",
                       fontWeight: 500,
                     }}
@@ -248,7 +248,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
                   <span
                     className="text-[10px] sm:text-[11px] uppercase"
                     style={{
-                      color: active ? "var(--color-primary)" : "rgba(61,20,25,0.5)",
+                      color: active ? "var(--color-primary)" : "rgba(42,61,46,0.5)",
                       letterSpacing: "0.18em",
                       fontWeight: active ? 500 : 400,
                     }}
@@ -280,7 +280,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
             >
               Find Your Order
             </h2>
-            <p className="text-sm" style={{ color: "rgba(61,20,25,0.6)", lineHeight: 1.7 }}>
+            <p className="text-sm" style={{ color: "rgba(42,61,46,0.6)", lineHeight: 1.7 }}>
               You&rsquo;ll find your order ID in your confirmation email or on
               the order confirmation page after checkout.
             </p>
@@ -317,7 +317,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
               href="/shop"
               className="text-[11px] uppercase font-medium self-center"
               style={{
-                color: "rgba(61,20,25,0.5)",
+                color: "rgba(42,61,46,0.5)",
                 letterSpacing: "0.18em",
               }}
             >
@@ -471,7 +471,7 @@ function Step2({
           </h2>
           <p
             className="text-[10px] uppercase"
-            style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.18em" }}
+            style={{ color: "rgba(42,61,46,0.5)", letterSpacing: "0.18em" }}
           >
             Placed {orderDate}
           </p>
@@ -527,7 +527,7 @@ function Step2({
                   />
                   <div
                     className="relative w-16 sm:w-20 aspect-[3/4] shrink-0 overflow-hidden rounded-[2px]"
-                    style={{ backgroundColor: "#E0D5C2" }}
+                    style={{ backgroundColor: "#DCD2BD" }}
                   >
                     {image ? (
                       <Image
@@ -554,7 +554,7 @@ function Step2({
                     {variantLabel && (
                       <p
                         className="text-xs mt-1"
-                        style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.05em" }}
+                        style={{ color: "rgba(42,61,46,0.5)", letterSpacing: "0.05em" }}
                       >
                         {variantLabel}
                       </p>
@@ -562,7 +562,7 @@ function Step2({
                     <div className="flex items-baseline gap-3 mt-2">
                       <span
                         className="text-[11px] uppercase"
-                        style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.15em" }}
+                        style={{ color: "rgba(42,61,46,0.5)", letterSpacing: "0.15em" }}
                       >
                         Qty {item.quantity}
                       </span>
@@ -641,7 +641,7 @@ function Step2({
               color:
                 reason.trim().length > 0 && reason.trim().length < 20
                   ? "#dc2626"
-                  : "rgba(61,20,25,0.4)",
+                  : "rgba(42,61,46,0.4)",
             }}
           >
             {reason.trim().length}/20 characters minimum
@@ -691,7 +691,7 @@ function Step2({
           onClick={onBack}
           className="text-[11px] uppercase font-medium self-center"
           style={{
-            color: "rgba(61,20,25,0.5)",
+            color: "rgba(42,61,46,0.5)",
             letterSpacing: "0.18em",
           }}
         >
@@ -757,7 +757,7 @@ function Step3({
           >
             Pick a Replacement
           </h2>
-          <p className="text-sm" style={{ color: "rgba(61,20,25,0.6)", lineHeight: 1.7 }}>
+          <p className="text-sm" style={{ color: "rgba(42,61,46,0.6)", lineHeight: 1.7 }}>
             Choose any in-stock item below as your exchange. Subject to admin approval.
           </p>
         </div>
@@ -792,7 +792,7 @@ function Step3({
         {products.length === 0 ? (
           <p
             className="text-sm py-12 text-center"
-            style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.7 }}
+            style={{ color: "rgba(42,61,46,0.5)", lineHeight: 1.7 }}
           >
             {allCount === 0
               ? "No products are currently in stock for exchange."
@@ -823,7 +823,7 @@ function Step3({
                 >
                   <div
                     className="relative aspect-[3/4] overflow-hidden"
-                    style={{ backgroundColor: "#E0D5C2" }}
+                    style={{ backgroundColor: "#DCD2BD" }}
                   >
                     {img ? (
                       <Image
@@ -876,7 +876,7 @@ function Step3({
           onClick={onBack}
           className="text-[11px] uppercase font-medium self-center"
           style={{
-            color: "rgba(61,20,25,0.5)",
+            color: "rgba(42,61,46,0.5)",
             letterSpacing: "0.18em",
           }}
         >
@@ -970,7 +970,7 @@ function Step4({
                 <li key={i} className="flex items-start gap-3">
                   <div
                     className="relative w-14 aspect-[3/4] shrink-0 overflow-hidden rounded-[2px]"
-                    style={{ backgroundColor: "#E0D5C2" }}
+                    style={{ backgroundColor: "#DCD2BD" }}
                   >
                     {img ? (
                       <Image src={img} alt={item.name} fill className="object-cover" sizes="56px" />
@@ -988,11 +988,11 @@ function Step4({
                       {item.name}
                     </p>
                     {variantLabel && (
-                      <p className="text-xs mt-0.5" style={{ color: "rgba(61,20,25,0.5)" }}>
+                      <p className="text-xs mt-0.5" style={{ color: "rgba(42,61,46,0.5)" }}>
                         {variantLabel}
                       </p>
                     )}
-                    <p className="text-xs mt-0.5" style={{ color: "rgba(61,20,25,0.5)" }}>
+                    <p className="text-xs mt-0.5" style={{ color: "rgba(42,61,46,0.5)" }}>
                       Qty {item.quantity}
                     </p>
                   </div>
@@ -1007,7 +1007,7 @@ function Step4({
             <div className="flex items-start gap-3">
               <div
                 className="relative w-14 aspect-[3/4] shrink-0 overflow-hidden rounded-[2px]"
-                style={{ backgroundColor: "#E0D5C2" }}
+                style={{ backgroundColor: "#DCD2BD" }}
               >
                 {exchangeProduct.images[0] ? (
                   <Image
@@ -1050,7 +1050,7 @@ function Step4({
         <ReviewRow label="Contact">
           <div>
             <p>{customerName}</p>
-            <p style={{ color: "rgba(61,20,25,0.6)" }}>{customerPhone}</p>
+            <p style={{ color: "rgba(42,61,46,0.6)" }}>{customerPhone}</p>
           </div>
         </ReviewRow>
       </div>
@@ -1066,7 +1066,7 @@ function Step4({
           onClick={onBack}
           className="text-[11px] uppercase font-medium self-center"
           style={{
-            color: "rgba(61,20,25,0.5)",
+            color: "rgba(42,61,46,0.5)",
             letterSpacing: "0.18em",
           }}
         >
@@ -1098,7 +1098,7 @@ function ReviewRow({ label, children }: { label: string; children: React.ReactNo
     >
       <p
         className="text-[10px] uppercase font-medium pt-1"
-        style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.18em" }}
+        style={{ color: "rgba(42,61,46,0.5)", letterSpacing: "0.18em" }}
       >
         {label}
       </p>
@@ -1144,7 +1144,7 @@ function Step5({ requestId, phone }: { requestId: string | null; phone: string }
         </h2>
         <p
           className="text-base"
-          style={{ color: "rgba(61,20,25,0.6)", lineHeight: 1.8 }}
+          style={{ color: "rgba(42,61,46,0.6)", lineHeight: 1.8 }}
         >
           Your request has been submitted. We will contact you within 2 business
           days on{" "}
@@ -1166,7 +1166,7 @@ function Step5({ requestId, phone }: { requestId: string | null; phone: string }
         >
           <span
             className="text-xs font-sans"
-            style={{ color: "rgba(61,20,25,0.5)", fontWeight: 400 }}
+            style={{ color: "rgba(42,61,46,0.5)", fontWeight: 400 }}
           >
             Request
           </span>

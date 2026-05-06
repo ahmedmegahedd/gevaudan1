@@ -34,7 +34,7 @@ export default function CartPage() {
         </h1>
         <p
           className="text-base mb-12"
-          style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.8 }}
+          style={{ color: "rgba(42,61,46,0.5)", lineHeight: 1.8 }}
         >
           Your cart is empty.
         </p>
@@ -75,7 +75,7 @@ export default function CartPage() {
                 {/* Image */}
                 <div
                   className="relative w-24 sm:w-28 aspect-[3/4] shrink-0 overflow-hidden rounded-card"
-                  style={{ backgroundColor: "#E0D5C2" }}
+                  style={{ backgroundColor: "#DCD2BD" }}
                 >
                   {item.product.images[0] ? (
                     <Image
@@ -109,7 +109,7 @@ export default function CartPage() {
                   {variantLabel && (
                     <p
                       className="text-xs uppercase"
-                      style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.1em" }}
+                      style={{ color: "rgba(42,61,46,0.5)", letterSpacing: "0.1em" }}
                     >
                       {variantLabel}
                     </p>
@@ -133,13 +133,13 @@ export default function CartPage() {
                     {/* Quantity controls */}
                     <div
                       className="flex items-center rounded-[2px]"
-                      style={{ border: "1px solid rgba(61,20,25,0.15)" }}
+                      style={{ border: "1px solid rgba(42,61,46,0.15)" }}
                     >
                       <button
                         onClick={() =>
                           updateQuantity(item.product.id, item.selectedVariants, item.quantity - 1)
                         }
-                        className="w-10 h-10 flex items-center justify-center hover:bg-[#E0D5C2] text-base"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#DCD2BD] text-base"
                         aria-label="Decrease"
                       >
                         −
@@ -154,7 +154,7 @@ export default function CartPage() {
                           const s = getVariantStock(item.product.stock, item.product.variant_stock, item.selectedVariants, rk)
                           return item.quantity >= s
                         })()}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-[#E0D5C2] text-base disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#DCD2BD] text-base disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Increase"
                       >
                         +
@@ -168,7 +168,7 @@ export default function CartPage() {
                       }}
                       className="text-[10px] uppercase font-medium hover:text-red-500"
                       style={{
-                        color: "rgba(61,20,25,0.4)",
+                        color: "rgba(42,61,46,0.4)",
                         letterSpacing: "0.18em",
                       }}
                     >
@@ -211,21 +211,21 @@ export default function CartPage() {
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span style={{ color: "rgba(61,20,25,0.6)" }}>Subtotal</span>
+                <span style={{ color: "rgba(42,61,46,0.6)" }}>Subtotal</span>
                 <span style={{ color: "var(--color-primary)" }}>
                   {currency} {sub.toLocaleString()}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span style={{ color: "rgba(61,20,25,0.6)" }}>Delivery</span>
+                <span style={{ color: "rgba(42,61,46,0.6)" }}>Delivery</span>
                 <span style={{ color: fee === 0 ? "#16a34a" : "var(--color-primary)" }}>
                   {fee === 0 ? "Free" : `${currency} ${fee.toLocaleString()}`}
                 </span>
               </div>
 
               {fee > 0 && (
-                <p className="text-xs" style={{ color: "rgba(61,20,25,0.4)", lineHeight: 1.7 }}>
+                <p className="text-xs" style={{ color: "rgba(42,61,46,0.4)", lineHeight: 1.7 }}>
                   Free delivery on orders above {currency} {freeAbove.toLocaleString()}
                 </p>
               )}
@@ -260,7 +260,7 @@ export default function CartPage() {
               href="/shop"
               className="block text-center text-[11px] uppercase font-medium hover:opacity-100"
               style={{
-                color: "rgba(61,20,25,0.5)",
+                color: "rgba(42,61,46,0.5)",
                 letterSpacing: "0.18em",
               }}
             >

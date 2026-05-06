@@ -246,7 +246,11 @@ export default async function OrderDetailPage({ params }: Props) {
 
       {/* ── Order Meta ── */}
       <Section title="Order Info">
-        <Row label="Order ID" value={<span className="font-mono text-xs">{order.id}</span>} />
+        <Row label="Order #" value={<span className="font-mono">{shortId}</span>} />
+        <Row
+          label="Internal ID"
+          value={<span className="font-mono text-[10px] text-gray-400">{order.id}</span>}
+        />
         <Row
           label="Placed"
           value={orderDate.toLocaleString("en-GB", {

@@ -80,7 +80,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
               >
                 Order Placed Successfully!
               </h1>
-              <p className="text-sm" style={{ color: "rgba(61,20,25,0.5)", lineHeight: 1.7 }}>
+              <p className="text-sm" style={{ color: "rgba(42,61,46,0.5)", lineHeight: 1.7 }}>
                 Thank you for shopping with{" "}
                 <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                   {brand.name}
@@ -93,13 +93,13 @@ export default async function OrderConfirmationPage({ params }: Props) {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-mono"
               style={{ backgroundColor: `${theme.accentColor}18`, color: theme.accentColor, fontWeight: 500 }}
             >
-              <span className="text-xs font-sans" style={{ color: "rgba(61,20,25,0.5)", fontWeight: 400 }}>
+              <span className="text-xs font-sans" style={{ color: "rgba(42,61,46,0.5)", fontWeight: 400 }}>
                 Order
               </span>
               #{shortId}
             </div>
 
-            <p className="text-sm" style={{ color: "rgba(61,20,25,0.55)", lineHeight: 1.8 }}>
+            <p className="text-sm" style={{ color: "rgba(42,61,46,0.55)", lineHeight: 1.8 }}>
               We will contact you on{" "}
               <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
                 {o.customer_info.phone}
@@ -115,7 +115,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
           >
             <p
               className="text-[10px] uppercase font-medium mb-2"
-              style={{ color: "rgba(61,20,25,0.5)", letterSpacing: "0.18em" }}
+              style={{ color: "rgba(42,61,46,0.5)", letterSpacing: "0.18em" }}
             >
               Delivery To
             </p>
@@ -123,7 +123,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
               {o.delivery_address.city} — {o.delivery_address.address}
             </p>
             {o.delivery_address.notes && (
-              <p className="text-xs" style={{ color: "rgba(61,20,25,0.4)" }}>
+              <p className="text-xs" style={{ color: "rgba(42,61,46,0.4)" }}>
                 {o.delivery_address.notes}
               </p>
             )}
@@ -134,7 +134,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
             <div
               className="px-5 py-3 text-[10px] uppercase font-medium"
               style={{
-                backgroundColor: "rgba(61,20,25,0.04)",
+                backgroundColor: "rgba(42,61,46,0.04)",
                 color: "var(--color-primary)",
                 letterSpacing: "0.18em",
               }}
@@ -164,7 +164,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
                         {item.name}
                       </p>
                       {variantLabel && (
-                        <p className="text-xs mt-1" style={{ color: "rgba(61,20,25,0.4)" }}>{variantLabel}</p>
+                        <p className="text-xs mt-1" style={{ color: "rgba(42,61,46,0.4)" }}>{variantLabel}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0">
@@ -172,7 +172,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
                         {currency} {(item.price * item.quantity).toLocaleString()}
                       </span>
                       {item.quantity > 1 && (
-                        <p className="text-xs" style={{ color: "rgba(61,20,25,0.4)" }}>×{item.quantity}</p>
+                        <p className="text-xs" style={{ color: "rgba(42,61,46,0.4)" }}>×{item.quantity}</p>
                       )}
                     </div>
                   </li>
@@ -183,11 +183,11 @@ export default async function OrderConfirmationPage({ params }: Props) {
               className="px-5 py-4 space-y-2 text-sm"
               style={{ borderTop: "1px solid var(--divider-soft)" }}
             >
-              <div className="flex justify-between" style={{ color: "rgba(61,20,25,0.5)" }}>
+              <div className="flex justify-between" style={{ color: "rgba(42,61,46,0.5)" }}>
                 <span>Subtotal</span>
                 <span>{currency} {o.subtotal.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between" style={{ color: "rgba(61,20,25,0.5)" }}>
+              <div className="flex justify-between" style={{ color: "rgba(42,61,46,0.5)" }}>
                 <span>Delivery</span>
                 <span style={{ color: o.delivery_fee === 0 ? "#16a34a" : undefined }}>
                   {o.delivery_fee === 0 ? "Free" : `${currency} ${o.delivery_fee.toLocaleString()}`}

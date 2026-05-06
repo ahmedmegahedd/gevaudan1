@@ -24,7 +24,7 @@ export default function ToastContainer() {
             style={{
               backgroundColor: "var(--color-primary)",
               color: "#fff",
-              boxShadow: "0 20px 60px rgba(61, 20, 25, 0.55), 0 0 0 1px rgba(255,255,255,0.06)",
+              boxShadow: "0 20px 60px rgba(42, 61, 46, 0.55), 0 0 0 1px rgba(255,255,255,0.06)",
               borderLeft: `4px solid ${accent}`,
             }}
             role="alert"

@@ -48,7 +48,7 @@ export default function AddedToCartPopup() {
           className="rounded-card overflow-hidden"
           style={{
             backgroundColor: "#ffffff",
-            boxShadow: "0 12px 40px rgba(61,20,25,0.18)",
+            boxShadow: "0 12px 40px rgba(42,61,46,0.18)",
           }}
         >
           {/* ── Header strip ── */}
@@ -130,7 +130,7 @@ export default function AddedToCartPopup() {
                 <p
                   className="text-[10px] uppercase mt-1.5"
                   style={{
-                    color: "rgba(61,20,25,0.5)",
+                    color: "rgba(42,61,46,0.5)",
                     letterSpacing: "0.15em",
                   }}
                 >
@@ -147,7 +147,7 @@ export default function AddedToCartPopup() {
                 {quantity > 1 && (
                   <span
                     className="text-xs"
-                    style={{ color: "rgba(61,20,25,0.5)" }}
+                    style={{ color: "rgba(42,61,46,0.5)" }}
                   >
                     × {quantity}
                   </span>
@@ -164,7 +164,7 @@ export default function AddedToCartPopup() {
             <button
               type="button"
               onClick={hide}
-              className="text-[11px] uppercase font-medium py-3.5 hover:bg-[rgba(92,31,42,0.04)]"
+              className="text-[11px] uppercase font-medium py-3.5 hover:bg-[rgba(42,61,46,0.04)]"
               style={{
                 color: "var(--color-primary)",
                 letterSpacing: "0.2em",

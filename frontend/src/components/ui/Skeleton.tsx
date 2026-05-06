@@ -3,7 +3,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
       className={`animate-pulse ${className}`}
-      style={{ backgroundColor: "rgba(61,20,25,0.06)" }}
+      style={{ backgroundColor: "rgba(42,61,46,0.06)" }}
       aria-hidden="true"
     />
   )

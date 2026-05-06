@@ -43,10 +43,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${headingFont.variable} ${bodyFont.variable} ${scriptFont.variable} bg-[#F1E9D9]`}
+      className={`${headingFont.variable} ${bodyFont.variable} ${scriptFont.variable} bg-[#EFE6D6]`}
       suppressHydrationWarning
     >
-      <body className="antialiased min-h-screen flex flex-col bg-[#F1E9D9]" suppressHydrationWarning>
+      <body className="antialiased min-h-screen flex flex-col bg-[#EFE6D6]" suppressHydrationWarning>
         <Navbar />
         <main className="flex-1 pt-[60px] md:pt-[70px]">{children}</main>
         <Footer />

@@ -138,7 +138,7 @@ export default function NotifyMeForm({ productId, variantInfo, variant = "light"
                 ? "#ef4444"
                 : isDark
                   ? "rgba(255,255,255,0.3)"
-                  : "rgba(61,20,25,0.2)"
+                  : "rgba(42,61,46,0.2)"
             }`,
             color: isDark ? "#ffffff" : "var(--color-primary)",
             padding: "12px 2px",
@@ -174,7 +174,7 @@ export default function NotifyMeForm({ productId, variantInfo, variant = "light"
         }}
         className="text-[10px] uppercase self-start hover:opacity-100"
         style={{
-          color: isDark ? "rgba(255,255,255,0.5)" : "rgba(61,20,25,0.5)",
+          color: isDark ? "rgba(255,255,255,0.5)" : "rgba(42,61,46,0.5)",
           letterSpacing: "0.18em",
         }}
       >

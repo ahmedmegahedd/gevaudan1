@@ -10,11 +10,11 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        primary: "#5C1F2A",
-        accent: "#8B3A48",
-        mid1: "#7A2A38",
-        mid2: "#3D1419",
-        cream: "#F1E9D9",
+        primary: "#2A3D2E",
+        accent: "#4A5D4D",
+        mid1: "#3D4D3F",
+        mid2: "#1A2B1D",
+        cream: "#EFE6D6",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Georgia", "serif"],

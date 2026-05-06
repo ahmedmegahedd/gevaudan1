@@ -57,7 +57,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         style={{
           backgroundColor: "var(--color-cream-deep)",
           // Hairline border that becomes a touch more present on hover
-          boxShadow: "inset 0 0 0 1px rgba(61,20,25,0.06)",
+          boxShadow: "inset 0 0 0 1px rgba(42,61,46,0.06)",
         }}
       >
         {/* Primary image */}
@@ -73,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="absolute inset-0 flex items-center justify-center">
             <span
               className="text-[10px] uppercase"
-              style={{ color: "rgba(61,20,25,0.35)", letterSpacing: "0.18em" }}
+              style={{ color: "rgba(42,61,46,0.35)", letterSpacing: "0.18em" }}
             >
               No image
             </span>
@@ -99,7 +99,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span
               className="text-[10px] uppercase font-medium px-4 py-2"
               style={{
-                backgroundColor: "rgba(61,20,25,0.85)",
+                backgroundColor: "rgba(42,61,46,0.85)",
                 color: "var(--color-cream)",
                 letterSpacing: "0.22em",
               }}
@@ -185,7 +185,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
             <span
               className="text-[10px]"
-              style={{ color: "rgba(61,20,25,0.45)", letterSpacing: "0.05em" }}
+              style={{ color: "rgba(42,61,46,0.45)", letterSpacing: "0.05em" }}
             >
               ({product.review_count})
             </span>
@@ -299,7 +299,7 @@ function ColorSwatches({ variants, colorImages, colorNames, stockByVariant, onPr
               height: 16,
               borderRadius: "50%",
               backgroundColor: resolved,
-              border: isActive ? `2px solid var(--color-accent)` : `1px solid rgba(61,20,25,0.1)`,
+              border: isActive ? `2px solid var(--color-accent)` : `1px solid rgba(42,61,46,0.1)`,
               flexShrink: 0,
               cursor: oos ? "not-allowed" : hasImage ? "pointer" : "default",
               outline: "none",

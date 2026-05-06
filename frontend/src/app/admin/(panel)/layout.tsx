@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq("status", "pending")
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#F1E9D9" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#EFE6D6" }}>
       {/* Admin header */}
       <header
         className="h-14 flex items-center justify-between px-4 sm:px-6 border-b"

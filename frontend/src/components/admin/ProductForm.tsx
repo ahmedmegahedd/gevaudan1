@@ -732,7 +732,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
                   {combinations.map((combo, i) => {
                     const stockKey = combo.join("|")
                     return (
-                      <tr key={stockKey} style={{ backgroundColor: i % 2 === 0 ? "rgba(61,20,25,0.03)" : "transparent" }}>
+                      <tr key={stockKey} style={{ backgroundColor: i % 2 === 0 ? "rgba(42,61,46,0.03)" : "transparent" }}>
                         {combo.map((val, j) => (
                           <td key={j} className="px-3 py-2 text-gray-700">{val}</td>
                         ))}

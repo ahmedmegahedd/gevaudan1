@@ -4,7 +4,6 @@ import { storeConfig } from "@/config/store.config"
 import { createClient } from "@/lib/supabase/server"
 import ProductCard from "@/components/shop/ProductCard"
 import Aurora from "@/components/ui/Aurora"
-import PalettePreview from "@/components/ui/PalettePreview"
 import { attachRatings } from "@/lib/reviews"
 import type { Product, Category } from "@/types"
 
@@ -39,10 +38,6 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Preview-only: forces the forest-green/bone palette while the
-          homepage is mounted. Other routes keep the burgundy palette. */}
-      <PalettePreview palette="forest" />
-
       {/* ── Hero ── */}
       <section
         className="relative flex items-center justify-center min-h-[100vh] text-center px-4 sm:px-6 lg:px-10 py-24 overflow-hidden"
@@ -60,7 +55,7 @@ export default async function HomePage() {
         {/* Subtle overlay — just enough to keep text readable */}
         <div
           className="absolute inset-0 z-10"
-          style={{ background: "linear-gradient(to top, rgba(61,20,25,0.75) 0%, rgba(61,20,25,0.1) 50%, rgba(61,20,25,0.3) 100%)" }}
+          style={{ background: "linear-gradient(to top, rgba(42,61,46,0.75) 0%, rgba(42,61,46,0.1) 50%, rgba(42,61,46,0.3) 100%)" }}
         />
         <div className="relative z-20 max-w-3xl w-full">
           <p
