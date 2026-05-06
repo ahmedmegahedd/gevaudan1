@@ -195,6 +195,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <ColorSwatches
           variants={product.variants}
           colorImages={product.color_images ?? {}}
+          colorNames={product.color_names ?? {}}
           stockByVariant={product.stock_by_variant ?? {}}
           onPreview={setPreviewImage}
         />
@@ -221,11 +222,12 @@ const NEUTRAL_SWATCH = "#c8c4bc"
 interface ColorSwatchesProps {
   variants: Record<string, string[]>
   colorImages: Record<string, string>
+  colorNames: Record<string, string>
   stockByVariant: Record<string, number>
   onPreview: (url: string | null) => void
 }
 
-function ColorSwatches({ variants, colorImages, stockByVariant, onPreview }: ColorSwatchesProps) {
+function ColorSwatches({ variants, colorImages, colorNames, stockByVariant, onPreview }: ColorSwatchesProps) {
   const [active, setActive] = useState<string | null>(null)
   const colorKey = Object.keys(variants).find((k) => /colou?r/i.test(k))
   if (!colorKey) return null
@@ -279,15 +281,16 @@ function ColorSwatches({ variants, colorImages, stockByVariant, onPreview }: Col
         const hasImage = !!colorImages[color]
         const isActive = active === color
         const oos = isOOS(color)
+        const label = (colorNames[color] ?? "").trim() || color
         return (
           <button
             key={color}
             type="button"
-            title={oos ? "Out of stock" : color}
+            title={oos ? `${label} — out of stock` : label}
             onClick={(e) => handleClick(e, color)}
             onMouseEnter={() => handleMouseEnter(color)}
             onMouseLeave={handleMouseLeave}
-            aria-label={oos ? `${color} — out of stock` : color}
+            aria-label={oos ? `${label} — out of stock` : label}
             aria-disabled={oos || undefined}
             disabled={oos}
             className={oos ? "swatch-oos" : undefined}

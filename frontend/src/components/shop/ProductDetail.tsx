@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { getRealVariantKeys, getVariantStock } from "@/lib/variantStock"
+import { getVariantValueLabel } from "@/lib/colorNames"
 import NotifyMeForm from "@/components/shop/NotifyMeForm"
 import type { Product } from "@/types"
 
@@ -279,7 +280,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                         cursor: optionOOS ? "not-allowed" : "pointer",
                       }}
                     >
-                      {option}
+                      {getVariantValueLabel(product, key, option)}
                     </button>
                   )
                 })}

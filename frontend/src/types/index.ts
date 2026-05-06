@@ -62,6 +62,8 @@ export interface Product {
   stock_by_variant: Record<string, number> | null
   /** Maps color name → image URL, e.g. { "Black": "https://..." } */
   color_images: Record<string, string> | null
+  /** Maps color value (hex) → human-readable display name, e.g. { "#FF0000": "Red" } */
+  color_names: Record<string, string> | null
   is_active: boolean
   is_featured: boolean
   model_info: string | null

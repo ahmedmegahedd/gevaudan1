@@ -9,6 +9,7 @@ import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { clientApi } from "@/lib/clientApi"
 import { formatOrderNumber } from "@/lib/orderNumber"
+import { formatVariantLabel } from "@/lib/colorNames"
 import CheckoutRecommendations from "@/components/shop/CheckoutRecommendations"
 import type { OrderItem } from "@/types"
 
@@ -388,9 +389,7 @@ export default function CheckoutPage() {
 
               <ul className="space-y-5 text-sm">
                 {items.map((item) => {
-                  const variantLabel = Object.entries(item.selectedVariants)
-                    .map(([k, v]) => `${k}: ${v}`)
-                    .join(", ")
+                  const variantLabel = formatVariantLabel(item.product, item.selectedVariants, ", ")
                   return (
                     <li
                       key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`}

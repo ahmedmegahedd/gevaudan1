@@ -25,6 +25,34 @@
   --line-height-body: 1.8;
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   Homepage palette preview: Deep Forest Green + Warm Bone/Ivory.
+   Scoped to <html data-palette="forest"> via PalettePreview client
+   component on the homepage. Every other route falls through to the
+   default burgundy palette above.
+   ────────────────────────────────────────────────────────────────── */
+html[data-palette="forest"] {
+  --background: #EFE6D6;
+  --foreground: #1F2A21;
+  --color-primary: #2A3D2E;          /* deep forest green */
+  --color-accent: #4A5D4D;            /* mossy mid-green */
+  --color-mid1: #3D4D3F;
+  --color-mid2: #1A2B1D;              /* espresso forest */
+  --color-cream: #EFE6D6;             /* warm bone */
+  --color-cream-deep: #DCD2BD;        /* deeper sand */
+  --color-text-light: #EFE6D6;
+  --color-text-on-accent: #EFE6D6;
+
+  --shadow-card: 0 2px 20px rgba(42, 61, 46, 0.08);
+  --shadow-card-hover: 0 6px 30px rgba(42, 61, 46, 0.12);
+  --divider-soft: rgba(42, 61, 46, 0.12);
+
+  background-color: #EFE6D6 !important;
+}
+html[data-palette="forest"] body {
+  background-color: #EFE6D6 !important;
+}
+
 /* Prevent horizontal overflow at root level */
 html, body {
   overflow-x: hidden;

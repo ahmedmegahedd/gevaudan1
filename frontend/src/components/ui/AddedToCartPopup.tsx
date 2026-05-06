@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useAddedToCartStore } from "@/store/addedToCartStore"
 import { useCartStore } from "@/store/cartStore"
 import { storeConfig } from "@/config/store.config"
+import { formatVariantLabel } from "@/lib/colorNames"
 
 const AUTO_DISMISS_MS = 5500
 const { currency } = storeConfig.delivery
@@ -27,10 +28,7 @@ export default function AddedToCartPopup() {
   if (!current) return null
 
   const { product, variants, quantity } = current
-  const variantLabel = Object.entries(variants)
-    .filter(([k]) => !/^(material|materials|fabric|size_guide)$/i.test(k))
-    .map(([k, v]) => `${k}: ${v}`)
-    .join(" · ")
+  const variantLabel = formatVariantLabel(product, variants)
   const image = product.images?.[0]
 
   return (

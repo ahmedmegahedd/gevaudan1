@@ -6,6 +6,7 @@ import { storeConfig } from "@/config/store.config"
 import { useCartStore } from "@/store/cartStore"
 import { useToastStore } from "@/store/toastStore"
 import { getRealVariantKeys, getVariantStock } from "@/lib/variantStock"
+import { formatVariantLabel } from "@/lib/colorNames"
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal, deliveryFee, total } =
@@ -63,9 +64,7 @@ export default function CartPage() {
         {/* ── Cart Items ── */}
         <div className="lg:col-span-2 space-y-8 md:space-y-10">
           {items.map((item) => {
-            const variantLabel = Object.entries(item.selectedVariants)
-              .map(([k, v]) => `${k}: ${v}`)
-              .join(", ")
+            const variantLabel = formatVariantLabel(item.product, item.selectedVariants, ", ")
 
             return (
               <div

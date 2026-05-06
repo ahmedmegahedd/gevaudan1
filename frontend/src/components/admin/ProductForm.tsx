@@ -169,6 +169,11 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
     (initialData?.color_images as Record<string, string> | null) ?? {}
   )
 
+  // Color hex → human-readable display name (e.g. { "#FF0000": "Red" })
+  const [colorNames, setColorNames] = useState<Record<string, string>>(
+    (initialData?.color_names as Record<string, string> | null) ?? {}
+  )
+
   // ── Form setup ──
   const {
     register,
@@ -338,6 +343,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       stock_by_variant:
         Object.keys(stockByVariant).length > 0 ? stockByVariant : {},
       color_images: Object.keys(colorImages).length > 0 ? colorImages : null,
+      color_names: Object.keys(colorNames).length > 0 ? colorNames : {},
       // If variant_stock is set, total stock = sum of all variant stocks
       ...(Object.keys(variantStock).length > 0
         ? { stock: Object.values(variantStock).reduce((s, v) => s + v, 0) }
@@ -555,6 +561,8 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
                       onChange={(v) => updateVariantValue(i, v)}
                       stockMap={stockByVariant}
                       setStockMap={setStockByVariant}
+                      nameMap={colorNames}
+                      setNameMap={setColorNames}
                     />
                   ) : (
                     <>
@@ -1006,11 +1014,15 @@ function ColorPickerField({
   onChange,
   stockMap,
   setStockMap,
+  nameMap,
+  setNameMap,
 }: {
   value: string
   onChange: (v: string) => void
   stockMap?: Record<string, number>
   setStockMap?: (next: Record<string, number>) => void
+  nameMap?: Record<string, string>
+  setNameMap?: (next: Record<string, string>) => void
 }) {
   const colors = value.split(",").map((c) => c.trim()).filter(Boolean)
 
@@ -1027,6 +1039,14 @@ function ColorPickerField({
       delete nextMap[oldHex]
       setStockMap(nextMap)
     }
+
+    // Migrate display-name entry to the new hex key
+    if (nameMap && setNameMap && oldHex && oldHex !== hex && oldHex in nameMap) {
+      const nextMap = { ...nameMap }
+      nextMap[hex] = nextMap[oldHex]
+      delete nextMap[oldHex]
+      setNameMap(nextMap)
+    }
   }
 
   function addColor() {
@@ -1040,6 +1060,11 @@ function ColorPickerField({
       const nextMap = { ...stockMap }
       delete nextMap[removed]
       setStockMap(nextMap)
+    }
+    if (nameMap && setNameMap && removed && removed in nameMap) {
+      const nextMap = { ...nameMap }
+      delete nextMap[removed]
+      setNameMap(nextMap)
     }
   }
 
@@ -1055,7 +1080,17 @@ function ColorPickerField({
     setStockMap(nextMap)
   }
 
+  function setName(hex: string, raw: string) {
+    if (!nameMap || !setNameMap) return
+    const nextMap = { ...nameMap }
+    const trimmed = raw.trim()
+    if (trimmed === "") delete nextMap[hex]
+    else nextMap[hex] = raw // preserve user spacing in input; trim on save
+    setNameMap(nextMap)
+  }
+
   const showStockInputs = !!stockMap && !!setStockMap
+  const showNameInputs = !!nameMap && !!setNameMap
 
   return (
     <div className="flex flex-wrap items-start gap-3 min-h-[48px] border border-gray-300 px-3 py-3 bg-white">
@@ -1064,7 +1099,7 @@ function ColorPickerField({
           <label
             className="relative w-9 h-9 rounded-full overflow-hidden cursor-pointer border-2 transition-transform hover:scale-110"
             style={{ borderColor: "#d1d5db" }}
-            title={color}
+            title={(nameMap?.[color] ?? "").trim() || color}
           >
             <span
               className="absolute inset-0 rounded-full"
@@ -1078,6 +1113,19 @@ function ColorPickerField({
             />
           </label>
           <span className="text-[9px] font-mono text-gray-400 leading-none">{color}</span>
+          {showNameInputs && (
+            <input
+              type="text"
+              value={nameMap?.[color] ?? ""}
+              onChange={(e) => setName(color, e.target.value)}
+              placeholder="name"
+              aria-label={`Display name for ${color}`}
+              title="What customers see for this color (e.g. Burgundy)"
+              className="w-20 border px-1 py-0.5 text-[10px] text-center focus:outline-none focus:border-[var(--color-accent)] bg-white"
+              style={{ borderColor: "#e5e7eb" }}
+              maxLength={32}
+            />
+          )}
           {showStockInputs && (
             <input
               type="number"
@@ -1088,7 +1136,7 @@ function ColorPickerField({
               placeholder="qty"
               aria-label={`Stock for ${color}`}
               title={`Stock for ${color}`}
-              className="w-14 border px-1 py-0.5 text-[10px] text-center focus:outline-none focus:border-[var(--color-accent)] bg-white"
+              className="w-20 border px-1 py-0.5 text-[10px] text-center focus:outline-none focus:border-[var(--color-accent)] bg-white"
               style={{ borderColor: "#e5e7eb" }}
             />
           )}

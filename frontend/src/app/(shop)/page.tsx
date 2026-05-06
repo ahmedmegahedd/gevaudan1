@@ -4,6 +4,7 @@ import { storeConfig } from "@/config/store.config"
 import { createClient } from "@/lib/supabase/server"
 import ProductCard from "@/components/shop/ProductCard"
 import Aurora from "@/components/ui/Aurora"
+import PalettePreview from "@/components/ui/PalettePreview"
 import { attachRatings } from "@/lib/reviews"
 import type { Product, Category } from "@/types"
 
@@ -38,6 +39,10 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* Preview-only: forces the forest-green/bone palette while the
+          homepage is mounted. Other routes keep the burgundy palette. */}
+      <PalettePreview palette="forest" />
+
       {/* ── Hero ── */}
       <section
         className="relative flex items-center justify-center min-h-[100vh] text-center px-4 sm:px-6 lg:px-10 py-24 overflow-hidden"
@@ -46,7 +51,7 @@ export default async function HomePage() {
         {/* Aurora WebGL background */}
         <div className="absolute inset-0 z-0">
           <Aurora
-            colorStops={["#5C1F2A", "#8B3A48", "#3D1419"]}
+            colorStops={["#2A3D2E", "#4A5D4D", "#1A2B1D"]}
             amplitude={1.8}
             blend={0.8}
             speed={0.5}
