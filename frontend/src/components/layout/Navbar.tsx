@@ -34,18 +34,19 @@ export default function Navbar() {
       style={{ backgroundColor: "var(--color-primary)" }}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 h-[60px] md:h-[70px] flex items-center justify-between gap-4">
-        {/* Logo / Brand — single Zapfino wordmark; subtitle removed so the
-            full glyph (incl. tall ascenders/descenders) fits the navbar. */}
+        {/* Logo / Brand — Zapfino has tall ascenders. Use a generous
+            line-height so the line-box contains the full glyph, and DON'T
+            clip the link container — clipping would cut the top of the G. */}
         <Link
           href="/"
-          className="flex items-center leading-none shrink-0 overflow-hidden"
+          className="flex items-center shrink-0"
           onClick={() => setMenuOpen(false)}
         >
           <span
             className="brand-script text-white block"
             style={{
-              fontSize: "clamp(18px, 4vw, 26px)",
-              lineHeight: 0.9,
+              fontSize: "clamp(16px, 3.5vw, 22px)",
+              lineHeight: 1.5,
             }}
           >
             {brand.name}
