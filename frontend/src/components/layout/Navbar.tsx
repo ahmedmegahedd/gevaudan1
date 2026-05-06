@@ -44,8 +44,8 @@ export default function Navbar() {
           <span
             className="brand-script text-white block"
             style={{
-              fontSize: "clamp(28px, 7vw, 40px)",
-              lineHeight: 1,
+              fontSize: "clamp(18px, 4vw, 26px)",
+              lineHeight: 0.9,
             }}
           >
             {brand.name}
