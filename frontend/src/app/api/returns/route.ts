@@ -19,6 +19,7 @@ const schema = z
     reason: z.string().trim().min(20, "Reason must be at least 20 characters"),
     items: z.array(itemSchema).min(1, "Select at least one item to return"),
     exchange_product_id: z.string().uuid().nullable().optional(),
+    exchange_variants: z.record(z.string(), z.string()).nullable().optional(),
   })
   .refine(
     (v) => v.request_type !== "exchange" || !!v.exchange_product_id,
@@ -66,6 +67,10 @@ export async function POST(request: NextRequest) {
       reason: v.reason,
       items: v.items,
       exchange_product_id: v.request_type === "exchange" ? (v.exchange_product_id ?? null) : null,
+      exchange_variants:
+        v.request_type === "exchange" && v.exchange_variants
+          ? v.exchange_variants
+          : null,
       status: "pending",
     })
     .select("id")

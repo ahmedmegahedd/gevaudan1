@@ -34,22 +34,32 @@ export default function Navbar() {
       style={{ backgroundColor: "var(--color-primary)" }}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 h-[60px] md:h-[70px] flex items-center justify-between gap-4">
-        {/* Logo / Brand — Zapfino has tall ascenders. Use a generous
-            line-height so the line-box contains the full glyph, and DON'T
-            clip the link container — clipping would cut the top of the G. */}
+        {/* Logo / Brand — Zapfino wordmark stacked with the small subtitle.
+            Wordmark size unchanged; subtitle is intentionally tiny so the
+            stack still fits inside the 60/70px navbar. */}
         <Link
           href="/"
-          className="flex items-center shrink-0"
+          className="flex flex-col items-start leading-none shrink-0"
           onClick={() => setMenuOpen(false)}
         >
           <span
             className="brand-script text-white block"
             style={{
               fontSize: "clamp(16px, 3.5vw, 22px)",
-              lineHeight: 1.5,
+              lineHeight: 1.2,
             }}
           >
             {brand.name}
+          </span>
+          <span
+            className="text-[8px] md:text-[9px] uppercase font-light"
+            style={{
+              color: "var(--color-cream)",
+              letterSpacing: "0.3em",
+              marginTop: 2,
+            }}
+          >
+            {brand.subtitle}
           </span>
         </Link>
 
@@ -110,17 +120,6 @@ export default function Navbar() {
                 </Link>
               </li>
 
-              {/* Admin */}
-              <li>
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-1.5 text-[10px] uppercase font-semibold px-4 py-2 rounded-[2px] hover:opacity-80"
-                  style={{ backgroundColor: "var(--color-accent)", color: "#fff", letterSpacing: "0.18em" }}
-                >
-                  <AdminIcon />
-                  Admin
-                </Link>
-              </li>
             </ul>
         </div>
 
@@ -233,17 +232,6 @@ export default function Navbar() {
                 )}
               </Link>
             </li>
-            <li>
-              <Link
-                href="/admin"
-                className="flex items-center gap-2 px-6 py-5 text-base font-semibold"
-                style={{ backgroundColor: "var(--color-accent)", color: "#fff", letterSpacing: "0.05em" }}
-                onClick={() => setMenuOpen(false)}
-              >
-                <AdminIcon />
-                Admin Panel
-              </Link>
-            </li>
           </ul>
         </div>
       )}
@@ -289,14 +277,6 @@ function HeartIcon() {
   )
 }
 
-function AdminIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-  )
-}
 
 function CartIcon() {
   return (

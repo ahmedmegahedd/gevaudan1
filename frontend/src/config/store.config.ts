@@ -2,7 +2,7 @@ export const storeConfig = {
   brand: {
     name: "Gévadaun",
     subtitle: "Kemet",
-    tagline: "Where Ancient Elegance Meets Modern Grace",
+    tagline: "The pulse of the streets.",
     logo: "/logo.png",
     whatsapp: "+201001234567",
   },

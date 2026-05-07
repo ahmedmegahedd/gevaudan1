@@ -140,9 +140,9 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
     const raw = initialData?.variants?.["size_guide"]
     if (raw && raw[0]?.startsWith("HEADER:")) {
       const parts = raw[0].replace("HEADER:", "").split("|")
-      return [parts[0] ?? "Size", parts[1] ?? "Bust (cm)", parts[2] ?? "Waist (cm)", parts[3] ?? "Hips (cm)"]
+      return [parts[0] ?? "Size", parts[1] ?? "Length (cm)", parts[2] ?? "Width (cm)", parts[3] ?? "Height (cm)"]
     }
-    return ["Size", "Bust (cm)", "Waist (cm)", "Hips (cm)"]
+    return ["Size", "Length (cm)", "Width (cm)", "Height (cm)"]
   })
 
   // Variant stock state
@@ -465,7 +465,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
           <textarea
             {...register("measurements")}
             rows={3}
-            placeholder="e.g. Length: 120cm, Bust: 92cm, Waist: 76cm"
+            placeholder="e.g. Length: 69cm, Width: 51cm, Height: 26cm"
             className={input(false)}
           />
         </Field>
@@ -653,7 +653,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
                       }}
                       className="flex-1 border px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--color-accent)] bg-white"
                       style={{ borderColor: "#e5e7eb" }}
-                      placeholder={field === "size" ? "e.g. M" : "e.g. 88–92"}
+                      placeholder={field === "size" ? "e.g. M" : "e.g. 69"}
                     />
                   ))}
                   <button

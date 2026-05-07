@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
 import { z } from "zod"
 import { parseOrderNumber } from "@/lib/orderNumber"
-import type { Order } from "@/types"
+import type { Order, ReturnRequest } from "@/types"
 
 const RETURN_WINDOW_DAYS = 14
 const RETURN_WINDOW_MS = RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000
@@ -88,9 +88,22 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Pull any existing return/exchange requests for this order so the
+  // customer sees their current status when they re-enter the order id.
+  const { data: existingRows } = await supabase
+    .from("return_requests")
+    .select(
+      "id, request_type, status, items, reason, created_at, exchange_product_id, exchange_variants"
+    )
+    .eq("order_id", order.id)
+    .order("created_at", { ascending: false })
+
+  const existingRequests = (existingRows as Partial<ReturnRequest>[] | null) ?? []
+
   return NextResponse.json({
     order,
     productImages,
+    existingRequests,
     returnWindowDays: RETURN_WINDOW_DAYS,
   })
 }

@@ -1,23 +1,36 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { storeConfig } from "@/config/store.config"
 import { formatOrderNumber } from "@/lib/orderNumber"
-import type { Order, OrderItem, ReturnRequestType } from "@/types"
+import { getRealVariantKeys, getVariantStock } from "@/lib/variantStock"
+import { getVariantValueLabel } from "@/lib/colorNames"
+import type {
+  Order,
+  OrderItem,
+  ReturnRequest,
+  ReturnRequestStatus,
+  ReturnRequestType,
+} from "@/types"
 
 const { currency } = storeConfig.delivery
 const RETURN_WINDOW_DAYS = 14
 
 type Step = 1 | 2 | 3 | 4 | 5 // 5 = success
 
-interface ExchangeProduct {
+export interface ExchangeProduct {
   id: string
   name: string
   slug: string
   price: number
   images: string[]
+  stock: number
+  variants: Record<string, string[]>
+  variant_stock: Record<string, number> | null
+  stock_by_variant: Record<string, number> | null
+  color_names: Record<string, string> | null
 }
 
 interface ReturnsClientProps {
@@ -28,6 +41,31 @@ interface ReturnsClientProps {
 type LookupResult = {
   order: Order
   productImages: Record<string, string | null>
+  existingRequests: ReturnRequest[]
+}
+
+/** A product is fully OOS when stock_by_variant is set and every value is 0. */
+function isProductFullyOOS(p: ExchangeProduct): boolean {
+  const sbv = p.stock_by_variant
+  if (!sbv || Object.keys(sbv).length === 0) return false
+  return Object.values(sbv).every((v) => v === 0)
+}
+
+/** Pick a sensible default selection for the variant picker. */
+function buildDefaultVariants(p: ExchangeProduct): Record<string, string> {
+  const realKeys = getRealVariantKeys(p.variants)
+  const sbv = p.stock_by_variant ?? {}
+  const initial: Record<string, string> = {}
+  for (const key of realKeys) {
+    const options = p.variants[key] ?? []
+    if (options.length === 0) continue
+    if (/colou?r/i.test(key)) {
+      initial[key] = options.find((o) => sbv[o] !== 0) ?? options[0]
+    } else {
+      initial[key] = options[0]
+    }
+  }
+  return initial
 }
 
 export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) {
@@ -51,7 +89,9 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
 
   // Step 3 state
   const [exchangeProductId, setExchangeProductId] = useState<string | null>(null)
+  const [exchangeVariants, setExchangeVariants] = useState<Record<string, string>>({})
   const [productSearch, setProductSearch] = useState("")
+  const [step3Error, setStep3Error] = useState("")
 
   // Step 4 state
   const [submitLoading, setSubmitLoading] = useState(false)
@@ -78,7 +118,11 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
         return
       }
 
-      const result = json as LookupResult
+      const result: LookupResult = {
+        order: json.order,
+        productImages: json.productImages ?? {},
+        existingRequests: (json.existingRequests as ReturnRequest[] | undefined) ?? [],
+      }
       setLookup(result)
       // Pre-fill customer info from the order
       setCustomerName(result.order.customer_info.name)
@@ -147,6 +191,69 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
     [exchangeProducts, exchangeProductId]
   )
 
+  // Reset variant selection whenever the chosen exchange product changes.
+  useEffect(() => {
+    if (!selectedExchangeProduct) {
+      setExchangeVariants({})
+      return
+    }
+    setExchangeVariants(buildDefaultVariants(selectedExchangeProduct))
+    setStep3Error("")
+  }, [selectedExchangeProduct])
+
+  const exchangeRealKeys = useMemo(
+    () =>
+      selectedExchangeProduct
+        ? getRealVariantKeys(selectedExchangeProduct.variants)
+        : [],
+    [selectedExchangeProduct]
+  )
+
+  /** True when the picker has at least one selectable real variant (size, color, …). */
+  const exchangeHasVariants = exchangeRealKeys.length > 0
+
+  /** True when the *currently selected* combination is OOS. */
+  const exchangeSelectedOOS = useMemo(() => {
+    const p = selectedExchangeProduct
+    if (!p) return false
+    const colorKey = exchangeRealKeys.find((k) => /colou?r/i.test(k))
+    const selectedColor = colorKey ? exchangeVariants[colorKey] : null
+    if (selectedColor && p.stock_by_variant?.[selectedColor] === 0) return true
+    const combinationStock = getVariantStock(
+      p.stock,
+      p.variant_stock,
+      exchangeVariants,
+      exchangeRealKeys
+    )
+    return combinationStock === 0
+  }, [selectedExchangeProduct, exchangeRealKeys, exchangeVariants])
+
+  function handleStep3Continue() {
+    setStep3Error("")
+    if (!selectedExchangeProduct) {
+      setStep3Error("Please choose a product to exchange for.")
+      return
+    }
+    if (isProductFullyOOS(selectedExchangeProduct)) {
+      setStep3Error("That product is sold out. Please choose another.")
+      return
+    }
+    if (exchangeHasVariants) {
+      // Every real key must be selected
+      for (const key of exchangeRealKeys) {
+        if (!exchangeVariants[key]) {
+          setStep3Error(`Please choose a ${key.toLowerCase()}.`)
+          return
+        }
+      }
+      if (exchangeSelectedOOS) {
+        setStep3Error("The selected combination is out of stock. Pick another.")
+        return
+      }
+    }
+    setStep(4)
+  }
+
   // ── Submit ──────────────────────────────────────────────
   async function handleSubmit() {
     if (!lookup) return
@@ -166,6 +273,10 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
           items: selectedItems,
           exchange_product_id:
             requestType === "exchange" ? exchangeProductId : null,
+          exchange_variants:
+            requestType === "exchange" && exchangeHasVariants
+              ? exchangeVariants
+              : null,
         }),
       })
       const json = await res.json()
@@ -344,6 +455,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
       {step === 2 && lookup && (
         <Step2
           lookup={lookup}
+          existingRequests={lookup.existingRequests}
           itemKey={itemKey}
           selectedItemKeys={selectedItemKeys}
           toggleItem={toggleItem}
@@ -371,8 +483,13 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
           selectedId={exchangeProductId}
           setSelectedId={setExchangeProductId}
           selectedProduct={selectedExchangeProduct}
+          variantSelection={exchangeVariants}
+          setVariantSelection={setExchangeVariants}
+          realVariantKeys={exchangeRealKeys}
+          selectionOOS={exchangeSelectedOOS}
+          stepError={step3Error}
           onBack={() => setStep(2)}
-          onContinue={() => exchangeProductId && setStep(4)}
+          onContinue={handleStep3Continue}
         />
       )}
 
@@ -387,6 +504,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
           customerName={customerName}
           customerPhone={customerPhone}
           exchangeProduct={selectedExchangeProduct}
+          exchangeVariants={exchangeVariants}
           submitLoading={submitLoading}
           submitError={submitError}
           onBack={() => setStep(requestType === "exchange" ? 3 : 2)}
@@ -409,6 +527,7 @@ export default function ReturnsClient({ exchangeProducts }: ReturnsClientProps) 
 
 interface Step2Props {
   lookup: LookupResult
+  existingRequests: ReturnRequest[]
   itemKey: (item: OrderItem, i: number) => string
   selectedItemKeys: Set<string>
   toggleItem: (key: string) => void
@@ -427,6 +546,7 @@ interface Step2Props {
 
 function Step2({
   lookup,
+  existingRequests,
   itemKey,
   selectedItemKeys,
   toggleItem,
@@ -452,6 +572,11 @@ function Step2({
 
   return (
     <div className="space-y-8">
+      {/* Existing-requests banner — shown when a previous request was filed */}
+      {existingRequests.length > 0 && (
+        <ExistingRequestsBanner requests={existingRequests} />
+      )}
+
       {/* Order header */}
       <div
         className="rounded-card card-shadow p-6 md:p-8"
@@ -722,8 +847,13 @@ interface Step3Props {
   search: string
   setSearch: (s: string) => void
   selectedId: string | null
-  setSelectedId: (id: string) => void
+  setSelectedId: (id: string | null) => void
   selectedProduct: ExchangeProduct | null
+  variantSelection: Record<string, string>
+  setVariantSelection: (next: Record<string, string>) => void
+  realVariantKeys: string[]
+  selectionOOS: boolean
+  stepError: string
   onBack: () => void
   onContinue: () => void
 }
@@ -736,6 +866,11 @@ function Step3({
   selectedId,
   setSelectedId,
   selectedProduct,
+  variantSelection,
+  setVariantSelection,
+  realVariantKeys,
+  selectionOOS,
+  stepError,
   onBack,
   onContinue,
 }: Step3Props) {
@@ -772,20 +907,15 @@ function Step3({
           aria-label="Search exchange products"
         />
 
-        {/* Selected confirmation */}
+        {/* Selected confirmation + variant picker */}
         {selectedProduct && (
-          <p
-            className="text-sm rounded-[2px] px-4 py-3"
-            style={{
-              backgroundColor: "rgba(68,119,148,0.1)",
-              borderLeft: "2px solid var(--color-accent)",
-              color: "var(--color-primary)",
-              lineHeight: 1.6,
-            }}
-          >
-            You selected:{" "}
-            <span style={{ fontWeight: 500 }}>{selectedProduct.name}</span>
-          </p>
+          <SelectedExchangePanel
+            product={selectedProduct}
+            realKeys={realVariantKeys}
+            selection={variantSelection}
+            setSelection={setVariantSelection}
+            selectionOOS={selectionOOS}
+          />
         )}
 
         {/* Grid */}
@@ -803,11 +933,17 @@ function Step3({
             {products.map((p) => {
               const isSelected = selectedId === p.id
               const img = p.images?.[0]
+              const fullyOOS = isProductFullyOOS(p)
               return (
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => setSelectedId(p.id)}
+                  disabled={fullyOOS}
+                  aria-disabled={fullyOOS || undefined}
+                  onClick={() => {
+                    if (fullyOOS) return
+                    setSelectedId(p.id)
+                  }}
                   className="text-left group flex flex-col rounded-[4px] overflow-hidden"
                   style={{
                     backgroundColor: "#ffffff",
@@ -816,10 +952,13 @@ function Step3({
                       : "1px solid var(--divider-soft)",
                     transition: "all 0.2s ease",
                     boxShadow: isSelected
-                      ? "0 6px 24px rgba(68,119,148,0.18)"
+                      ? "0 6px 24px rgba(74,93,77,0.18)"
                       : "0 2px 12px rgba(0,0,0,0.04)",
+                    cursor: fullyOOS ? "not-allowed" : "pointer",
+                    opacity: fullyOOS ? 0.55 : 1,
                   }}
                   aria-pressed={isSelected}
+                  title={fullyOOS ? "Out of stock" : undefined}
                 >
                   <div
                     className="relative aspect-[3/4] overflow-hidden"
@@ -830,12 +969,16 @@ function Step3({
                         src={img}
                         alt={p.name}
                         fill
-                        className="object-cover group-hover:scale-105"
+                        className={
+                          fullyOOS
+                            ? "object-cover grayscale"
+                            : "object-cover group-hover:scale-105"
+                        }
                         style={{ transition: "transform 0.4s ease" }}
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       />
                     ) : null}
-                    {isSelected && (
+                    {isSelected && !fullyOOS && (
                       <div
                         className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center text-white text-sm"
                         style={{ backgroundColor: "var(--color-accent)" }}
@@ -844,12 +987,28 @@ function Step3({
                         ✓
                       </div>
                     )}
+                    {fullyOOS && (
+                      <div className="absolute inset-0 flex items-end justify-center pb-5">
+                        <span
+                          className="text-[10px] uppercase font-medium px-3 py-1.5"
+                          style={{
+                            backgroundColor: "rgba(42,61,46,0.85)",
+                            color: "var(--color-cream)",
+                            letterSpacing: "0.22em",
+                          }}
+                        >
+                          Out of Stock
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="p-4 space-y-1">
                     <p
                       className="text-sm leading-snug"
                       style={{
-                        color: "var(--color-primary)",
+                        color: fullyOOS
+                          ? "rgba(42,61,46,0.5)"
+                          : "var(--color-primary)",
                         fontFamily: "var(--font-heading)",
                         fontWeight: 500,
                         letterSpacing: "0.02em",
@@ -859,7 +1018,11 @@ function Step3({
                     </p>
                     <p
                       className="price-text text-sm"
-                      style={{ color: "var(--color-accent)" }}
+                      style={{
+                        color: fullyOOS
+                          ? "rgba(42,61,46,0.4)"
+                          : "var(--color-accent)",
+                      }}
                     >
                       {currency} {p.price.toLocaleString()}
                     </p>
@@ -870,6 +1033,12 @@ function Step3({
           </div>
         )}
       </div>
+
+      {stepError && (
+        <p className="text-sm" style={{ color: "#dc2626", lineHeight: 1.7 }}>
+          {stepError}
+        </p>
+      )}
 
       <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-3 sm:gap-4">
         <button
@@ -900,6 +1069,229 @@ function Step3({
   )
 }
 
+// ─── Selected exchange product + variant picker ─────────────────────────────
+
+function SelectedExchangePanel({
+  product,
+  realKeys,
+  selection,
+  setSelection,
+  selectionOOS,
+}: {
+  product: ExchangeProduct
+  realKeys: string[]
+  selection: Record<string, string>
+  setSelection: (next: Record<string, string>) => void
+  selectionOOS: boolean
+}) {
+  const sbv = product.stock_by_variant ?? {}
+
+  function isOptionOOS(key: string, option: string): boolean {
+    if (/colou?r/i.test(key) && sbv[option] === 0) return true
+    const test = { ...selection, [key]: option }
+    return getVariantStock(product.stock, product.variant_stock, test, realKeys) === 0
+  }
+
+  return (
+    <div
+      className="rounded-[4px] px-4 py-4 space-y-4"
+      style={{
+        backgroundColor: "rgba(74,93,77,0.08)",
+        borderLeft: "2px solid var(--color-accent)",
+      }}
+    >
+      <p
+        className="text-sm"
+        style={{ color: "var(--color-primary)", lineHeight: 1.6 }}
+      >
+        You selected: <span style={{ fontWeight: 500 }}>{product.name}</span>
+      </p>
+
+      {realKeys.length === 0 ? (
+        <p
+          className="text-xs"
+          style={{ color: "rgba(42,61,46,0.55)", letterSpacing: "0.05em" }}
+        >
+          No size or colour to choose — ready to review.
+        </p>
+      ) : (
+        <div className="space-y-4">
+          {realKeys.map((key) => (
+            <div key={key} className="space-y-2">
+              <p
+                className="text-[10px] uppercase font-medium"
+                style={{
+                  color: "var(--color-primary)",
+                  letterSpacing: "0.18em",
+                }}
+              >
+                {key}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {(product.variants[key] ?? []).map((option) => {
+                  const isSel = selection[key] === option
+                  const oos = isOptionOOS(key, option)
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      disabled={oos}
+                      title={oos ? "Out of stock" : undefined}
+                      onClick={() => {
+                        if (oos) return
+                        setSelection({ ...selection, [key]: option })
+                      }}
+                      className="rounded-[2px]"
+                      style={{
+                        minHeight: 40,
+                        padding: "0 14px",
+                        border: `1px solid ${
+                          isSel ? "var(--color-primary)" : "rgba(42,61,46,0.18)"
+                        }`,
+                        backgroundColor: isSel
+                          ? "var(--color-primary)"
+                          : "transparent",
+                        color: isSel
+                          ? "var(--color-cream)"
+                          : oos
+                            ? "rgba(42,61,46,0.3)"
+                            : "var(--color-primary)",
+                        fontSize: 13,
+                        letterSpacing: "0.05em",
+                        textDecoration: oos && !isSel ? "line-through" : "none",
+                        cursor: oos ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {getVariantValueLabel(product, key, option)}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+          {selectionOOS && (
+            <p className="text-xs" style={{ color: "#dc2626", lineHeight: 1.7 }}>
+              That combination is currently out of stock — please choose another.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Existing requests banner ───────────────────────────────────────────────
+
+const STATUS_PILL: Record<
+  ReturnRequestStatus,
+  { bg: string; fg: string; label: string }
+> = {
+  pending: { bg: "rgba(180,83,9,0.12)", fg: "#b45309", label: "Pending" },
+  approved: { bg: "rgba(22,163,74,0.12)", fg: "#16a34a", label: "Approved" },
+  rejected: { bg: "rgba(185,28,28,0.12)", fg: "#b91c1c", label: "Rejected" },
+}
+
+function ExistingRequestsBanner({ requests }: { requests: ReturnRequest[] }) {
+  return (
+    <div
+      className="rounded-card p-6 md:p-8 space-y-5"
+      style={{
+        backgroundColor: "#ffffff",
+        borderLeft: "3px solid var(--color-accent)",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
+      <div>
+        <p
+          className="text-[10px] uppercase font-medium mb-1"
+          style={{ color: "var(--color-accent)", letterSpacing: "0.22em" }}
+        >
+          Your Existing Requests
+        </p>
+        <h3
+          className="text-[18px] md:text-[22px]"
+          style={{
+            fontFamily: "var(--font-heading)",
+            color: "var(--color-primary)",
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+          }}
+        >
+          {requests.length === 1
+            ? "You've submitted 1 request for this order"
+            : `You've submitted ${requests.length} requests for this order`}
+        </h3>
+      </div>
+
+      <ul className="space-y-3">
+        {requests.map((r) => {
+          const pill = STATUS_PILL[r.status]
+          const date = new Date(r.created_at).toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+          const itemCount = Array.isArray(r.items)
+            ? r.items.reduce((s, it) => s + (it.quantity ?? 0), 0)
+            : 0
+          return (
+            <li
+              key={r.id}
+              className="flex items-center gap-4 flex-wrap py-3"
+              style={{ borderTop: "1px solid var(--divider-soft)" }}
+            >
+              <span
+                className="font-mono text-xs"
+                style={{ color: "rgba(42,61,46,0.55)" }}
+              >
+                #{r.id.slice(0, 8).toUpperCase()}
+              </span>
+              <span
+                className="text-[10px] uppercase font-medium"
+                style={{
+                  color: "var(--color-primary)",
+                  letterSpacing: "0.15em",
+                }}
+              >
+                {r.request_type === "exchange" ? "Exchange" : "Refund"}
+              </span>
+              <span
+                className="text-xs"
+                style={{ color: "rgba(42,61,46,0.55)" }}
+              >
+                {itemCount} item{itemCount === 1 ? "" : "s"}
+              </span>
+              <span
+                className="text-xs"
+                style={{ color: "rgba(42,61,46,0.55)" }}
+              >
+                {date}
+              </span>
+              <span
+                className="ml-auto inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold uppercase"
+                style={{
+                  backgroundColor: pill.bg,
+                  color: pill.fg,
+                  letterSpacing: "0.15em",
+                }}
+              >
+                {pill.label}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+
+      <p
+        className="text-xs"
+        style={{ color: "rgba(42,61,46,0.55)", lineHeight: 1.7 }}
+      >
+        You can submit another request for different items below, or close this page if you&rsquo;re just checking the status.
+      </p>
+    </div>
+  )
+}
+
 // ─── Step 4: Review ─────────────────────────────────────────────────────────
 
 interface Step4Props {
@@ -911,6 +1303,7 @@ interface Step4Props {
   customerName: string
   customerPhone: string
   exchangeProduct: ExchangeProduct | null
+  exchangeVariants: Record<string, string>
   submitLoading: boolean
   submitError: string
   onBack: () => void
@@ -926,6 +1319,7 @@ function Step4({
   customerName,
   customerPhone,
   exchangeProduct,
+  exchangeVariants,
   submitLoading,
   submitError,
   onBack,
@@ -1030,6 +1424,22 @@ function Step4({
                 >
                   {exchangeProduct.name}
                 </p>
+                {Object.keys(exchangeVariants).length > 0 && (
+                  <p
+                    className="text-xs mt-1"
+                    style={{
+                      color: "rgba(42,61,46,0.55)",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {Object.entries(exchangeVariants)
+                      .map(
+                        ([k, v]) =>
+                          `${k}: ${getVariantValueLabel(exchangeProduct, k, v)}`
+                      )
+                      .join(" · ")}
+                  </p>
+                )}
                 <p
                   className="price-text text-sm mt-0.5"
                   style={{ color: "var(--color-accent)" }}

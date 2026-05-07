@@ -553,15 +553,15 @@ function MaterialCare({ variants }: { variants: Record<string, string[]> }) {
 }
 
 const DEFAULT_SIZE_GUIDE = [
-  { size: "XS",  col2: "80–83",  col3: "60–63",  col4: "86–89"  },
-  { size: "S",   col2: "84–87",  col3: "64–67",  col4: "90–93"  },
-  { size: "M",   col2: "88–92",  col3: "68–72",  col4: "94–98"  },
-  { size: "L",   col2: "93–98",  col3: "73–78",  col4: "99–104" },
-  { size: "XL",  col2: "99–104", col3: "79–84",  col4: "105–110"},
-  { size: "XXL", col2: "105–111",col3: "85–91",  col4: "111–117"},
+  { size: "XS",  col2: "65", col3: "46", col4: "24" },
+  { size: "S",   col2: "67", col3: "48", col4: "25" },
+  { size: "M",   col2: "69", col3: "51", col4: "26" },
+  { size: "L",   col2: "71", col3: "54", col4: "27" },
+  { size: "XL",  col2: "73", col3: "57", col4: "28" },
+  { size: "XXL", col2: "75", col3: "60", col4: "29" },
 ]
 
-const DEFAULT_HEADERS = ["Size", "Bust (cm)", "Waist (cm)", "Hips (cm)"]
+const DEFAULT_HEADERS = ["Size", "Length (cm)", "Width (cm)", "Height (cm)"]
 
 function SizeGuide({ rawRows }: { rawRows?: string[] }) {
   const [open, setOpen] = useState(false)

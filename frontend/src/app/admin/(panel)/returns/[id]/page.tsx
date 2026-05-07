@@ -158,6 +158,20 @@ export default async function ReturnRequestPage({ params }: Props) {
                   >
                     {exchangeProduct.name}
                   </Link>
+                  {req.exchange_variants &&
+                    Object.keys(req.exchange_variants).length > 0 && (
+                      <p
+                        className="text-xs mt-1"
+                        style={{
+                          color: "rgba(42,61,46,0.6)",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        {Object.entries(req.exchange_variants)
+                          .map(([k, v]) => `${k}: ${v}`)
+                          .join(" · ")}
+                      </p>
+                    )}
                   <p className="text-sm mt-1" style={{ color: "var(--color-accent)" }}>
                     {storeConfig.delivery.currency}{" "}
                     {exchangeProduct.price.toLocaleString()}

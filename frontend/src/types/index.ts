@@ -174,6 +174,8 @@ export interface ReturnRequest {
   reason: string
   items: ReturnRequestItem[]
   exchange_product_id: string | null
+  /** Selected variants on the exchange product (e.g. { Color: "#FF0000", Size: "M" }). */
+  exchange_variants: Record<string, string> | null
   status: ReturnRequestStatus
   admin_notes: string | null
   created_at: string
