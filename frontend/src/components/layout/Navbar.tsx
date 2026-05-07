@@ -46,7 +46,7 @@ export default function Navbar() {
             className="brand-script text-white block"
             style={{
               fontSize: "clamp(16px, 3.5vw, 22px)",
-              lineHeight: 1.2,
+              lineHeight: 1.4,
             }}
           >
             {brand.name}
@@ -56,7 +56,7 @@ export default function Navbar() {
             style={{
               color: "var(--color-cream)",
               letterSpacing: "0.3em",
-              marginTop: 2,
+              marginTop: 8,
             }}
           >
             {brand.subtitle}

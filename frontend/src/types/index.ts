@@ -43,6 +43,8 @@ export interface Category {
   created_at: string
 }
 
+export type ProductGender = "male" | "female" | "unisex"
+
 export interface Product {
   id: string
   name: string
@@ -67,6 +69,8 @@ export interface Product {
   is_active: boolean
   is_featured: boolean
   model_info: string | null
+  /** Customer-facing gender label shown on the product card. */
+  gender: ProductGender
   created_at: string
   /** Populated when joined */
   category?: Category
@@ -98,6 +102,15 @@ export interface Review {
 }
 
 export type OrderStatus = "pending" | "confirmed" | "delivered" | "cancelled"
+export type PaymentMethod = "cod" | "card"
+/**
+ * Payment lifecycle:
+ *   pending          → COD order, will be paid on delivery
+ *   awaiting_payment → card order, customer hasn't completed Paymob yet
+ *   paid             → card order, Paymob webhook confirmed success
+ *   failed           → card order, Paymob webhook reported failure
+ */
+export type PaymentStatus = "pending" | "awaiting_payment" | "paid" | "failed"
 
 export interface CustomerInfo {
   name: string
@@ -134,6 +147,10 @@ export interface Order {
   total: number
   promo_code: string | null
   status: OrderStatus
+  payment_method: PaymentMethod
+  payment_status: PaymentStatus
+  paymob_order_id: string | null
+  paymob_transaction_id: string | null
   created_at: string
 }
 

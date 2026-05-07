@@ -131,6 +131,21 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
+        {/* Gender label — top-left */}
+        {product.gender && (
+          <span
+            className="absolute top-3 left-3 z-20 inline-flex items-center text-[9px] uppercase font-medium px-2.5 py-1 rounded-[2px]"
+            style={{
+              backgroundColor: "rgba(42,61,46,0.85)",
+              color: "var(--color-cream)",
+              letterSpacing: "0.2em",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            {product.gender}
+          </span>
+        )}
+
         {/* Wishlist heart — top-right, refined */}
         <button
           onClick={handleToggleWishlist}

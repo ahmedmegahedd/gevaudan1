@@ -9,7 +9,7 @@ import type { Order } from "@/types"
  */
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  const { customer_info, delivery_address, items, subtotal, delivery_fee, total, promo_code, discount_amount } = body
+  const { customer_info, delivery_address, items, subtotal, delivery_fee, total, promo_code, discount_amount, payment_method } = body
 
   if (!customer_info || !delivery_address || !items || items.length === 0) {
     return NextResponse.json({ error: "Missing required order fields" }, { status: 400 })
@@ -32,6 +32,11 @@ export async function POST(request: NextRequest) {
     { cookies: { getAll: () => [], setAll: () => {} } }
   )
 
+  // Validate payment method (defaults to COD for older clients)
+  const normalizedPaymentMethod = payment_method === "card" ? "card" : "cod"
+  const initialPaymentStatus =
+    normalizedPaymentMethod === "card" ? "awaiting_payment" : "pending"
+
   const { data, error } = await supabase
     .from("orders")
     .insert({
@@ -44,6 +49,8 @@ export async function POST(request: NextRequest) {
       total,
       promo_code: promo_code ?? null,
       status: "pending",
+      payment_method: normalizedPaymentMethod,
+      payment_status: initialPaymentStatus,
     })
     .select("*")
     .single()
@@ -100,16 +107,19 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-  // ── Fire the order confirmation email (best-effort, non-blocking on errors) ──
-  // We `await` the send here because serverless function lifecycles end with
-  // the response, but we never let an email failure roll back the order.
-  try {
-    const result = await sendOrderConfirmationEmail(data as Order)
-    if (result.error) {
-      console.error("[orders] order confirmation email failed:", result.error)
+  // ── Fire the order confirmation email (best-effort, non-blocking) ──
+  // Skip for card orders — those emails go out from the Paymob webhook once
+  // payment is actually confirmed, so customers don't get a "confirmed" email
+  // before they've finished checkout.
+  if (normalizedPaymentMethod !== "card") {
+    try {
+      const result = await sendOrderConfirmationEmail(data as Order)
+      if (result.error) {
+        console.error("[orders] order confirmation email failed:", result.error)
+      }
+    } catch (e) {
+      console.error("[orders] order confirmation email threw:", e)
     }
-  } catch (e) {
-    console.error("[orders] order confirmation email threw:", e)
   }
 
   return NextResponse.json(data, { status: 201 })

@@ -27,6 +27,7 @@ const schema = z.object({
   model_info: z.string().optional(),
   price: z.preprocess((v) => Number(v), z.number().min(0)),
   category_id: z.string().optional(),
+  gender: z.enum(["male", "female", "unisex"]),
   stock: z.preprocess((v) => Number(v), z.number().int().min(0)),
   is_active: z.boolean(),
   is_featured: z.boolean(),
@@ -41,6 +42,7 @@ type FormValues = {
   model_info?: string
   price: number
   category_id?: string
+  gender: "male" | "female" | "unisex"
   stock: number
   is_active: boolean
   is_featured: boolean
@@ -193,6 +195,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       model_info: initialData?.model_info ?? "",
       price: initialData?.price ?? 0,
       category_id: initialData?.category_id ?? "",
+      gender: (initialData?.gender as "male" | "female" | "unisex") ?? "unisex",
       stock: initialData?.stock ?? 0,
       is_active: initialData?.is_active ?? true,
       is_featured: initialData?.is_featured ?? false,
@@ -334,6 +337,7 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
       model_info: values.model_info?.trim() || null,
       price: values.price,
       category_id: values.category_id || null,
+      gender: values.gender,
       stock: values.stock,
       is_active: values.is_active,
       is_featured: values.is_featured,
@@ -518,6 +522,17 @@ export default function ProductForm({ categories, initialData, mode }: ProductFo
               </option>
             ))}
           </select>
+        </Field>
+
+        <Field label="Gender" error={errors.gender?.message}>
+          <select {...register("gender")} className={input(!!errors.gender)}>
+            <option value="unisex">Unisex</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <p className="text-xs text-gray-400 mt-1">
+            Shown as a small label in the top-left of the product card.
+          </p>
         </Field>
       </Section>
 

@@ -53,6 +53,8 @@ interface SuccessData {
   promoCode: string | null
 }
 
+type PaymentChoice = "cod" | "card"
+
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, subtotal, clearCart } = useCartStore()
@@ -61,6 +63,7 @@ export default function CheckoutPage() {
   const [promoInput, setPromoInput] = useState("")
   const [promoLoading, setPromoLoading] = useState(false)
   const [promoError, setPromoError] = useState("")
+  const [paymentMethod, setPaymentMethod] = useState<PaymentChoice>("cod")
 
   const sub = subtotal()
   const fee = sub >= freeAbove ? 0 : deliveryFee
@@ -136,6 +139,7 @@ export default function CheckoutPage() {
       discount_amount: discountAmount,
       total,
       promo_code: promo?.code ?? null,
+      payment_method: paymentMethod,
     })
 
     if (error || !data) {
@@ -143,6 +147,16 @@ export default function CheckoutPage() {
       return
     }
 
+    // Card → hand off to Paymob iframe page; cart is cleared once payment
+    // confirms (the result page can clear it, or the customer comes back here
+    // already with the cart still in local storage if they retry).
+    if (paymentMethod === "card") {
+      clearCart()
+      router.push(`/checkout/payment?orderId=${data.id}`)
+      return
+    }
+
+    // COD → existing in-page success modal
     setSuccess({
       orderId: data.id,
       orderNumber: data.order_number,
@@ -348,6 +362,30 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {/* ── Payment Method ── */}
+            <div className="space-y-4">
+              <p
+                className="text-[11px] uppercase font-medium"
+                style={{ color: "var(--color-primary)", letterSpacing: "0.15em" }}
+              >
+                Payment Method
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <PaymentOption
+                  active={paymentMethod === "cod"}
+                  onClick={() => setPaymentMethod("cod")}
+                  label="Cash on Delivery"
+                  description="Pay with cash when your order arrives."
+                />
+                <PaymentOption
+                  active={paymentMethod === "card"}
+                  onClick={() => setPaymentMethod("card")}
+                  label="Credit / Debit Card"
+                  description="Secure payment via Paymob."
+                />
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={isSubmitting}
@@ -358,7 +396,13 @@ export default function CheckoutPage() {
                 letterSpacing: "0.25em",
               }}
             >
-              {isSubmitting ? "Placing Order…" : "Place Order (Cash on Delivery)"}
+              {isSubmitting
+                ? paymentMethod === "card"
+                  ? "Redirecting to payment…"
+                  : "Placing Order…"
+                : paymentMethod === "card"
+                  ? "Continue to Payment"
+                  : "Place Order (Cash on Delivery)"}
             </button>
 
             <p
@@ -482,13 +526,21 @@ export default function CheckoutPage() {
               letterSpacing: "0.22em",
             }}
           >
-            {isSubmitting ? "Placing Order…" : "Place Order (Cash on Delivery)"}
+            {isSubmitting
+              ? paymentMethod === "card"
+                ? "Redirecting…"
+                : "Placing Order…"
+              : paymentMethod === "card"
+                ? "Continue to Payment"
+                : "Place Order (Cash on Delivery)"}
           </button>
           <p
             className="text-xs text-center mt-2"
             style={{ color: "rgba(255,255,255,0.5)" }}
           >
-            No payment required now.
+            {paymentMethod === "card"
+              ? "Card details are entered on the next screen."
+              : "No payment required now."}
           </p>
         </div>
       </div>
@@ -712,6 +764,68 @@ function Field({
       {children}
       {error && <p className="text-xs" style={{ color: "#dc2626" }}>{error}</p>}
     </div>
+  )
+}
+
+function PaymentOption({
+  active,
+  onClick,
+  label,
+  description,
+}: {
+  active: boolean
+  onClick: () => void
+  label: string
+  description: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className="text-left rounded-[2px] p-4 transition-colors"
+      style={{
+        border: active
+          ? "1px solid var(--color-primary)"
+          : "1px solid var(--divider-soft)",
+        backgroundColor: active ? "rgba(74,93,77,0.08)" : "transparent",
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <span
+          className="inline-flex w-4 h-4 rounded-full items-center justify-center shrink-0"
+          style={{
+            border: "1px solid var(--color-primary)",
+            backgroundColor: active ? "var(--color-primary)" : "transparent",
+          }}
+          aria-hidden="true"
+        >
+          {active && (
+            <span
+              className="block w-1.5 h-1.5 rounded-full"
+              style={{ backgroundColor: "var(--color-cream)" }}
+            />
+          )}
+        </span>
+        <span
+          className="text-sm"
+          style={{
+            color: "var(--color-primary)",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+          }}
+        >
+          {label}
+        </span>
+      </div>
+      <p
+        className="text-xs mt-2 ml-7"
+        style={{ color: "rgba(42,61,46,0.6)", lineHeight: 1.6 }}
+      >
+        {description}
+      </p>
+    </button>
   )
 }
 

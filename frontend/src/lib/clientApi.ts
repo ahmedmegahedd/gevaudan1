@@ -87,6 +87,7 @@ export const clientApi = {
     discount_amount?: number
     total: number
     promo_code?: string | null
+    payment_method?: "cod" | "card"
   }): Promise<{ data?: { id: string; order_number: number }; error?: string }> {
     try {
       const res = await fetch("/api/orders", {
