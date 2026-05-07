@@ -131,10 +131,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
-        {/* Gender label — top-left */}
+        {/* Gender label — top-left, pill */}
         {product.gender && (
           <span
-            className="absolute top-3 left-3 z-20 inline-flex items-center text-[9px] uppercase font-medium px-2.5 py-1 rounded-[2px]"
+            className="absolute top-3 left-3 z-20 inline-flex items-center text-[9px] uppercase font-medium px-3 py-1 rounded-full"
             style={{
               backgroundColor: "rgba(42,61,46,0.85)",
               color: "var(--color-cream)",
