@@ -34,32 +34,53 @@ export default function Navbar() {
       style={{ backgroundColor: "var(--color-primary)" }}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 h-[60px] md:h-[70px] flex items-center justify-between gap-4">
-        {/* Logo / Brand — Zapfino wordmark stacked with the small subtitle.
-            Wordmark size unchanged; subtitle is intentionally tiny so the
-            stack still fits inside the 60/70px navbar. */}
+        {/* Logo / Brand — heraldic bear emblem next to the Zapfino wordmark
+            and the KEMET subtitle. */}
         <Link
           href="/"
-          className="flex flex-col items-start leading-none shrink-0"
+          className="flex items-center gap-3 shrink-0"
           onClick={() => setMenuOpen(false)}
         >
+          {/* Bear emblem */}
           <span
-            className="brand-script text-white block"
+            className="relative shrink-0"
             style={{
-              fontSize: "clamp(16px, 3.5vw, 22px)",
-              lineHeight: 1.4,
+              width: "clamp(32px, 7vw, 46px)",
+              height: "clamp(32px, 7vw, 46px)",
             }}
+            aria-hidden="true"
           >
-            {brand.name}
+            <Image
+              src="/logo.png"
+              alt=""
+              fill
+              priority
+              sizes="46px"
+              style={{ objectFit: "contain" }}
+            />
           </span>
-          <span
-            className="text-[8px] md:text-[9px] uppercase font-light"
-            style={{
-              color: "var(--color-cream)",
-              letterSpacing: "0.3em",
-              marginTop: 8,
-            }}
-          >
-            {brand.subtitle}
+
+          {/* Wordmark + subtitle */}
+          <span className="flex flex-col items-start leading-none">
+            <span
+              className="brand-script text-white block"
+              style={{
+                fontSize: "clamp(16px, 3.5vw, 22px)",
+                lineHeight: 1.4,
+              }}
+            >
+              {brand.name}
+            </span>
+            <span
+              className="text-[8px] md:text-[9px] uppercase font-light"
+              style={{
+                color: "var(--color-cream)",
+                letterSpacing: "0.3em",
+                marginTop: 8,
+              }}
+            >
+              {brand.subtitle}
+            </span>
           </span>
         </Link>
 
