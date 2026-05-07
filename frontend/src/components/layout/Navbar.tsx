@@ -272,9 +272,9 @@ function MobileDrawerLogo() {
         <Image
           src="/logo.png"
           alt={brand.name}
-          width={400}
-          height={160}
-          style={{ maxHeight: 155, width: "auto", objectFit: "contain" }}
+          width={300}
+          height={120}
+          style={{ maxHeight: 116, width: "auto", objectFit: "contain" }}
           onError={() => setImgError(true)}
           priority
         />
